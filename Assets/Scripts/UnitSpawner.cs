@@ -9,6 +9,8 @@ public class UnitSpawner : MonoBehaviour
     [SerializeField]
     ClickableArea area;
     [SerializeField]
+    TargetAcquiring targetAcquiring;
+    [SerializeField]
     Transform target;
     
 
@@ -23,5 +25,6 @@ public class UnitSpawner : MonoBehaviour
         Dude dude = Instantiate(dudePrefab, transform);
         dude.transform.position = new Vector3(position.x, position.y, 0);
         dude.Init(target);
+        targetAcquiring.AddUnit(dude);
     }
 }
