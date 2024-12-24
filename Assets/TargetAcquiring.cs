@@ -37,8 +37,6 @@ public class TargetAcquiring : MonoBehaviour
 
     void Run() {
         removeLock = true;
-        
-        print("agents count = " + agents.Count);
         for (int i = 0; i < agents.Count; i++)
         {
             Vector2 position = agents[i].transform.position;
@@ -62,7 +60,6 @@ public class TargetAcquiring : MonoBehaviour
         toRemove.Clear();
     }
 
-    // Update is called once per frame
     void Update()
     {
         timePassed += Time.deltaTime;

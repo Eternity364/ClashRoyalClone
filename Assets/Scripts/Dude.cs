@@ -1,9 +1,8 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
+
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.Events;
+using DG.Tweening;
 
 public class Dude : MonoBehaviour
 {    
@@ -18,6 +17,10 @@ public class Dude : MonoBehaviour
     float attackRate;
     [SerializeField]
     private int team;
+    [SerializeField]
+    private Color damageColor;
+    [SerializeField]    
+    private Renderer ren;
 
     public float AttackRange => attackRange;
     public int Team => team;
@@ -35,9 +38,13 @@ public class Dude : MonoBehaviour
     private Transform destination;
     private Dude attackTarget;
     private float timePassedSinceLastAttack = 0;
+    private Color originalColor;
+    private Sequence damageAnimation;
 
     void Awake() {
         navMeshAgent = GetComponent<NavMeshAgent>();
+        originalColor = ren.material.color;
+        print("Color = " + originalColor);
     }
 
     public void Init(Transform destination) {
@@ -53,7 +60,7 @@ public class Dude : MonoBehaviour
         timePassedSinceLastAttack = 0;
     } 
     
-    public void ClearAttackTarget(Dude _) {
+    private void ClearAttackTarget(Dude _) {
         if (attackTarget != null) {
             attackTarget.OnDeath -= ClearAttackTarget;
             attackTarget = null;
@@ -61,7 +68,14 @@ public class Dude : MonoBehaviour
         navMeshAgent.isStopped = false;
     } 
 
-    public void ReceiveAttack(int damage) {
+    private void ReceiveAttack(int damage) {
+        health -= damage;
+        StartAttackAnimation();
+        if (health <= 0)
+            PerformDeath();
+    } 
+
+    private void ReceiveAttackAnimation(int damage) {
         health -= damage;
         StartAttackAnimation();
         if (health <= 0)
@@ -76,11 +90,16 @@ public class Dude : MonoBehaviour
     }
 
     private void StartAttackAnimation() {
+        if (damageAnimation != null) {
+            damageAnimation.Kill();
+        }
+        damageAnimation = DOTween.Sequence();
+        damageAnimation.Append(ren.material.DOColor(damageColor, 0.3f));
+        damageAnimation.Append(ren.material.DOColor(originalColor, 0.3f));
     }
 
     private void PerformAttack() {
         attackTarget.ReceiveAttack(attack);
-        print("attack");
     }
 
     void Update() {

@@ -74,6 +74,8 @@ MonoBehaviour:
   attackRange: 20
   attackRate: 1.5
   team: 1
+  damageColor: {r: 1, g: 0, b: 0, a: 0}
+  ren: {fileID: 7536466037435594900}
 --- !u!1 &5807425466472996856
 GameObject:
   m_ObjectHideFlags: 0
