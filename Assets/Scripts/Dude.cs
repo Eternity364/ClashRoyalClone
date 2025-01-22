@@ -35,16 +35,19 @@ public class Dude : MonoBehaviour
     public UnityAction<Dude> OnDeath;
 
     private NavMeshAgent navMeshAgent;
+    [SerializeField]    
     private Transform destination;
     private Dude attackTarget;
     private float timePassedSinceLastAttack = 0;
     private Color originalColor;
     private Sequence damageAnimation;
+    private float speed;
+    private float multiplier = 10;
 
     void Awake() {
         navMeshAgent = GetComponent<NavMeshAgent>();
         originalColor = ren.material.color;
-        print("Color = " + originalColor);
+        speed = navMeshAgent.speed;
     }
 
     public void Init(Transform destination) {
@@ -54,10 +57,11 @@ public class Dude : MonoBehaviour
 
     public void SetAttackTarget(Dude dude) {
         attackTarget = dude;
-        navMeshAgent.isStopped = true;
         attackTarget.OnDeath += ClearAttackTarget;
-        transform.LookAt(attackTarget.transform);
         timePassedSinceLastAttack = 0;
+        navMeshAgent.isStopped = true;
+        transform.DOLookAt(attackTarget.transform.position, 0.5f, AxisConstraint.Z, Vector3.forward);
+        //transform.LookAt(attackTarget.transform.position, Vector3.forward);
     } 
     
     private void ClearAttackTarget(Dude _) {
@@ -70,6 +74,7 @@ public class Dude : MonoBehaviour
 
     private void ReceiveAttack(int damage) {
         health -= damage;
+        print("Health = " + health);
         StartAttackAnimation();
         if (health <= 0)
             PerformDeath();
