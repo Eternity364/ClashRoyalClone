@@ -47,6 +47,7 @@ public class Dude : MonoBehaviour
     private float speed;
     private float rotationSpeed = 10f;
     private Tween rotationTween;
+    private bool attackAllowed = false;
 
     void Awake() {
         navMeshAgent = GetComponent<NavMeshAgent>();
@@ -58,14 +59,18 @@ public class Dude : MonoBehaviour
     public void Init(Transform destination) {
         this.destination = destination;
         navMeshAgent.destination = destination.position;
+        timePassedSinceLastAttack = attackRate;
     }   
 
     public void SetAttackTarget(Dude dude) {
+        navMeshAgent.isStopped = true;
         attackTarget = dude;
         attackTarget.OnDeath += ClearAttackTarget;
-        timePassedSinceLastAttack = 0;
-        navMeshAgent.isStopped = true;
-        RotateTowards(attackTarget.transform);
+        RotateTowards(dude.transform, OnComplete);
+
+        void OnComplete () {
+            attackAllowed = true;
+        }
     } 
     
     private void ClearAttackTarget(Dude _) {
@@ -74,19 +79,13 @@ public class Dude : MonoBehaviour
             attackTarget = null;
         }
         navMeshAgent.isStopped = false;
+        attackAllowed = false;
         RotateTowards(null);
     } 
 
     private void ReceiveAttack(int damage) {
         health -= damage;
-        StartAttackAnimation();
-        if (health <= 0)
-            PerformDeath();
-    } 
-
-    private void ReceiveAttackAnimation(int damage) {
-        health -= damage;
-        StartAttackAnimation();
+        StartDamageAnimation();
         if (health <= 0)
             PerformDeath();
     } 
@@ -94,11 +93,13 @@ public class Dude : MonoBehaviour
     private void PerformDeath() {
         ClearAttackTarget(null);
         navMeshAgent.isStopped = true;
+        if (rotationTween != null)
+            rotationTween.Kill(false);
         OnDeath?.Invoke(this);
         UnityEngine.Object.Destroy(gameObject);
     }
 
-    private void StartAttackAnimation() {
+    private void StartDamageAnimation() {
         if (damageAnimation != null) {
             damageAnimation.Kill();
         }
@@ -112,16 +113,16 @@ public class Dude : MonoBehaviour
     }
 
     void Update() {
-        if (attackTarget != null) {
+        if (attackTarget != null && attackAllowed) {
             timePassedSinceLastAttack += Time.deltaTime;
-            if (timePassedSinceLastAttack > attackRate) {
+            if (timePassedSinceLastAttack >= attackRate) {
                 timePassedSinceLastAttack =- attackRate;
                 PerformAttack();
             }
         }
     }
 
-    private void RotateTowards(Transform target) {
+    private void RotateTowards(Transform target, TweenCallback OnComplete = null) {
         if (rotationTween != null)
             rotationTween.Kill(false);
         if (target == null) {
@@ -131,13 +132,13 @@ public class Dude : MonoBehaviour
         {
             Vector3 worldUp = new Vector3(0, 0, -transform.position.z);
             Vector3 originalRotation = child.localEulerAngles;
-            child.DOLookAt(target.position, 0, AxisConstraint.Z, worldUp).OnComplete(OnComplete);
+            child.DOLookAt(target.position, 0, AxisConstraint.Z, worldUp).OnComplete(OnCompleteLocal);
 
-            void OnComplete() {
+            void OnCompleteLocal() {
                 Vector3 newRotation = child.localEulerAngles;
                 print("newRotation = " + newRotation);
                 child.localEulerAngles = originalRotation;
-                rotationTween = child.DOLocalRotate(newRotation, 1);
+                rotationTween = child.DOLocalRotate(newRotation, 1).OnComplete(OnComplete);
             }
         }
     }
