@@ -6,7 +6,7 @@ using UnityEngine;
 
 public class TargetAcquiring : MonoBehaviour
 {
-    // How oftet acquiring happens in seconds
+    // How often acquiring happens in seconds
     [SerializeField]
     private List<Dude> agents;
     [SerializeField]
