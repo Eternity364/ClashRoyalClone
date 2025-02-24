@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.Events;
 using DG.Tweening;
-using UnityEngine.Experimental.AI;
+using Unity.VisualScripting;
 
 public class Dude : MonoBehaviour
 {    
@@ -24,6 +24,8 @@ public class Dude : MonoBehaviour
     private Renderer ren;
     [SerializeField]    
     private Transform child;
+    [SerializeField]    
+    private GameObject bulletPrefab;
 
     public float AttackRange => navMeshAgent.stoppingDistance;
     public int Team => team;
@@ -43,7 +45,7 @@ public class Dude : MonoBehaviour
     private Dude attackTarget;
     private float timePassedSinceLastAttack = 0;
     private Color originalColor;
-    private Sequence damageAnimation;
+    private DG.Tweening.Sequence damageAnimation;
     private float speed;
     private float rotationSpeed = 10f;
     private Tween rotationTween;
@@ -110,6 +112,16 @@ public class Dude : MonoBehaviour
 
     private void PerformAttack() {
         attackTarget.ReceiveAttack(attack);
+        GameObject bullet = Instantiate(bulletPrefab, transform.parent);
+        bullet.transform.position = transform.position;
+        if (attackTarget != null) {
+            Vector3 targetPosition = attackTarget.transform.position;
+            bullet.transform.DOMove(targetPosition, 1).OnComplete(OnComplete);
+
+            void OnComplete() {
+                GameObject.Destroy(bullet);;
+            }
+        }
     }
 
     void Update() {
@@ -136,7 +148,6 @@ public class Dude : MonoBehaviour
 
             void OnCompleteLocal() {
                 Vector3 newRotation = child.localEulerAngles;
-                print("newRotation = " + newRotation);
                 child.localEulerAngles = originalRotation;
                 rotationTween = child.DOLocalRotate(newRotation, 1).OnComplete(OnComplete);
             }
