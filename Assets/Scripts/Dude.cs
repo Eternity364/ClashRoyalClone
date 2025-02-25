@@ -106,20 +106,26 @@ public class Dude : MonoBehaviour
             damageAnimation.Kill();
         }
         damageAnimation = DOTween.Sequence();
-        damageAnimation.Append(ren.material.DOColor(damageColor, 0.3f));
+        damageAnimation.Append(ren.material.DOColor(damageColor, 0.1f));
         damageAnimation.Append(ren.material.DOColor(originalColor, 0.3f));
     }
 
     private void PerformAttack() {
-        attackTarget.ReceiveAttack(attack);
         GameObject bullet = Instantiate(bulletPrefab, transform.parent);
         bullet.transform.position = transform.position;
         if (attackTarget != null) {
             Vector3 targetPosition = attackTarget.transform.position;
-            bullet.transform.DOMove(targetPosition, 1).OnComplete(OnComplete);
+            float duration = 1;
+            DG.Tweening.Sequence mySequence = DOTween.Sequence();
+            mySequence.Append(bullet.transform.DOMove(targetPosition, duration));
+            mySequence.InsertCallback(duration * 0.8f, OnComplete);
+            mySequence.SetAutoKill(true);
+
 
             void OnComplete() {
-                GameObject.Destroy(bullet);;
+                GameObject.Destroy(bullet);
+                if (attackTarget != null)
+                    attackTarget.ReceiveAttack(attack);
             }
         }
     }
