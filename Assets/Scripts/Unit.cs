@@ -26,6 +26,8 @@ public class Unit : MonoBehaviour
     [SerializeField]    
     private Transform child;
     [SerializeField]    
+    private float bulletSpeed;
+    [SerializeField]    
     private GameObject bulletPrefab;
     [SerializeField]    
     private NavMeshAgent navMeshAgent;
@@ -49,20 +51,16 @@ public class Unit : MonoBehaviour
     }
     public UnityAction<Unit> OnDeath;
 
-    [SerializeField]    
     private Transform destination;
     private Unit attackTarget;
     private float timePassedSinceLastAttack = 0;
     private Color originalColor;
     private DG.Tweening.Sequence damageAnimation;
-    private float speed;
-    private float rotationSpeed = 10f;
     private DG.Tweening.Sequence rotationAnimation;
     private bool attackAllowed = false;
 
     void Awake() {
         originalColor = ren.material.color;
-        speed = navMeshAgent.speed;
     }
 
     public void Init(Transform destination) {
@@ -125,7 +123,7 @@ public class Unit : MonoBehaviour
         bullet.transform.position = transform.position;
         if (attackTarget != null) {
             Vector3 targetPosition = attackTarget.transform.position;
-            float duration = 1;
+            float duration = (transform.position - targetPosition).magnitude / bulletSpeed;
             DG.Tweening.Sequence mySequence = DOTween.Sequence();
             mySequence.Append(bullet.transform.DOMove(targetPosition, duration));
             mySequence.InsertCallback(duration * 0.8f, OnComplete);
