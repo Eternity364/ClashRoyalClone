@@ -5,7 +5,7 @@ using UnityEngine;
 public class UnitSpawner : MonoBehaviour
 {
     [SerializeField]
-    Dude dudePrefab;
+    Unit unitPrefab;
     [SerializeField]
     ClickableArea area;
     [SerializeField]
@@ -22,9 +22,9 @@ public class UnitSpawner : MonoBehaviour
 
     public void Spawn(Vector2 position)
     {
-        Dude dude = Instantiate(dudePrefab, transform);
-        dude.transform.position = new Vector3(position.x, position.y, 0);
-        dude.Init(target);
-        targetAcquiring.AddUnit(dude);
+        Unit unit = Instantiate(unitPrefab, transform);
+        unit.transform.position = new Vector3(position.x, position.y, 0);
+        unit.Init(target);
+        targetAcquiring.AddUnit(unit);
     }
 }

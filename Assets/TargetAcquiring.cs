@@ -8,49 +8,53 @@ public class TargetAcquiring : MonoBehaviour
 {
     // How often acquiring happens in seconds
     [SerializeField]
-    private List<Dude> agents;
+    private List<Unit> agents;
+    [SerializeField]
+    private List<Unit> enemyBases;
     [SerializeField]
     private float frequency = 0.2f;
+
     private float timePassed = 0;
-    private List<Dude> toRemove = new();
+    private List<Unit> toRemove = new();
     bool removeLock;
 
     void Start() {
-        foreach (Dude dude in agents)
+        foreach (Unit unit in agents)
         {
-            dude.OnDeath += RemoveUnit;
+            unit.OnDeath += RemoveUnit;
         }
     }
 
-    public void AddUnit(Dude dude) {
-        agents.Add(dude);
-        dude.OnDeath += RemoveUnit;
+    public void AddUnit(Unit unit) {
+        agents.Add(unit);
+        unit.OnDeath += RemoveUnit;
     }
 
-    public void RemoveUnit(Dude dude) {
+    public void RemoveUnit(Unit unit) {
         if (removeLock)
-            toRemove.Add(dude);
+            toRemove.Add(unit);
         else {
-            agents.Remove(dude);
+            agents.Remove(unit);
         }
     }
 
-    void Run() {
+    private void Run() {
         removeLock = true;
         for (int i = 0; i < agents.Count; i++)
         {
-            Vector2 position = agents[i].transform.position;
-            Dude agent = agents[i];
+            Unit agent = agents[i];
             if (agent.IsDestroyed()) continue;
             int team = agent.Team;
             for (int j = 0; j < agents.Count; j++)
             {
-                if (agents[j].IsDestroyed()) continue;
+                if (agents[j].IsDestroyed() || (agent.HasTarget && agent.Target != enemyBases[agent.Team])) continue;
                 if (i != j && team != agents[j].Team) {
-                    float distance = (position - (Vector2)agents[j].transform.position).magnitude;
-                    if (!agent.HasTarget && agent.AttackRange > distance)
-                        agent.SetAttackTarget(agents[j]);
+                    CheckPosition(agent, agents[j]);
                 }
+            }
+            
+            if (!agent.HasTarget) {
+               CheckPosition(agent, enemyBases[agent.Team]); 
             }
         }
         removeLock = false;
@@ -58,6 +62,13 @@ public class TargetAcquiring : MonoBehaviour
             agents.Remove(toRemove[i]);
         }
         toRemove.Clear();
+    }
+
+    private void CheckPosition(Unit attacker, Unit possibleEnemy) {
+        Vector2 position = attacker.transform.position;
+        float distance = (position - (Vector2)possibleEnemy.transform.position).magnitude;
+        if ((!attacker.HasTarget || attacker.Target == enemyBases[attacker.Team]) && attacker.AttackRange > distance)
+            attacker.SetAttackTarget(possibleEnemy);
     }
 
     void Update()

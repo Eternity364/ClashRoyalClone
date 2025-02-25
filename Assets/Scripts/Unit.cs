@@ -5,7 +5,7 @@ using UnityEngine.Events;
 using DG.Tweening;
 using Unity.VisualScripting;
 
-public class Dude : MonoBehaviour
+public class Unit : MonoBehaviour
 {    
 
     [SerializeField]
@@ -27,7 +27,7 @@ public class Dude : MonoBehaviour
     [SerializeField]    
     private GameObject bulletPrefab;
 
-    public float AttackRange => navMeshAgent.stoppingDistance;
+    public float AttackRange => attackRange;
     public int Team => team;
 
     public bool HasTarget
@@ -37,12 +37,19 @@ public class Dude : MonoBehaviour
             return attackTarget != null;
         }
     }
-    public UnityAction<Dude> OnDeath;
+    public Unit Target
+    {
+        get
+        {
+            return attackTarget;
+        }
+    }
+    public UnityAction<Unit> OnDeath;
 
     private NavMeshAgent navMeshAgent;
     [SerializeField]    
     private Transform destination;
-    private Dude attackTarget;
+    private Unit attackTarget;
     private float timePassedSinceLastAttack = 0;
     private Color originalColor;
     private DG.Tweening.Sequence damageAnimation;
@@ -64,18 +71,19 @@ public class Dude : MonoBehaviour
         timePassedSinceLastAttack = attackRate;
     }   
 
-    public void SetAttackTarget(Dude dude) {
+    public void SetAttackTarget(Unit unit) {
+        ClearAttackTarget(null);
         navMeshAgent.isStopped = true;
-        attackTarget = dude;
+        attackTarget = unit;
         attackTarget.OnDeath += ClearAttackTarget;
-        RotateTowards(dude.transform, OnComplete);
+        RotateTowards(unit.transform, OnComplete);
 
         void OnComplete () {
             attackAllowed = true;
         }
     } 
     
-    private void ClearAttackTarget(Dude _) {
+    private void ClearAttackTarget(Unit _) {
         if (attackTarget != null) {
             attackTarget.OnDeath -= ClearAttackTarget;
             attackTarget = null;
