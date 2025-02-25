@@ -4,6 +4,7 @@ using UnityEngine.AI;
 using UnityEngine.Events;
 using DG.Tweening;
 using Unity.VisualScripting;
+using UnityEngine.UIElements;
 
 public class Unit : MonoBehaviour
 {    
@@ -26,6 +27,8 @@ public class Unit : MonoBehaviour
     private Transform child;
     [SerializeField]    
     private GameObject bulletPrefab;
+    [SerializeField]    
+    private NavMeshAgent navMeshAgent;
 
     public float AttackRange => attackRange;
     public int Team => team;
@@ -46,7 +49,6 @@ public class Unit : MonoBehaviour
     }
     public UnityAction<Unit> OnDeath;
 
-    private NavMeshAgent navMeshAgent;
     [SerializeField]    
     private Transform destination;
     private Unit attackTarget;
@@ -55,14 +57,12 @@ public class Unit : MonoBehaviour
     private DG.Tweening.Sequence damageAnimation;
     private float speed;
     private float rotationSpeed = 10f;
-    private Tween rotationTween;
+    private DG.Tweening.Sequence rotationAnimation;
     private bool attackAllowed = false;
 
     void Awake() {
-        navMeshAgent = GetComponent<NavMeshAgent>();
         originalColor = ren.material.color;
         speed = navMeshAgent.speed;
-        navMeshAgent.updateRotation = false;
     }
 
     public void Init(Transform destination) {
@@ -74,6 +74,7 @@ public class Unit : MonoBehaviour
     public void SetAttackTarget(Unit unit) {
         ClearAttackTarget(null);
         navMeshAgent.isStopped = true;
+        navMeshAgent.updateRotation = false;
         attackTarget = unit;
         attackTarget.OnDeath += ClearAttackTarget;
         RotateTowards(unit.transform, OnComplete);
@@ -89,6 +90,7 @@ public class Unit : MonoBehaviour
             attackTarget = null;
         }
         navMeshAgent.isStopped = false;
+        navMeshAgent.updateRotation = true;
         attackAllowed = false;
         RotateTowards(null);
     } 
@@ -103,8 +105,8 @@ public class Unit : MonoBehaviour
     private void PerformDeath() {
         ClearAttackTarget(null);
         navMeshAgent.isStopped = true;
-        if (rotationTween != null)
-            rotationTween.Kill(false);
+        if (rotationAnimation != null)
+            rotationAnimation.Kill(false);
         OnDeath?.Invoke(this);
         UnityEngine.Object.Destroy(gameObject);
     }
@@ -149,21 +151,23 @@ public class Unit : MonoBehaviour
     }
 
     private void RotateTowards(Transform target, TweenCallback OnComplete = null) {
-        if (rotationTween != null)
-            rotationTween.Kill(false);
+        if (rotationAnimation != null)
+            rotationAnimation.Kill(false);
+        rotationAnimation = DOTween.Sequence();
         if (target == null) {
-            rotationTween = child.DOLocalRotate(Vector3.zero, 1);
+            rotationAnimation.Append(child.DOLocalRotate(Vector3.zero, 1));
         }
         else
         {
+            rotationAnimation.OnComplete(OnComplete);
             Vector3 worldUp = new Vector3(0, 0, -transform.position.z);
-            Vector3 originalRotation = child.localEulerAngles;
+            Vector3 originalchildRotation = child.localEulerAngles;
             child.DOLookAt(target.position, 0, AxisConstraint.Z, worldUp).OnComplete(OnCompleteLocal);
 
             void OnCompleteLocal() {
                 Vector3 newRotation = child.localEulerAngles;
-                child.localEulerAngles = originalRotation;
-                rotationTween = child.DOLocalRotate(newRotation, 1).OnComplete(OnComplete);
+                child.localEulerAngles = originalchildRotation;                
+                rotationAnimation.Append(child.DOLocalRotate(newRotation, 1));
             }
         }
     }

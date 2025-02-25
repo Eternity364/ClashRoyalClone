@@ -12,6 +12,8 @@ public class UnitSpawner : MonoBehaviour
     TargetAcquiring targetAcquiring;
     [SerializeField]
     Transform target;
+    [SerializeField]
+    Transform parent;
     
 
 
@@ -22,7 +24,7 @@ public class UnitSpawner : MonoBehaviour
 
     public void Spawn(Vector2 position)
     {
-        Unit unit = Instantiate(unitPrefab, transform);
+        Unit unit = Instantiate(unitPrefab, parent);
         unit.transform.position = new Vector3(position.x, position.y, 0);
         unit.Init(target);
         targetAcquiring.AddUnit(unit);

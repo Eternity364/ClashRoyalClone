@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 1563671952550330282}
   - component: {fileID: -6429231015304818342}
   m_Layer: 0
-  m_Name: Dude
+  m_Name: EnemyDude
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -72,7 +72,7 @@ MonoBehaviour:
   attack: 20
   attackRange: 20
   attackRate: 1.36
-  team: 0
+  team: 1
   damageColor: {r: 1, g: 0, b: 0, a: 0}
   ren: {fileID: 7536466037435594900}
   child: {fileID: 1317998435848781288}
@@ -142,7 +142,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 04cfbd7ab50a85045bb7dc4b1e7d8c4e, type: 2}
+  - {fileID: 2100000, guid: 863d446b6ad92a04d98f1b36442e6f13, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
