@@ -14,6 +14,8 @@ public class UnitSpawner : MonoBehaviour
     Transform target;
     [SerializeField]
     Transform parent;
+    [SerializeField]
+    BulletFactory bulletFactory;
     
 
 
@@ -26,7 +28,7 @@ public class UnitSpawner : MonoBehaviour
     {
         Unit unit = Instantiate(unitPrefab, parent);
         unit.transform.position = new Vector3(position.x, position.y, 0);
-        unit.Init(target);
+        unit.Init(target, bulletFactory);
         targetAcquiring.AddUnit(unit);
     }
 }

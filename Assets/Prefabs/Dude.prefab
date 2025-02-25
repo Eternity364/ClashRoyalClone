@@ -77,8 +77,7 @@ MonoBehaviour:
   ren: {fileID: 7536466037435594900}
   child: {fileID: 1317998435848781288}
   bulletSpeed: 40
-  bulletPrefab: {fileID: 2761294050886622945, guid: 5077c58a17853934db2ac6910373038a,
-    type: 3}
+  bulletFactory: {fileID: 0}
   navMeshAgent: {fileID: 1563671952550330282}
 --- !u!1 &5807425466472996856
 GameObject:

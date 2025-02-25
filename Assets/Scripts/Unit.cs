@@ -28,7 +28,7 @@ public class Unit : MonoBehaviour
     [SerializeField]    
     private float bulletSpeed;
     [SerializeField]    
-    private GameObject bulletPrefab;
+    private BulletFactory bulletFactory;
     [SerializeField]    
     private NavMeshAgent navMeshAgent;
 
@@ -63,7 +63,8 @@ public class Unit : MonoBehaviour
         originalColor = ren.material.color;
     }
 
-    public void Init(Transform destination) {
+    public void Init(Transform destination, BulletFactory bulletFactory) {
+        this.bulletFactory = bulletFactory;
         this.destination = destination;
         navMeshAgent.destination = destination.position;
         timePassedSinceLastAttack = attackRate;
@@ -119,8 +120,9 @@ public class Unit : MonoBehaviour
     }
 
     private void PerformAttack() {
-        GameObject bullet = Instantiate(bulletPrefab, transform.parent);
+        GameObject bullet = Instantiate(bulletFactory.Get(), transform.parent);
         bullet.transform.position = transform.position;
+        bullet.SetActive(true);
         if (attackTarget != null) {
             Vector3 targetPosition = attackTarget.transform.position;
             float duration = (transform.position - targetPosition).magnitude / bulletSpeed;
@@ -131,7 +133,7 @@ public class Unit : MonoBehaviour
 
 
             void OnComplete() {
-                GameObject.Destroy(bullet);
+                bullet.SetActive(false);
                 if (attackTarget != null)
                     attackTarget.ReceiveAttack(attack);
             }

@@ -4144,6 +4144,7 @@ MonoBehaviour:
   targetAcquiring: {fileID: 1082284949}
   target: {fileID: 208128927}
   parent: {fileID: 866699091}
+  bulletFactory: {fileID: 2114211193}
   spawnRate: 5
 --- !u!1001 &757062943
 PrefabInstance:
@@ -4695,6 +4696,7 @@ MonoBehaviour:
   targetAcquiring: {fileID: 1082284949}
   target: {fileID: 1370715126}
   parent: {fileID: 866699091}
+  bulletFactory: {fileID: 2114211193}
 --- !u!1001 &883855728
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -5576,7 +5578,54 @@ MonoBehaviour:
   targetAcquiring: {fileID: 1082284949}
   target: {fileID: 208128927}
   parent: {fileID: 866699091}
+  bulletFactory: {fileID: 2114211193}
   spawnRate: 5
+--- !u!1 &2114211192
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2114211194}
+  - component: {fileID: 2114211193}
+  m_Layer: 0
+  m_Name: BulletFactory
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &2114211193
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2114211192}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 316d0b5337ace934b945fd76d6d6f1c5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  bulletPrefab: {fileID: 2761294050886622945, guid: 5077c58a17853934db2ac6910373038a,
+    type: 3}
+--- !u!4 &2114211194
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2114211192}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -3.4886317, y: 37.966515, z: 48.880135}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!43 &2127554926
 Mesh:
   m_ObjectHideFlags: 0
@@ -5848,3 +5897,4 @@ SceneRoots:
   - {fileID: 285316917}
   - {fileID: 397140015}
   - {fileID: 1082284950}
+  - {fileID: 2114211194}
