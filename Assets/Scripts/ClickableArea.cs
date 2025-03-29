@@ -10,9 +10,9 @@ public class ClickableArea : MonoBehaviour
     [SerializeField]
     private Collider coll; 
 
-    private UnityAction<Vector2> OnClick; 
+    private UnityAction<Vector3> OnClick; 
 
-    public void Init(UnityAction<Vector2> OnClick) {
+    public void Init(UnityAction<Vector3> OnClick) {
         this.OnClick = OnClick;
     }
 

@@ -24,11 +24,12 @@ public class UnitSpawner : MonoBehaviour
         area.Init(Spawn);
     }
 
-    public void Spawn(Vector2 position)
+    public void Spawn(Vector3 position)
     {
         Unit unit = Instantiate(unitPrefab, parent);
-        unit.transform.position = new Vector3(position.x, position.y, 0);
         unit.Init(target, bulletFactory);
-        targetAcquiring.AddUnit(unit);
+        //targetAcquiring.AddUnit(unit);
+        position.y -= 5.5f;
+        unit.transform.position = position;
     }
 }

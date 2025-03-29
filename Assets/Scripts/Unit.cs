@@ -5,6 +5,7 @@ using UnityEngine.Events;
 using DG.Tweening;
 using Unity.VisualScripting;
 using UnityEngine.UIElements;
+using RPGCharacterAnims;
 
 public class Unit : MonoBehaviour
 {    
@@ -51,7 +52,7 @@ public class Unit : MonoBehaviour
     }
     public UnityAction<Unit> OnDeath;
 
-    private Transform destination;
+    public Transform destination;
     private Unit attackTarget;
     private float timePassedSinceLastAttack = 0;
     private Color originalColor;
@@ -59,15 +60,23 @@ public class Unit : MonoBehaviour
     private DG.Tweening.Sequence rotationAnimation;
     private bool attackAllowed = false;
 
-    void Awake() {
-        originalColor = ren.material.color;
-    }
+    void Start()
+    {
+        if (destination != null) {
+            RPGCharacterController controller = GetComponent<RPGCharacterController>();
+            if (controller != null) 
+                controller.StartAction("Navigation", destination.position);
+        }
+    }  
 
     public void Init(Transform destination, BulletFactory bulletFactory) {
         this.bulletFactory = bulletFactory;
         this.destination = destination;
-        navMeshAgent.destination = destination.position;
         timePassedSinceLastAttack = attackRate;
+        // RPGCharacterController controller = GetComponent<RPGCharacterController>();
+        // if (controller != null) {
+        //     controller.StartAction("Navigation", destination.position);
+        // }
     }   
 
     public void SetAttackTarget(Unit unit) {
@@ -111,12 +120,12 @@ public class Unit : MonoBehaviour
     }
 
     private void StartDamageAnimation() {
-        if (damageAnimation != null) {
-            damageAnimation.Kill();
-        }
-        damageAnimation = DOTween.Sequence();
-        damageAnimation.Append(ren.material.DOColor(damageColor, 0.1f));
-        damageAnimation.Append(ren.material.DOColor(originalColor, 0.3f));
+        // if (damageAnimation != null) {
+        //     damageAnimation.Kill();
+        // }
+        // damageAnimation = DOTween.Sequence();
+        // damageAnimation.Append(ren.material.DOColor(damageColor, 0.1f));
+        // damageAnimation.Append(ren.material.DOColor(originalColor, 0.3f));
     }
 
     private void PerformAttack() {
