@@ -207,6 +207,9 @@ namespace RPGCharacterAnims
 
         private void Awake()
         {
+            // Get other RPG Character components.
+            superCharacterController = GetComponent<SuperCharacterController>();
+
             rpgCharacterController = GetComponent<RPGCharacterController>();
             rpgCharacterController.SetHandler("AcquiringGround", new Actions.SimpleActionHandler(() => { }, () => { }));
             rpgCharacterController.SetHandler("MaintainingGround", new Actions.SimpleActionHandler(() => { }, () => { }));
@@ -227,9 +230,6 @@ namespace RPGCharacterAnims
 
         private void Start()
         {
-            // Get other RPG Character components.
-            superCharacterController = GetComponent<SuperCharacterController>();
-
             // Check if Animator exists, otherwise pause script.
             animator = GetComponentInChildren<Animator>();
 			if (animator == null) {

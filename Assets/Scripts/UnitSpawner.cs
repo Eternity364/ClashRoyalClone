@@ -27,9 +27,9 @@ public class UnitSpawner : MonoBehaviour
     public void Spawn(Vector3 position)
     {
         Unit unit = Instantiate(unitPrefab, parent);
+        position.y = 0;
+        unit.transform.localPosition = position;
         unit.Init(target, bulletFactory);
         //targetAcquiring.AddUnit(unit);
-        position.y -= 5.5f;
-        unit.transform.position = position;
     }
 }

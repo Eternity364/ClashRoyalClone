@@ -60,23 +60,21 @@ public class Unit : MonoBehaviour
     private DG.Tweening.Sequence rotationAnimation;
     private bool attackAllowed = false;
 
-    void Start()
-    {
-        if (destination != null) {
-            RPGCharacterController controller = GetComponent<RPGCharacterController>();
-            if (controller != null) 
-                controller.StartAction("Navigation", destination.position);
-        }
-    }  
+    // public void Start() {
+    //     RPGCharacterController controller = GetComponent<RPGCharacterController>();
+    //     if (controller != null) {
+    //         controller.StartAction("Navigation", destination.position);
+    //     }
+    // }   
 
     public void Init(Transform destination, BulletFactory bulletFactory) {
         this.bulletFactory = bulletFactory;
         this.destination = destination;
         timePassedSinceLastAttack = attackRate;
-        // RPGCharacterController controller = GetComponent<RPGCharacterController>();
-        // if (controller != null) {
-        //     controller.StartAction("Navigation", destination.position);
-        // }
+        RPGCharacterController controller = GetComponent<RPGCharacterController>();
+        if (controller != null) {
+            controller.StartAction("Navigation", destination.position);
+        }
     }   
 
     public void SetAttackTarget(Unit unit) {
