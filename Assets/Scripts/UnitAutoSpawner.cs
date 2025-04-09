@@ -11,6 +11,7 @@ public class UnitAutoSpawner : UnitSpawner
     private float timePassed = 0;
     
     void Start() {
+        timePassed = spawnRate;
     }
     
     void Update() {

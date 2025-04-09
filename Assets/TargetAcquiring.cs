@@ -1,6 +1,4 @@
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -49,7 +47,8 @@ public class TargetAcquiring : MonoBehaviour
             {
                 if (agents[j].IsDestroyed() || (agent.HasTarget && agent.Target != enemyBases[agent.Team])) continue;
                 if (i != j && team != agents[j].Team) {
-                    CheckPosition(agent, agents[j]);
+                    bool found = CheckPosition(agent, agents[j]);
+                    if (found) break;
                 }
             }
             
@@ -64,11 +63,15 @@ public class TargetAcquiring : MonoBehaviour
         toRemove.Clear();
     }
 
-    private void CheckPosition(Unit attacker, Unit possibleEnemy) {
-        Vector2 position = attacker.transform.position;
-        float distance = (position - (Vector2)possibleEnemy.transform.position).magnitude;
-        if ((!attacker.HasTarget || attacker.Target == enemyBases[attacker.Team]) && attacker.AttackRange > distance)
+    private bool CheckPosition(Unit attacker, Unit possibleEnemy) {
+        Vector3 position = attacker.transform.position;
+        float distance = (position - possibleEnemy.transform.position).magnitude;
+        bool targetValid = false;
+        if ((!attacker.HasTarget || attacker.Target == enemyBases[attacker.Team]) && attacker.AttackRange > distance) {
             attacker.SetAttackTarget(possibleEnemy);
+            targetValid = true;
+        }
+        return targetValid;
     }
 
     void Update()

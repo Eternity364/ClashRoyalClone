@@ -3,9 +3,9 @@ using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.Events;
 using DG.Tweening;
-using Unity.VisualScripting;
-using UnityEngine.UIElements;
 using RPGCharacterAnims;
+using Unity.VisualScripting;
+using System.Collections;
 
 public class Unit : MonoBehaviour
 {    
@@ -32,6 +32,10 @@ public class Unit : MonoBehaviour
     private BulletFactory bulletFactory;
     [SerializeField]    
     private NavMeshAgent navMeshAgent;
+    [SerializeField]    
+    private NavMeshObstacle navMeshObstacle;
+    [SerializeField]    
+    private Animator animator;
 
     public float AttackRange => attackRange;
     public int Team => team;
@@ -59,28 +63,37 @@ public class Unit : MonoBehaviour
     private DG.Tweening.Sequence damageAnimation;
     private DG.Tweening.Sequence rotationAnimation;
     private bool attackAllowed = false;
+    private Vector3 positionBefore;
 
-    // public void Start() {
-    //     RPGCharacterController controller = GetComponent<RPGCharacterController>();
-    //     if (controller != null) {
-    //         controller.StartAction("Navigation", destination.position);
-    //     }
-    // }   
+    public void Start() {
+        // RPGCharacterController controller = GetComponent<RPGCharacterController>();
+        // if (controller != null) {
+        //     controller.StartAction("Sprint");
+        // };
+    }   
 
-    public void Init(Transform destination, BulletFactory bulletFactory) {
+    public void Init(Transform destination, BulletFactory bulletFactory, int navMeshPriority) {
         this.bulletFactory = bulletFactory;
         this.destination = destination;
         timePassedSinceLastAttack = attackRate;
-        RPGCharacterController controller = GetComponent<RPGCharacterController>();
-        if (controller != null) {
-            controller.StartAction("Navigation", destination.position);
-        }
-    }   
+        navMeshAgent.enabled = true;
+        navMeshAgent.updateRotation = true;
+        navMeshAgent.SetDestination(destination.position);
+        animator.SetBool("Moving", true);
+        StartMovingAnimation(true);
+}   
 
     public void SetAttackTarget(Unit unit) {
-        ClearAttackTarget(null);
+        if (attackTarget != null) {
+            attackTarget.OnDeath -= ClearAttackTarget;
+            attackTarget = null;
+        }
+        attackAllowed = false;
         navMeshAgent.isStopped = true;
         navMeshAgent.updateRotation = false;
+        navMeshAgent.enabled = false;
+        StartMovingAnimation(false);
+        navMeshObstacle.enabled = true;
         attackTarget = unit;
         attackTarget.OnDeath += ClearAttackTarget;
         RotateTowards(unit.transform, OnComplete);
@@ -91,15 +104,26 @@ public class Unit : MonoBehaviour
     } 
     
     private void ClearAttackTarget(Unit _) {
-        if (attackTarget != null) {
-            attackTarget.OnDeath -= ClearAttackTarget;
-            attackTarget = null;
-        }
+        attackTarget = null;
+        //RotateTowards(null);
+        print("Position before " + transform.position);
+        positionBefore = transform.position;
+        navMeshObstacle.enabled = false;
+        navMeshAgent.enabled = true;
         navMeshAgent.isStopped = false;
         navMeshAgent.updateRotation = true;
+        StartMovingAnimation(true);
+        //print("navMeshAgent.destination " + this.name + " " + destination.position);
+        StartCoroutine("PositionChecker");
         attackAllowed = false;
-        RotateTowards(null);
-    } 
+    }
+    
+    private IEnumerator PositionChecker() {
+        yield return new WaitForNextFrameUnit();
+        transform.position = positionBefore;
+        navMeshAgent.SetDestination(destination.position);
+        print("Position after " + transform.position);
+    }
 
     private void ReceiveAttack(int damage) {
         health -= damage;
@@ -107,13 +131,21 @@ public class Unit : MonoBehaviour
         if (health <= 0)
             PerformDeath();
     } 
+    private void StartMovingAnimation(bool isMoving) {
+        animator.SetFloat("Velocity Z", isMoving ? 1 : 0);
+    } 
 
     private void PerformDeath() {
+        if (this.IsDestroyed())
+            return;
         ClearAttackTarget(null);
         navMeshAgent.isStopped = true;
-        if (rotationAnimation != null)
+        if (rotationAnimation != null) {
             rotationAnimation.Kill(false);
+            rotationAnimation = null;
+        }
         OnDeath?.Invoke(this);
+        OnDeath = null;
         UnityEngine.Object.Destroy(gameObject);
     }
 
@@ -158,24 +190,26 @@ public class Unit : MonoBehaviour
     }
 
     private void RotateTowards(Transform target, TweenCallback OnComplete = null) {
-        if (rotationAnimation != null)
+        if (rotationAnimation != null) {
             rotationAnimation.Kill(false);
-        rotationAnimation = DOTween.Sequence();
-        if (target == null) {
-            rotationAnimation.Append(child.DOLocalRotate(Vector3.zero, 1));
+            rotationAnimation = null;
         }
-        else
-        {
-            rotationAnimation.OnComplete(OnComplete);
-            Vector3 worldUp = new Vector3(0, 0, -transform.position.z);
-            Vector3 originalchildRotation = child.localEulerAngles;
-            child.DOLookAt(target.position, 0, AxisConstraint.Z, worldUp).OnComplete(OnCompleteLocal);
 
-            void OnCompleteLocal() {
-                Vector3 newRotation = child.localEulerAngles;
-                child.localEulerAngles = originalchildRotation;                
-                rotationAnimation.Append(child.DOLocalRotate(newRotation, 1));
-            }
-        }
+        rotationAnimation = DOTween.Sequence();
+        rotationAnimation.OnComplete(OnComplete);
+        float angle = Mathf.Atan2(target.position.x - transform.position.x, target.position.z - transform.position.z) * Mathf.Rad2Deg;
+        //float angle = Vector3.Angle(target.position, transform.position);
+        //print("angle: " + angle);
+        rotationAnimation.Append(transform.DORotate(new Vector3(0, angle, 0), 1).SetEase(Ease.InCubic));
+
+        // Vector3 worldUp = new Vector3(0, 0, -transform.position.z);
+        // Vector3 originalchildRotation = child.localEulerAngles;
+        // child.DOLookAt(target.position, 0, AxisConstraint.Z, worldUp).OnComplete(OnCompleteLocal);
+
+        // void OnCompleteLocal() {
+        //     Vector3 newRotation = child.localEulerAngles;
+        //     child.localEulerAngles = originalchildRotation;                
+        //     rotationAnimation.Append(child.DOLocalRotate(newRotation, 1));
+        // }
     }
 }

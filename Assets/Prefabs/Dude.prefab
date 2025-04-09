@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7921607464109018035}
   - component: {fileID: 1563671952550330282}
-  - component: {fileID: -6429231015304818342}
+  - component: {fileID: -2351325890075182342}
   m_Layer: 0
   m_Name: Dude
   m_TagString: Untagged
@@ -26,14 +26,14 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3526362448372470246}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.5, y: -0.5, z: -0.5, w: 0.5}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: -0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1317998435848781288}
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: -90, z: -90}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!195 &1563671952550330282
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -56,7 +56,7 @@ NavMeshAgent:
   m_BaseOffset: 0
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
---- !u!114 &-6429231015304818342
+--- !u!114 &-2351325890075182342
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -65,19 +65,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 3526362448372470246}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 28372e726f87dbc43b6d760fe3a592c9, type: 3}
+  m_Script: {fileID: 11500000, guid: 3e27f24baf1ef6b45afd3a82a030bfd4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  health: 80
-  attack: 20
-  attackRange: 20
-  attackRate: 1.36
-  team: 0
-  damageColor: {r: 1, g: 0, b: 0, a: 0}
-  ren: {fileID: 7536466037435594900}
-  child: {fileID: 1317998435848781288}
-  bulletSpeed: 40
-  bulletFactory: {fileID: 0}
   navMeshAgent: {fileID: 1563671952550330282}
   destination: {fileID: 0}
 --- !u!1 &5807425466472996856
