@@ -27,16 +27,12 @@ public class UnitSpawner : MonoBehaviour
 
     public void Spawn(Vector3 position)
     {
-        Unit unit = Instantiate(unitPrefab, parent);
+        Unit unit = ObjectPool.Instance.GetObject(unitPrefab.gameObject).GetComponent<Unit>();
+        unit.transform.SetParent(parent);
+        unit.gameObject.SetActive(true);
         position.y = 0;
         unit.transform.localPosition = position;
         unit.Init(target, bulletFactory, GetNavMeshPriority());
-        //targetAcquiring.AddUnit(unit);
-        StartCoroutine(nameof(AddUnitToTargetAcquiring), unit);
-    }
-
-    private IEnumerator AddUnitToTargetAcquiring(Unit unit) {
-        yield return new WaitForSeconds(0.01f);
         targetAcquiring.AddUnit(unit);
     }
 

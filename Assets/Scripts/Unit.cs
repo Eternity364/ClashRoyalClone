@@ -6,12 +6,13 @@ using DG.Tweening;
 using RPGCharacterAnims;
 using Unity.VisualScripting;
 using System.Collections;
+using System;
 
 public class Unit : MonoBehaviour
 {    
 
     [SerializeField]
-    int health;
+    int maxHealth;
     [SerializeField]
     int attack;
     [SerializeField]
@@ -64,6 +65,7 @@ public class Unit : MonoBehaviour
     private DG.Tweening.Sequence rotationAnimation;
     private bool attackAllowed = false;
     private Vector3 positionBefore;
+    private int health;
 
     public void Start() {
         // RPGCharacterController controller = GetComponent<RPGCharacterController>();
@@ -76,6 +78,7 @@ public class Unit : MonoBehaviour
         this.bulletFactory = bulletFactory;
         this.destination = destination;
         timePassedSinceLastAttack = attackRate;
+        health = maxHealth;
         navMeshAgent.enabled = true;
         navMeshAgent.updateRotation = true;
         navMeshAgent.SetDestination(destination.position);
@@ -106,7 +109,6 @@ public class Unit : MonoBehaviour
     private void ClearAttackTarget(Unit _) {
         attackTarget = null;
         //RotateTowards(null);
-        print("Position before " + transform.position);
         positionBefore = transform.position;
         navMeshObstacle.enabled = false;
         navMeshAgent.enabled = true;
@@ -118,11 +120,13 @@ public class Unit : MonoBehaviour
         attackAllowed = false;
     }
     
+    /* Because after switching from NavMeshObstacle to NavMeshAgent back again, the position of the unit slightly changes,
+        so we need to set it to one from the frame before (on current frame it's the same for some reason).
+    */
     private IEnumerator PositionChecker() {
         yield return new WaitForNextFrameUnit();
         transform.position = positionBefore;
         navMeshAgent.SetDestination(destination.position);
-        print("Position after " + transform.position);
     }
 
     private void ReceiveAttack(int damage) {
@@ -146,7 +150,7 @@ public class Unit : MonoBehaviour
         }
         OnDeath?.Invoke(this);
         OnDeath = null;
-        UnityEngine.Object.Destroy(gameObject);
+        ObjectPool.Instance.ReturnObject(gameObject);
     }
 
     private void StartDamageAnimation() {
@@ -159,7 +163,7 @@ public class Unit : MonoBehaviour
     }
 
     private void PerformAttack() {
-        GameObject bullet = Instantiate(bulletFactory.Get(), transform.parent);
+        GameObject bullet = bulletFactory.Get();
         bullet.transform.position = transform.position;
         bullet.SetActive(true);
         if (attackTarget != null) {
@@ -198,18 +202,7 @@ public class Unit : MonoBehaviour
         rotationAnimation = DOTween.Sequence();
         rotationAnimation.OnComplete(OnComplete);
         float angle = Mathf.Atan2(target.position.x - transform.position.x, target.position.z - transform.position.z) * Mathf.Rad2Deg;
-        //float angle = Vector3.Angle(target.position, transform.position);
-        //print("angle: " + angle);
-        rotationAnimation.Append(transform.DORotate(new Vector3(0, angle, 0), 1).SetEase(Ease.InCubic));
-
-        // Vector3 worldUp = new Vector3(0, 0, -transform.position.z);
-        // Vector3 originalchildRotation = child.localEulerAngles;
-        // child.DOLookAt(target.position, 0, AxisConstraint.Z, worldUp).OnComplete(OnCompleteLocal);
-
-        // void OnCompleteLocal() {
-        //     Vector3 newRotation = child.localEulerAngles;
-        //     child.localEulerAngles = originalchildRotation;                
-        //     rotationAnimation.Append(child.DOLocalRotate(newRotation, 1));
-        // }
+        print("angle: " + angle);
+        rotationAnimation.Append(transform.DORotate(new Vector3(0, angle, 0), Math.Abs(angle) / navMeshAgent.angularSpeed));
     }
 }

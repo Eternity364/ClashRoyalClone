@@ -5,6 +5,8 @@ public class BulletFactory : MonoBehaviour
 {
     [SerializeField]
     private GameObject bulletPrefab;
+    [SerializeField]
+    private Transform parent;
 
     private GameObject[] bullets = new GameObject[100];
     private int currentBullet = -1;
@@ -13,7 +15,7 @@ public class BulletFactory : MonoBehaviour
     {
         for (int i = 0; i < bullets.Length; i++)
         {
-            bullets[i] = Instantiate(bulletPrefab, transform);
+            bullets[i] = Instantiate(bulletPrefab, parent);
             bullets[i].SetActive(false);
         }
     }

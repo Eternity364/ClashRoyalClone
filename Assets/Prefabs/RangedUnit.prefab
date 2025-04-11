@@ -337,8 +337,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 28372e726f87dbc43b6d760fe3a592c9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  health: 80
-  attack: 40
+  maxHealth: 80
+  attack: 20
   attackRange: 20
   attackRate: 1.36
   team: 0
