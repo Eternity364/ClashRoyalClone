@@ -82,7 +82,6 @@ public class Unit : MonoBehaviour
         navMeshAgent.enabled = true;
         navMeshAgent.updateRotation = true;
         navMeshAgent.SetDestination(destination.position);
-        animator.SetBool("Moving", true);
         StartMovingAnimation(true);
 }   
 
@@ -135,8 +134,17 @@ public class Unit : MonoBehaviour
         if (health <= 0)
             PerformDeath();
     } 
+
     private void StartMovingAnimation(bool isMoving) {
+        animator.SetBool("Moving", isMoving);
         animator.SetFloat("Velocity Z", isMoving ? 1 : 0);
+    } 
+
+    
+    private void TriggerAttackAnimation() {
+        animator.SetInteger("Action", 1);
+        animator.SetInteger("TriggerNumber", 4);
+        animator.SetTrigger("Trigger");
     } 
 
     private void PerformDeath() {
@@ -170,10 +178,12 @@ public class Unit : MonoBehaviour
             Vector3 targetPosition = attackTarget.transform.position;
             float duration = (transform.position - targetPosition).magnitude / bulletSpeed;
             DG.Tweening.Sequence mySequence = DOTween.Sequence();
+            //mySequence.Insert delay
             mySequence.Append(bullet.transform.DOMove(targetPosition, duration));
             mySequence.InsertCallback(duration * 0.8f, OnComplete);
             mySequence.SetAutoKill(true);
 
+            TriggerAttackAnimation();
 
             void OnComplete() {
                 bullet.SetActive(false);
