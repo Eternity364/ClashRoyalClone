@@ -23,7 +23,6 @@ public class ClickableArea : MonoBehaviour
             ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             if (coll.Raycast(ray, out hit, 100f))
             {
-                print(hit.point);
                 OnClick?.Invoke(hit.point);
             }
         }

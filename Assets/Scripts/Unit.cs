@@ -7,6 +7,8 @@ using RPGCharacterAnims;
 using Unity.VisualScripting;
 using System.Collections;
 using System;
+using RPGCharacterAnims.Actions;
+
 
 public class Unit : MonoBehaviour
 {    
@@ -37,6 +39,8 @@ public class Unit : MonoBehaviour
     private NavMeshObstacle navMeshObstacle;
     [SerializeField]    
     private Animator animator;
+    [SerializeField]    
+    private GameObject arrow;
 
     public float AttackRange => attackRange;
     public int Team => team;
@@ -68,10 +72,7 @@ public class Unit : MonoBehaviour
     private int health;
 
     public void Start() {
-        // RPGCharacterController controller = GetComponent<RPGCharacterController>();
-        // if (controller != null) {
-        //     controller.StartAction("Sprint");
-        // };
+        originalColor = ren.material.color;
     }   
 
     public void Init(Transform destination, BulletFactory bulletFactory, int navMeshPriority) {
@@ -79,6 +80,18 @@ public class Unit : MonoBehaviour
         this.destination = destination;
         timePassedSinceLastAttack = attackRate;
         health = maxHealth;
+        
+        RPGCharacterController controller = GetComponent<RPGCharacterController>();
+        controller.enabled = true;
+        SwitchWeaponContext context = new SwitchWeaponContext();
+        //Switch to unarmed.
+        context.type = "Instant";
+        context.side = "None";
+        context.sheathLocation = "Back";
+        context.leftWeapon = -1;
+        context.rightWeapon = (int)Weapon.TwoHandBow;
+        controller.StartAction("SwitchWeapon", context);
+
         navMeshAgent.enabled = true;
         navMeshAgent.updateRotation = true;
         navMeshAgent.SetDestination(destination.position);
@@ -115,13 +128,12 @@ public class Unit : MonoBehaviour
         navMeshAgent.updateRotation = true;
         StartMovingAnimation(true);
         //print("navMeshAgent.destination " + this.name + " " + destination.position);
-        StartCoroutine("PositionChecker");
+        StartCoroutine(nameof(PositionChecker));
         attackAllowed = false;
     }
     
     /* Because after switching from NavMeshObstacle to NavMeshAgent back again, the position of the unit slightly changes,
-        so we need to set it to one from the frame before (on current frame it's the same for some reason).
-    */
+        so we need to set it to one from the frame before (on current frame it's the same for some reason).*/
     private IEnumerator PositionChecker() {
         yield return new WaitForNextFrameUnit();
         transform.position = positionBefore;
@@ -138,13 +150,24 @@ public class Unit : MonoBehaviour
     private void StartMovingAnimation(bool isMoving) {
         animator.SetBool("Moving", isMoving);
         animator.SetFloat("Velocity Z", isMoving ? 1 : 0);
-    } 
+    }
 
-    
-    private void TriggerAttackAnimation() {
-        animator.SetInteger("Action", 1);
-        animator.SetInteger("TriggerNumber", 4);
-        animator.SetTrigger("Trigger");
+    private void TriggerBowAnimation(Action OnComplete) {
+        animator.SetBool("Aiming", true);
+        arrow.SetActive(true);
+
+        void SetBowPullValue(float value) {
+            animator.SetFloat("BowPull", value);
+        }
+
+        DOTween.To(SetBowPullValue, 0, 1, 0.5f).SetEase(Ease.OutCubic).OnComplete(() => { 
+            DOTween.To(SetBowPullValue, 1, 0, 0.25f).SetEase(Ease.InCubic).OnComplete(() => {
+                animator.SetBool("Aiming", false);
+            });
+
+            arrow.SetActive(false);
+            OnComplete();
+        });
     } 
 
     private void PerformDeath() {
@@ -162,30 +185,29 @@ public class Unit : MonoBehaviour
     }
 
     private void StartDamageAnimation() {
-        // if (damageAnimation != null) {
-        //     damageAnimation.Kill();
-        // }
-        // damageAnimation = DOTween.Sequence();
-        // damageAnimation.Append(ren.material.DOColor(damageColor, 0.1f));
-        // damageAnimation.Append(ren.material.DOColor(originalColor, 0.3f));
+        if (damageAnimation != null) {
+            damageAnimation.Kill();
+        }
+        damageAnimation = DOTween.Sequence();
+        damageAnimation.Append(ren.material.DOColor(damageColor, 0.1f));
+        damageAnimation.Append(ren.material.DOColor(originalColor, 0.3f));
     }
 
     private void PerformAttack() {
-        GameObject bullet = bulletFactory.Get();
-        bullet.transform.position = transform.position;
-        bullet.SetActive(true);
         if (attackTarget != null) {
+            GameObject bullet = bulletFactory.Get();
+            bullet.transform.localScale = arrow.transform.lossyScale;
+            ArrowFlight arrowFlight = bullet.GetComponent<ArrowFlight>();
+            NavMeshAgent attackTargetNavMesh = attackTarget.GetComponent<NavMeshAgent>();
+            float attackTargetSize = attackTargetNavMesh.radius * attackTarget.transform.lossyScale.x;
             Vector3 targetPosition = attackTarget.transform.position;
-            float duration = (transform.position - targetPosition).magnitude / bulletSpeed;
-            DG.Tweening.Sequence mySequence = DOTween.Sequence();
-            //mySequence.Insert delay
-            mySequence.Append(bullet.transform.DOMove(targetPosition, duration));
-            mySequence.InsertCallback(duration * 0.8f, OnComplete);
-            mySequence.SetAutoKill(true);
 
-            TriggerAttackAnimation();
+            TriggerBowAnimation(() => {
+                bullet.SetActive(true);
+                arrowFlight.FlyArrow(arrow.transform.position, targetPosition, attackTargetSize, OnBulletFlyComplete);
+            });
 
-            void OnComplete() {
+            void OnBulletFlyComplete() {
                 bullet.SetActive(false);
                 if (attackTarget != null)
                     attackTarget.ReceiveAttack(attack);
@@ -212,7 +234,6 @@ public class Unit : MonoBehaviour
         rotationAnimation = DOTween.Sequence();
         rotationAnimation.OnComplete(OnComplete);
         float angle = Mathf.Atan2(target.position.x - transform.position.x, target.position.z - transform.position.z) * Mathf.Rad2Deg;
-        print("angle: " + angle);
         rotationAnimation.Append(transform.DORotate(new Vector3(0, angle, 0), Math.Abs(angle) / navMeshAgent.angularSpeed));
     }
 }

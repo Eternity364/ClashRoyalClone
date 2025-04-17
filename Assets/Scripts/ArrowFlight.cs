@@ -1,0 +1,46 @@
+using UnityEngine;
+using DG.Tweening;
+using System;
+
+public class ArrowFlight : MonoBehaviour
+{
+    [SerializeField] private float flightSpeed = 1.0f;
+    [SerializeField] private float curveHeight = 3.0f;
+    // Affects how close arrow will be to the target when hit occurs
+    [SerializeField] private float enemySizeMultiplier = 3.0f;
+
+
+    public void FlyArrow(Vector3 startPoint, Vector3 endPoint, float enemySize, TweenCallback OnArrowHit)
+    {
+        print("Enemy size: " + enemySize);
+        transform.position = startPoint;
+
+        // Calculate the control point for the curve
+        Vector3 controlPoint = (transform.position + endPoint) / 2 + Vector3.up * curveHeight;
+
+        // Use DOTween to create a smooth curved path
+        Vector3[] path = new Vector3[] { transform.position, controlPoint, endPoint };
+
+        Vector3 previousPosition = transform.position;
+        float distance = (endPoint - startPoint).magnitude;
+        float flightDuration = distance / flightSpeed;
+
+        Sequence seq = DOTween.Sequence();
+
+        // Move the arrow along the path and update its rotation
+        seq.Append(transform.DOPath(path, flightDuration, PathType.CatmullRom, PathMode.Full3D)
+            .OnUpdate(() =>
+            {
+                // Smoothly rotate the arrow to face its movement direction
+                Vector3 direction = (transform.position - previousPosition).normalized;
+                previousPosition = transform.position;
+                if (direction != Vector3.zero)
+                {
+                    transform.rotation = Quaternion.LookRotation(direction);
+                }
+            }));
+        
+        // Calculate the time at which the arrow should hit the target based on its size
+        seq.InsertCallback(flightDuration * (distance - enemySize * enemySizeMultiplier) / distance, OnArrowHit);
+    }
+}
