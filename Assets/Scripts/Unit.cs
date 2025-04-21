@@ -70,19 +70,26 @@ public class Unit : MonoBehaviour
     private bool attackAllowed = false;
     private Vector3 positionBefore;
     private int health;
+    private bool isDead = false;
+    
+    private RPGCharacterController rPGCharacterController;
 
     public void Start() {
         originalColor = ren.material.color;
     }   
 
-    public void Init(Transform destination, BulletFactory bulletFactory, int navMeshPriority) {
+    public void Init(Transform destination, BulletFactory bulletFactory, int team, Color teamColor) {
         this.bulletFactory = bulletFactory;
         this.destination = destination;
+        this.team = team;
         timePassedSinceLastAttack = attackRate;
         health = maxHealth;
+        ren.material.SetColor("_TeamColor", teamColor);
+        isDead = false;
         
-        RPGCharacterController controller = GetComponent<RPGCharacterController>();
-        controller.enabled = true;
+        rPGCharacterController = GetComponent<RPGCharacterController>();
+        rPGCharacterController.enabled = true;
+        
         SwitchWeaponContext context = new SwitchWeaponContext();
         //Switch to unarmed.
         context.type = "Instant";
@@ -90,7 +97,7 @@ public class Unit : MonoBehaviour
         context.sheathLocation = "Back";
         context.leftWeapon = -1;
         context.rightWeapon = (int)Weapon.TwoHandBow;
-        controller.StartAction("SwitchWeapon", context);
+        rPGCharacterController.StartAction("SwitchWeapon", context);
 
         navMeshAgent.enabled = true;
         navMeshAgent.updateRotation = true;
@@ -127,7 +134,6 @@ public class Unit : MonoBehaviour
         navMeshAgent.isStopped = false;
         navMeshAgent.updateRotation = true;
         StartMovingAnimation(true);
-        //print("navMeshAgent.destination " + this.name + " " + destination.position);
         StartCoroutine(nameof(PositionChecker));
         attackAllowed = false;
     }
@@ -136,6 +142,8 @@ public class Unit : MonoBehaviour
         so we need to set it to one from the frame before (on current frame it's the same for some reason).*/
     private IEnumerator PositionChecker() {
         yield return new WaitForNextFrameUnit();
+        if (isDead)
+            yield break;
         transform.position = positionBefore;
         navMeshAgent.SetDestination(destination.position);
     }
@@ -171,17 +179,30 @@ public class Unit : MonoBehaviour
     } 
 
     private void PerformDeath() {
-        if (this.IsDestroyed())
+        if (isDead)
             return;
-        ClearAttackTarget(null);
-        navMeshAgent.isStopped = true;
+        
+        isDead = true;
+        navMeshAgent.enabled = false;
+        navMeshObstacle.enabled = false;
+        attackAllowed = false;
+        attackTarget = null;
+
         if (rotationAnimation != null) {
             rotationAnimation.Kill(false);
             rotationAnimation = null;
         }
         OnDeath?.Invoke(this);
         OnDeath = null;
-        ObjectPool.Instance.ReturnObject(gameObject);
+
+        rPGCharacterController.StartAction("Death");
+
+        DG.Tweening.Sequence deathSeq = DOTween.Sequence();
+        deathSeq.Insert(1f, transform.DOBlendableMoveBy(new Vector3(0, -2, 0), 2f));
+        deathSeq.InsertCallback(3f, () => {
+            ObjectPool.Instance.ReturnObject(gameObject);
+            rPGCharacterController.EndAction("Death");
+        });
     }
 
     private void StartDamageAnimation() {

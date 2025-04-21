@@ -16,11 +16,11 @@ public class UnitSpawner : MonoBehaviour
     Transform parent;
     [SerializeField]
     BulletFactory bulletFactory;
+    [SerializeField]
+    Color teamColor;
+    [SerializeField, Range(0, 1)]
+    int team;
     
-
-    private const int maxNavMeshPriority = 99;
-    private int currentNavMeshPriority = -1;
-
     void Start() {
         area.Init(Spawn);
     }
@@ -32,15 +32,7 @@ public class UnitSpawner : MonoBehaviour
         unit.gameObject.SetActive(true);
         position.y = 0;
         unit.transform.localPosition = position;
-        unit.Init(target, bulletFactory, GetNavMeshPriority());
+        unit.Init(target, bulletFactory, team, teamColor);
         targetAcquiring.AddUnit(unit);
-    }
-
-    private int GetNavMeshPriority() {
-        currentNavMeshPriority++;
-        if (currentNavMeshPriority > maxNavMeshPriority) {
-            currentNavMeshPriority = 0;
-        }
-        return currentNavMeshPriority;
     }
 }

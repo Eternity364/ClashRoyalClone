@@ -318,17 +318,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 474bcb49853aa07438625e644c072ee6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Version: 3
-  m_UsePipelineSettings: 1
-  m_AdditionalLightsShadowResolutionTier: 2
-  m_LightLayerMask: 1
-  m_RenderingLayers: 1
-  m_CustomShadowLayers: 0
-  m_ShadowLayerMask: 1
-  m_ShadowRenderingLayers: 1
-  m_LightCookieSize: {x: 1, y: 1}
-  m_LightCookieOffset: {x: 0, y: 0}
-  m_SoftShadowQuality: 1
 --- !u!108 &203844588
 Light:
   m_ObjectHideFlags: 0
@@ -6297,38 +6286,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a79441f348de89743a2939f4d699eac1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_RenderShadows: 1
-  m_RequiresDepthTextureOption: 2
-  m_RequiresOpaqueTextureOption: 2
-  m_CameraType: 0
-  m_Cameras: []
-  m_RendererIndex: -1
-  m_VolumeLayerMask:
-    serializedVersion: 2
-    m_Bits: 1
-  m_VolumeTrigger: {fileID: 0}
-  m_VolumeFrameworkUpdateModeOption: 2
-  m_RenderPostProcessing: 1
-  m_Antialiasing: 1
-  m_AntialiasingQuality: 2
-  m_StopNaN: 0
-  m_Dithering: 1
-  m_ClearDepth: 1
-  m_AllowXRRendering: 1
-  m_AllowHDROutput: 1
-  m_UseScreenCoordOverride: 0
-  m_ScreenSizeOverride: {x: 0, y: 0, z: 0, w: 0}
-  m_ScreenCoordScaleBias: {x: 0, y: 0, z: 0, w: 0}
-  m_RequiresDepthTexture: 0
-  m_RequiresColorTexture: 0
-  m_Version: 2
-  m_TaaSettings:
-    quality: 3
-    frameInfluence: 0.1
-    jitterScale: 1
-    mipBias: 0
-    varianceClampScale: 0.9
-    contrastAdaptiveSharpening: 0
 --- !u!81 &961739751
 AudioListener:
   m_ObjectHideFlags: 0
@@ -6435,13 +6392,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 16c582be4bdbf104b881d2af9b4fc1c2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  unitPrefab: {fileID: 6383213077768650605, guid: a8df096ef2fabe2438ef9569c2310aca,
+  unitPrefab: {fileID: 6383213077768650605, guid: b5813654b784855468d9767bef561ac2,
     type: 3}
   area: {fileID: 0}
   targetAcquiring: {fileID: 1082284949}
   target: {fileID: 208128927}
   parent: {fileID: 866699091}
   bulletFactory: {fileID: 2114211193}
+  teamColor: {r: 0.745283, g: 0.0660911, b: 0.0660911, a: 0}
+  team: 1
   spawnRate: 7
 --- !u!65 &1044829380
 BoxCollider:
@@ -6702,11 +6661,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 172515602e62fb746b5d573b38a5fe58, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_IsGlobal: 1
-  priority: 0
-  blendDistance: 0
-  weight: 1
-  sharedProfile: {fileID: 11400000, guid: c0b561c613ee8e441bd0b5cf83c92b14, type: 2}
 --- !u!4 &1160234427
 Transform:
   m_ObjectHideFlags: 0
@@ -6790,6 +6744,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 2.61
       objectReference: {fileID: 0}
+    - target: {fileID: 4893337981645129531, guid: b5813654b784855468d9767bef561ac2,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 19b56ebb2395d0747b384a88f95372ac, type: 2}
     - target: {fileID: 6609973235916616172, guid: b5813654b784855468d9767bef561ac2,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -6803,12 +6762,12 @@ PrefabInstance:
     - target: {fileID: 6609973235916616172, guid: b5813654b784855468d9767bef561ac2,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 148.20628
+      value: 147.73
       objectReference: {fileID: 0}
     - target: {fileID: 6609973235916616172, guid: b5813654b784855468d9767bef561ac2,
         type: 3}
       propertyPath: m_LocalRotation.w
-      value: 1
+      value: 0.9616935
       objectReference: {fileID: 0}
     - target: {fileID: 6609973235916616172, guid: b5813654b784855468d9767bef561ac2,
         type: 3}
@@ -6818,7 +6777,7 @@ PrefabInstance:
     - target: {fileID: 6609973235916616172, guid: b5813654b784855468d9767bef561ac2,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0
+      value: 0.27412707
       objectReference: {fileID: 0}
     - target: {fileID: 6609973235916616172, guid: b5813654b784855468d9767bef561ac2,
         type: 3}
@@ -6833,7 +6792,7 @@ PrefabInstance:
     - target: {fileID: 6609973235916616172, guid: b5813654b784855468d9767bef561ac2,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
+      value: 31.82
       objectReference: {fileID: 0}
     - target: {fileID: 6609973235916616172, guid: b5813654b784855468d9767bef561ac2,
         type: 3}
@@ -7146,13 +7105,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 16c582be4bdbf104b881d2af9b4fc1c2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  unitPrefab: {fileID: 6383213077768650605, guid: a8df096ef2fabe2438ef9569c2310aca,
+  unitPrefab: {fileID: 6383213077768650605, guid: b5813654b784855468d9767bef561ac2,
     type: 3}
   area: {fileID: 0}
   targetAcquiring: {fileID: 1082284949}
   target: {fileID: 208128927}
   parent: {fileID: 866699091}
   bulletFactory: {fileID: 2114211193}
+  teamColor: {r: 0.745283, g: 0.0660911, b: 0.0660911, a: 0}
+  team: 1
   spawnRate: 7
 --- !u!65 &1472674719
 BoxCollider:
@@ -8068,9 +8029,39 @@ PrefabInstance:
         type: 3}
     - target: {fileID: 5027094789416323413, guid: 30745e8b7734bca4f946c324ba20a54b,
         type: 3}
+      propertyPath: teamColor.b
+      value: 0.31984547
+      objectReference: {fileID: 0}
+    - target: {fileID: 5027094789416323413, guid: 30745e8b7734bca4f946c324ba20a54b,
+        type: 3}
+      propertyPath: teamColor.g
+      value: 0.7830189
+      objectReference: {fileID: 0}
+    - target: {fileID: 5027094789416323413, guid: 30745e8b7734bca4f946c324ba20a54b,
+        type: 3}
+      propertyPath: teamColor.r
+      value: 0.20978993
+      objectReference: {fileID: 0}
+    - target: {fileID: 5027094789416323413, guid: 30745e8b7734bca4f946c324ba20a54b,
+        type: 3}
       propertyPath: bulletFactory
       value: 
       objectReference: {fileID: 2114211193}
+    - target: {fileID: 5027094789416323413, guid: 30745e8b7734bca4f946c324ba20a54b,
+        type: 3}
+      propertyPath: playerColor.b
+      value: 0.3065094
+      objectReference: {fileID: 0}
+    - target: {fileID: 5027094789416323413, guid: 30745e8b7734bca4f946c324ba20a54b,
+        type: 3}
+      propertyPath: playerColor.g
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5027094789416323413, guid: 30745e8b7734bca4f946c324ba20a54b,
+        type: 3}
+      propertyPath: playerColor.r
+      value: 0.2584905
+      objectReference: {fileID: 0}
     - target: {fileID: 5027094789416323413, guid: 30745e8b7734bca4f946c324ba20a54b,
         type: 3}
       propertyPath: targetAcquiring

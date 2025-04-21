@@ -12,7 +12,6 @@ public class ArrowFlight : MonoBehaviour
 
     public void FlyArrow(Vector3 startPoint, Vector3 endPoint, float enemySize, TweenCallback OnArrowHit)
     {
-        print("Enemy size: " + enemySize);
         transform.position = startPoint;
 
         // Calculate the control point for the curve
