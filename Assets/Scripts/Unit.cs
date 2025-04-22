@@ -76,6 +76,18 @@ public class Unit : MonoBehaviour
 
     public void Start() {
         originalColor = ren.material.color;
+      
+        rPGCharacterController = GetComponent<RPGCharacterController>();
+        rPGCharacterController.enabled = true;
+
+        SwitchWeaponContext context = new SwitchWeaponContext();
+        //Switch to unarmed.
+        context.type = "Unsheath";
+        context.side = "None";
+        context.sheathLocation = "Back";
+        context.leftWeapon = -1;
+        context.rightWeapon = (int)Weapon.RightSword;
+        rPGCharacterController.StartAction("SwitchWeapon", context);
     }   
 
     public void Init(Transform destination, BulletFactory bulletFactory, int team, Color teamColor) {
