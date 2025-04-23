@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using Unity.VisualScripting;
+using Assets.Scripts.Unit;
 using UnityEngine;
 
 public class TargetAcquiring : MonoBehaviour
@@ -36,11 +36,11 @@ public class TargetAcquiring : MonoBehaviour
         for (int i = 0; i < agents.Count; i++)
         {
             Unit agent = agents[i];
-            if (agent.IsDestroyed()) continue;
+            if (agent.IsDead) continue;
             int team = agent.Team;
             for (int j = 0; j < agents.Count; j++)
             {
-                if (agents[j].IsDestroyed() || (agent.HasTarget && agent.Target != enemyBases[agent.Team])) continue;
+                if (agents[j].IsDead || (agent.HasTarget && agent.Target != enemyBases[agent.Team])) continue;
                 if (i != j && team != agents[j].Team) {
                     if (CheckAndSetTarget(agent, agents[j])) break;
                 }
@@ -50,6 +50,7 @@ public class TargetAcquiring : MonoBehaviour
                CheckAndSetTarget(agent, enemyBases[agent.Team]); 
             }
         }
+        // Units shouldn't be removed while we are iterating through them.
         removeLock = false;
         for (int i = 0; i < toRemove.Count; i++) {
             agents.Remove(toRemove[i]);
