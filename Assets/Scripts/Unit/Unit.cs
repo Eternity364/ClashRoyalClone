@@ -34,8 +34,6 @@ namespace Assets.Scripts.Unit {
         protected NavMeshObstacle navMeshObstacle;
         [SerializeField]    
         protected Animator animator;
-        [SerializeField]    
-        protected GameObject arrow;
 
         public float AttackRange => attackRange;
         public int Team => team;

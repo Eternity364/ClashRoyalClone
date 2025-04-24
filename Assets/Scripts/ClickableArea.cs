@@ -10,10 +10,11 @@ public class ClickableArea : MonoBehaviour
     [SerializeField]
     private Collider coll; 
 
-    private UnityAction<Vector3> OnClick; 
+    private UnityAction<Vector3>[] OnClick = new UnityAction<Vector3>[2]; 
 
-    public void Init(UnityAction<Vector3> OnClick) {
-        this.OnClick = OnClick;
+    public void SetOnClickEvent(UnityAction<Vector3> onClickEvent, int button) {
+        if (button != 0 && button != 1) return;
+        OnClick[button] = onClickEvent;
     }
 
     void Update()
@@ -21,10 +22,29 @@ public class ClickableArea : MonoBehaviour
         if (Input.GetMouseButtonDown(0))
         {
             ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            if (coll.Raycast(ray, out hit, 100f))
+            if (coll.Raycast(ray, out hit, 100f) )
             {
-                OnClick?.Invoke(hit.point);
+                OnLeftClick?.Invoke(hit.point);
             }
         }
+        if (Input.GetMouseButtonDown(1))
+        {
+            ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            if (coll.Raycast(ray, out hit, 100f) )
+            {
+                OnRightClick?.Invoke(hit.point);
+            }
+        }
+    }
+
+    private void OnClick(int button) {
+        if (Input.GetMouseButtonDown(button))
+        {
+            ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            if (coll.Raycast(ray, out hit, 100f) )
+            {
+                OnRightClick?.Invoke(hit.point);
+            }
+        } 
     }
 }
