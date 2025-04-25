@@ -1,11 +1,10 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 
 namespace Assets.Scripts.Unit {
     public class UnitSpawner : MonoBehaviour
     {
-        [SerializeField]
-        Unit unitPrefab;
         [SerializeField]
         ClickableArea area;
         [SerializeField]
@@ -22,12 +21,16 @@ namespace Assets.Scripts.Unit {
         int team;
         
         void Start() {
-            area.Init(Spawn);
+            area.SetOnClickEvent(Spawn);
         }
 
-        public void Spawn(Vector3 position)
+        public void Spawn(Vector3 position, int index)
         {
-            Unit unit = ObjectPool.Instance.GetObject(unitPrefab.gameObject).GetComponent<Unit>();
+            if (index < 0 || index >= UnitsList.Instance.Get().Count) {
+                Debug.LogError("Invalid index for unit prefab.");
+                return;
+            }
+            Unit unit = ObjectPool.Instance.GetObject(UnitsList.Instance.Get()[index].gameObject).GetComponent<Unit>();
             unit.transform.SetParent(parent);
             unit.gameObject.SetActive(true);
             position.y = 0;

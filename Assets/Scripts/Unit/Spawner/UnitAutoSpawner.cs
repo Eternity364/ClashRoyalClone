@@ -6,6 +6,8 @@ namespace Assets.Scripts.Unit {
         
         [SerializeField]
         private float spawnRate;
+        [SerializeField]
+        private int index;
 
         private float timePassed = 0;
         
@@ -16,7 +18,7 @@ namespace Assets.Scripts.Unit {
         void Update() {
             timePassed += Time.deltaTime;
             if (timePassed > spawnRate) {
-                Spawn(transform.position);
+                Spawn(transform.position, index);
                 timePassed = 0;
             }
         }

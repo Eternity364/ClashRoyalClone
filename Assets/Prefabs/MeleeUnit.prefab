@@ -17,7 +17,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &4794976980548078047
 Transform:
   m_ObjectHideFlags: 0
@@ -4707,7 +4707,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxHealth: 100
   attack: 25
-  attackRange: 5
+  attackRange: 20
   attackRate: 2
   team: 0
   damageColor: {r: 1, g: 0, b: 0, a: 0}
@@ -4717,3 +4717,5 @@ MonoBehaviour:
   navMeshObstacle: {fileID: 7290862605227990102}
   animator: {fileID: 7413368972480049925}
   destination: {fileID: 0}
+  swordInHand: {fileID: 3926819761456522989}
+  swordInTheBack: {fileID: 7413368972470626003}

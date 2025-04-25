@@ -73,8 +73,10 @@ namespace Assets.Scripts.Unit {
         
         protected RPGCharacterController rPGCharacterController;
 
-        public void Start() {
+        public void Awake() {
             originalColor = ren.material.color;
+            rPGCharacterController = GetComponent<RPGCharacterController>();
+            rPGCharacterController.enabled = true;
         }   
 
         public virtual void Init(Transform destination, BulletFactory bulletFactory, int team, Color teamColor) {
@@ -85,9 +87,6 @@ namespace Assets.Scripts.Unit {
             health = maxHealth;
             ren.material.SetColor("_TeamColor", teamColor);
             isDead = false;
-            
-            rPGCharacterController = GetComponent<RPGCharacterController>();
-            rPGCharacterController.enabled = true;
 
             navMeshAgent.enabled = true;
             navMeshAgent.updateRotation = true;
@@ -95,7 +94,7 @@ namespace Assets.Scripts.Unit {
             StartMovingAnimation(true);
         }   
 
-        public void SetAttackTarget(Unit unit) {
+        public virtual void SetAttackTarget(Unit unit) {
             if (attackTarget != null) {
                 attackTarget.OnDeath -= ClearAttackTarget;
                 attackTarget = null;
@@ -113,9 +112,16 @@ namespace Assets.Scripts.Unit {
             void OnComplete () {
                 attackAllowed = true;
             }
+        }
+
+        public void ReceiveAttack(int damage) {
+            health -= damage;
+            StartDamageAnimation();
+            if (health <= 0)
+                PerformDeath();
         } 
         
-        protected void ClearAttackTarget(Unit _) {
+        protected virtual void ClearAttackTarget(Unit unit) {
             attackTarget = null;
             //RotateTowards(null);
             positionBefore = transform.position;
@@ -137,13 +143,6 @@ namespace Assets.Scripts.Unit {
             transform.position = positionBefore;
             navMeshAgent.SetDestination(destination.position);
         }
-
-        public void ReceiveAttack(int damage) {
-            health -= damage;
-            StartDamageAnimation();
-            if (health <= 0)
-                PerformDeath();
-        } 
 
         protected void StartMovingAnimation(bool isMoving) {
             animator.SetBool("Moving", isMoving);
@@ -177,7 +176,7 @@ namespace Assets.Scripts.Unit {
             });
         }
 
-        protected void StartDamageAnimation() {
+        private void StartDamageAnimation() {
             if (damageAnimation != null) {
                 damageAnimation.Kill();
             }
@@ -188,7 +187,7 @@ namespace Assets.Scripts.Unit {
 
         protected abstract void PerformAttack();
 
-        void Update() {
+        private void Update() {
             if (attackTarget != null && attackAllowed) {
                 timePassedSinceLastAttack += Time.deltaTime;
                 if (timePassedSinceLastAttack >= attackRate) {
@@ -198,7 +197,7 @@ namespace Assets.Scripts.Unit {
             }
         }
 
-        protected void RotateTowards(Transform target, TweenCallback OnComplete = null) {
+        private void RotateTowards(Transform target, TweenCallback OnComplete = null) {
             if (rotationAnimation != null) {
                 rotationAnimation.Kill(false);
                 rotationAnimation = null;
