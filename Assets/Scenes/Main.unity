@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.18028334, g: 0.2257134, b: 0.30692226, a: 1}
+  m_IndirectSpecularColor: {r: 0.18028378, g: 0.22571412, b: 0.30692285, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -5687,6 +5687,7 @@ MonoBehaviour:
   maxHealth: 80
   attack: 20
   attackRange: 8
+  attackNoticeRange: 0
   attackRate: 2
   team: 0
   damageColor: {r: 1, g: 0, b: 0, a: 0}
@@ -5695,7 +5696,7 @@ MonoBehaviour:
   navMeshAgent: {fileID: 208128929}
   navMeshObstacle: {fileID: 0}
   animator: {fileID: 0}
-  destination: {fileID: 0}
+  checkForAttackTargetRate: 0.1
   arrow: {fileID: 0}
 --- !u!114 &606134745 stripped
 MonoBehaviour:
@@ -6421,7 +6422,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1044829379
 MonoBehaviour:
   m_ObjectHideFlags: 0

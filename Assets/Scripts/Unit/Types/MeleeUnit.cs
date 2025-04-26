@@ -13,7 +13,7 @@ namespace Assets.Scripts.Unit {
         [SerializeField]
         private GameObject swordInTheBack;
 
-        protected Sequence sheathAnimation;
+        protected Sequence seq;
 
         void Start()
         {
@@ -56,21 +56,34 @@ namespace Assets.Scripts.Unit {
             context.rightWeapon = (int)Weapon.RightSword;
             rPGCharacterController.StartAction("SwitchWeapon", context);
 
-            if (sheathAnimation != null) {
-                sheathAnimation.Kill();
+            if (seq != null) {
+                seq.Kill();
             }
-            sheathAnimation = DOTween.Sequence();
-            sheathAnimation.InsertCallback(callbackDelay, () => {
-                swordInHand.SetActive(false);
-                swordInTheBack.SetActive(true);
+            seq = DOTween.Sequence();
+            seq.InsertCallback(callbackDelay, () => {
+                swordInHand.SetActive(!active);
+                swordInTheBack.SetActive(active);
+            });            
+            seq.InsertCallback(1, () => {
+                if (!active)
+                    StartAttacking();
             });
         } 
 
+        protected override void OnAttackRotationComplete() {}
+
         protected override void PerformAttack() {
             if (attackTarget != null) {
-                // animator.SetInteger("TriggerNumber", 6);
-                // animator.SetBool("Trigger", true);
-                attackTarget.ReceiveAttack(attack);
+                animator.SetInteger("TriggerNumber", 6);
+                animator.SetBool("Trigger", true);
+
+                if (seq != null) {
+                    seq.Kill();
+                }
+                seq = DOTween.Sequence();
+                seq.InsertCallback(0.5f, () => {
+                    attackTarget.ReceiveAttack(attack);
+                });
             }
         }
     }

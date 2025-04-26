@@ -49,7 +49,7 @@ namespace Assets.Scripts.Unit {
                 bullet.transform.localScale = arrow.transform.lossyScale;
                 ArrowFlight arrowFlight = bullet.GetComponent<ArrowFlight>();
                 NavMeshAgent attackTargetNavMesh = attackTarget.GetComponent<NavMeshAgent>();
-                float attackTargetSize = attackTargetNavMesh.radius * attackTarget.transform.lossyScale.x;
+                float attackTargetSize = attackTarget.Size;
                 Vector3 targetPosition = attackTarget.transform.position;
 
                 TriggerBowAnimation(() => {

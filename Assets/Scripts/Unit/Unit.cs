@@ -19,6 +19,8 @@ namespace Assets.Scripts.Unit {
         [SerializeField]
         protected float attackRange;
         [SerializeField]
+        protected float attackNoticeRange;
+        [SerializeField]
         protected float attackRate;
         [SerializeField]
         protected int team;
@@ -34,6 +36,10 @@ namespace Assets.Scripts.Unit {
         protected NavMeshObstacle navMeshObstacle;
         [SerializeField]    
         protected Animator animator;
+        [SerializeField]    
+        protected float checkForAttackTargetRate = 0.1f;
+        [SerializeField]    
+        protected float size = 0.1f;
 
         public float AttackRange => attackRange;
         public int Team => team;
@@ -58,15 +64,24 @@ namespace Assets.Scripts.Unit {
                 return attackTarget;
             }
         }
+        public float Size
+        {
+            get
+            {
+                return navMeshAgent.radius * transform.lossyScale.x;;
+            }
+        }
         public UnityAction<Unit> OnDeath;
 
-        public Transform destination;
+        protected Transform destination;
         protected Unit attackTarget;
         protected float timePassedSinceLastAttack = 0;
+        protected float timePassedSinceLastAttackTargetCheck = 0;
         protected Color originalColor;
         protected DG.Tweening.Sequence damageAnimation;
         protected DG.Tweening.Sequence rotationAnimation;
         protected bool attackAllowed = false;
+        protected bool attackTargetFound = false;
         protected Vector3 positionBefore;
         protected int health;
         protected bool isDead = false;
@@ -83,7 +98,6 @@ namespace Assets.Scripts.Unit {
             this.bulletFactory = bulletFactory;
             this.destination = destination;
             this.team = team;
-            timePassedSinceLastAttack = attackRate;
             health = maxHealth;
             ren.material.SetColor("_TeamColor", teamColor);
             isDead = false;
@@ -99,19 +113,11 @@ namespace Assets.Scripts.Unit {
                 attackTarget.OnDeath -= ClearAttackTarget;
                 attackTarget = null;
             }
-            attackAllowed = false;
-            navMeshAgent.isStopped = true;
-            navMeshAgent.updateRotation = false;
-            navMeshAgent.enabled = false;
-            StartMovingAnimation(false);
-            navMeshObstacle.enabled = true;
             attackTarget = unit;
             attackTarget.OnDeath += ClearAttackTarget;
-            RotateTowards(unit.transform, OnComplete);
-
-            void OnComplete () {
-                attackAllowed = true;
-            }
+            attackAllowed = false;
+            attackTargetFound = true;
+            timePassedSinceLastAttackTargetCheck = checkForAttackTargetRate;
         }
 
         public void ReceiveAttack(int damage) {
@@ -119,7 +125,31 @@ namespace Assets.Scripts.Unit {
             StartDamageAnimation();
             if (health <= 0)
                 PerformDeath();
-        } 
+        }
+
+        protected virtual void CheckIfAttackTargetReachable() {
+            float distance = (transform.position - attackTarget.transform.position).magnitude;
+            if (distance > attackNoticeRange) {
+                attackTargetFound = false;
+                attackTarget.OnDeath -= ClearAttackTarget;
+                ClearAttackTarget(attackTarget);
+            } 
+            else if (distance <= attackNoticeRange) {
+                if (distance <= attackRange) {
+                    attackTargetFound = false;
+                    navMeshAgent.isStopped = true;
+                    navMeshAgent.updateRotation = false;
+                    navMeshAgent.enabled = false;
+                    StartMovingAnimation(false);
+                    navMeshObstacle.enabled = true;
+                    RotateTowards(attackTarget.transform, OnAttackRotationComplete);
+                }
+                else 
+                {
+                    navMeshAgent.SetDestination(attackTarget.transform.position);
+                }
+            }
+        }
         
         protected virtual void ClearAttackTarget(Unit unit) {
             attackTarget = null;
@@ -132,6 +162,7 @@ namespace Assets.Scripts.Unit {
             StartMovingAnimation(true);
             StartCoroutine(nameof(PositionChecker));
             attackAllowed = false;
+            attackTargetFound = false;
         }
         
         /* Because after switching from NavMeshObstacle to NavMeshAgent back again, the position of the unit slightly changes,
@@ -188,13 +219,33 @@ namespace Assets.Scripts.Unit {
         protected abstract void PerformAttack();
 
         private void Update() {
-            if (attackTarget != null && attackAllowed) {
-                timePassedSinceLastAttack += Time.deltaTime;
-                if (timePassedSinceLastAttack >= attackRate) {
-                    timePassedSinceLastAttack =- attackRate;
-                    PerformAttack();
+            if (isDead)
+                return;
+            if (attackTarget != null) {
+                if (attackTargetFound) {
+                    timePassedSinceLastAttackTargetCheck += Time.deltaTime;
+                    if (timePassedSinceLastAttackTargetCheck >= checkForAttackTargetRate) {
+                        timePassedSinceLastAttackTargetCheck =- checkForAttackTargetRate;
+                        CheckIfAttackTargetReachable();
+                    }
+                } 
+                else if (attackAllowed) {
+                    timePassedSinceLastAttack += Time.deltaTime;
+                    if (timePassedSinceLastAttack >= attackRate) {
+                        timePassedSinceLastAttack =- attackRate;
+                        PerformAttack();
+                    }
                 }
             }
+        }
+    
+        protected virtual void OnAttackRotationComplete() {
+            StartAttacking();
+        }
+
+        protected virtual void StartAttacking() {
+            attackAllowed = true;
+            timePassedSinceLastAttack = attackRate;
         }
 
         private void RotateTowards(Transform target, TweenCallback OnComplete = null) {
