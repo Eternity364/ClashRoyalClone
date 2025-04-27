@@ -4706,8 +4706,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxHealth: 100
-  attack: 25
-  attackRange: 10
+  attack: 100
+  attackRange: 7
   attackNoticeRange: 20
   attackRate: 2
   team: 0
@@ -4718,5 +4718,6 @@ MonoBehaviour:
   navMeshObstacle: {fileID: 7290862605227990102}
   animator: {fileID: 7413368972480049925}
   checkForAttackTargetRate: 0.1
+  size: 2
   swordInHand: {fileID: 3926819761456522989}
   swordInTheBack: {fileID: 7413368972470626003}

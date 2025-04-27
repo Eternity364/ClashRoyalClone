@@ -62,7 +62,7 @@ public class TargetAcquiring : MonoBehaviour
         Vector3 position = attacker.transform.position;
         float distance = (position - possibleEnemy.transform.position).magnitude;
         bool targetValid = false;
-        if ((!attacker.HasTarget || attacker.Target == enemyBases[attacker.Team]) && attacker.AttackRange > distance) {
+        if ((!attacker.HasTarget || attacker.Target == enemyBases[attacker.Team]) && attacker.AttackNoticeRange > distance) {
             attacker.SetAttackTarget(possibleEnemy);
             targetValid = true;
         }

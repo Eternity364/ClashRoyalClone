@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.18028378, g: 0.22571412, b: 0.30692285, a: 1}
+  m_IndirectSpecularColor: {r: 0.18028334, g: 0.2257134, b: 0.30692226, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -5697,6 +5697,7 @@ MonoBehaviour:
   navMeshObstacle: {fileID: 0}
   animator: {fileID: 0}
   checkForAttackTargetRate: 0.1
+  size: 0.1
   arrow: {fileID: 0}
 --- !u!114 &606134745 stripped
 MonoBehaviour:
@@ -6442,7 +6443,7 @@ MonoBehaviour:
   bulletFactory: {fileID: 2114211193}
   teamColor: {r: 0.745283, g: 0.0660911, b: 0.0660911, a: 0}
   team: 1
-  spawnRate: 7
+  spawnRate: 100
   index: 1
 --- !u!65 &1044829380
 BoxCollider:

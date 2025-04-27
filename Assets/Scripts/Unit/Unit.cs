@@ -17,8 +17,10 @@ namespace Assets.Scripts.Unit {
         [SerializeField]
         protected int attack;
         [SerializeField]
+        [Tooltip("On this range unit starts actually attacking enemy.")]
         protected float attackRange;
         [SerializeField]
+        [Tooltip("Range, on which unit spots an enemy and starts walking to it. Must be equal or greater than attack range.")]
         protected float attackNoticeRange;
         [SerializeField]
         protected float attackRate;
@@ -39,9 +41,12 @@ namespace Assets.Scripts.Unit {
         [SerializeField]    
         protected float checkForAttackTargetRate = 0.1f;
         [SerializeField]    
-        protected float size = 0.1f;
+        protected float size;
 
-        public float AttackRange => attackRange;
+        /// <summary>
+        /// Range, on which unit spots an enemy and starts walking to it. Must be equal or greater than attack range.
+        /// </summary>
+        public float AttackNoticeRange => attackNoticeRange;
         public int Team => team;
         public bool IsDead
         {
@@ -68,7 +73,7 @@ namespace Assets.Scripts.Unit {
         {
             get
             {
-                return navMeshAgent.radius * transform.lossyScale.x;;
+                return size;
             }
         }
         public UnityAction<Unit> OnDeath;
@@ -106,6 +111,10 @@ namespace Assets.Scripts.Unit {
             navMeshAgent.updateRotation = true;
             navMeshAgent.SetDestination(destination.position);
             StartMovingAnimation(true);
+            
+            if (attackRange > attackNoticeRange) {
+                Debug.LogError("Attack range must be equal or greater than attack notice range.");
+            }
         }   
 
         public virtual void SetAttackTarget(Unit unit) {

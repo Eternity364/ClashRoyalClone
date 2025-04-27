@@ -144,6 +144,7 @@ MonoBehaviour:
   maxHealth: 10000
   attack: 0
   attackRange: 0
+  attackNoticeRange: 0
   attackRate: 0
   team: 0
   damageColor: {r: 1, g: 0, b: 0, a: 0}
@@ -152,5 +153,6 @@ MonoBehaviour:
   navMeshAgent: {fileID: 1697520692266877604}
   navMeshObstacle: {fileID: 0}
   animator: {fileID: 0}
+  checkForAttackTargetRate: 0.1
+  size: 5
   arrow: {fileID: 0}
-  destination: {fileID: 0}

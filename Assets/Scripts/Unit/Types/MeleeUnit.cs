@@ -34,15 +34,11 @@ namespace Assets.Scripts.Unit {
 
         public override void SetAttackTarget(Unit target) {
             base.SetAttackTarget(target);
-            swordInHand.SetActive(true);
-            swordInTheBack.SetActive(false);
             SheathWeapon(false);
         }
 
         protected override void ClearAttackTarget(Unit unit) {
             base.ClearAttackTarget(unit);
-            swordInHand.SetActive(false);
-            swordInTheBack.SetActive(true);
             SheathWeapon(true);
         }
 
@@ -50,10 +46,10 @@ namespace Assets.Scripts.Unit {
             SwitchWeaponContext context = new SwitchWeaponContext();
             float callbackDelay = active ? 0.6f : 0.1f;
             context.type = active ? "Sheath" : "Unsheath";
-            context.side = "Right";
+            context.side = active ? "Dual": "Right";
             context.sheathLocation = "Back";
-            context.leftWeapon = -1;
-            context.rightWeapon = (int)Weapon.RightSword;
+            context.leftWeapon = (int)Weapon.Unarmed;
+            context.rightWeapon = active ? (int)Weapon.Unarmed : (int)Weapon.RightSword;
             rPGCharacterController.StartAction("SwitchWeapon", context);
 
             if (seq != null) {
