@@ -137,7 +137,7 @@ namespace Assets.Scripts.Unit {
         }
 
         protected virtual void CheckIfAttackTargetReachable() {
-            float distance = (transform.position - attackTarget.transform.position).magnitude;
+            float distance = (transform.position - attackTarget.transform.position).magnitude - attackTarget.Size / 2;
             if (distance > attackNoticeRange) {
                 attackTargetFound = false;
                 attackTarget.OnDeath -= ClearAttackTarget;

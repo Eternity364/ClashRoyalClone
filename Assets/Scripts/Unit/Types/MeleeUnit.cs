@@ -46,11 +46,17 @@ namespace Assets.Scripts.Unit {
             SwitchWeaponContext context = new SwitchWeaponContext();
             float callbackDelay = active ? 0.6f : 0.1f;
             context.type = active ? "Sheath" : "Unsheath";
-            context.side = active ? "Dual": "Right";
+            context.side = active ? "None": "Right";
             context.sheathLocation = "Back";
-            context.leftWeapon = (int)Weapon.Unarmed;
-            context.rightWeapon = active ? (int)Weapon.Unarmed : (int)Weapon.RightSword;
+            context.leftWeapon = (int)Weapon.Relax;
+            context.rightWeapon = active ? (int)Weapon.Relax : (int)Weapon.RightSword;
             rPGCharacterController.StartAction("SwitchWeapon", context);
+            // if (!active) {
+            //     rPGCharacterController.StartAction("SwitchWeapon", context);
+            // }
+            // else {
+            //     rPGCharacterController.EndAction("Relax");
+            // }
 
             if (seq != null) {
                 seq.Kill();
@@ -59,6 +65,8 @@ namespace Assets.Scripts.Unit {
             seq.InsertCallback(callbackDelay, () => {
                 swordInHand.SetActive(!active);
                 swordInTheBack.SetActive(active);
+                if (active)
+                    animator.SetBool("Trigger", true);
             });            
             seq.InsertCallback(1, () => {
                 if (!active)

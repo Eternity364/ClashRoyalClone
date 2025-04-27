@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.18028334, g: 0.2257134, b: 0.30692226, a: 1}
+  m_IndirectSpecularColor: {r: 0.18028378, g: 0.22571412, b: 0.30692285, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -477,27 +477,11 @@ PrefabInstance:
     - {fileID: 6366410928804317175, guid: 045ebb18616370b4aba8d9245df17b66, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 6385581814478832936, guid: 045ebb18616370b4aba8d9245df17b66,
-        type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 606134744}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 045ebb18616370b4aba8d9245df17b66, type: 3}
 --- !u!4 &208128927 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2710179908486630052, guid: 045ebb18616370b4aba8d9245df17b66,
-    type: 3}
-  m_PrefabInstance: {fileID: 208128926}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &208128928 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 6385581814478832936, guid: 045ebb18616370b4aba8d9245df17b66,
-    type: 3}
-  m_PrefabInstance: {fileID: 208128926}
-  m_PrefabAsset: {fileID: 0}
---- !u!195 &208128929 stripped
-NavMeshAgent:
-  m_CorrespondingSourceObject: {fileID: 1697520692266877604, guid: 045ebb18616370b4aba8d9245df17b66,
     type: 3}
   m_PrefabInstance: {fileID: 208128926}
   m_PrefabAsset: {fileID: 0}
@@ -5672,40 +5656,13 @@ MeshRenderer:
     type: 3}
   m_PrefabInstance: {fileID: 208128926}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &606134744
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 208128928}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 08bb17868fffa144c963002bf0db3e44, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  maxHealth: 80
-  attack: 20
-  attackRange: 8
-  attackNoticeRange: 0
-  attackRate: 2
-  team: 0
-  damageColor: {r: 1, g: 0, b: 0, a: 0}
-  ren: {fileID: 606134743}
-  bulletFactory: {fileID: 0}
-  navMeshAgent: {fileID: 208128929}
-  navMeshObstacle: {fileID: 0}
-  animator: {fileID: 0}
-  checkForAttackTargetRate: 0.1
-  size: 0.1
-  arrow: {fileID: 0}
 --- !u!114 &606134745 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 5991499500725100936, guid: 045ebb18616370b4aba8d9245df17b66,
     type: 3}
   m_PrefabInstance: {fileID: 208128926}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 208128928}
+  m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 08bb17868fffa144c963002bf0db3e44, type: 3}
@@ -6443,7 +6400,7 @@ MonoBehaviour:
   bulletFactory: {fileID: 2114211193}
   teamColor: {r: 0.745283, g: 0.0660911, b: 0.0660911, a: 0}
   team: 1
-  spawnRate: 100
+  spawnRate: 6
   index: 1
 --- !u!65 &1044829380
 BoxCollider:
@@ -7052,7 +7009,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1472674717
 Transform:
   m_ObjectHideFlags: 0
@@ -7087,7 +7044,7 @@ MonoBehaviour:
   bulletFactory: {fileID: 2114211193}
   teamColor: {r: 0.745283, g: 0.0660911, b: 0.0660911, a: 0}
   team: 1
-  spawnRate: 7
+  spawnRate: 6
   index: 0
 --- !u!65 &1472674719
 BoxCollider:

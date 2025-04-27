@@ -366,7 +366,7 @@ MonoBehaviour:
   navMeshObstacle: {fileID: 3107644234196968788}
   animator: {fileID: 4893337981640854681}
   checkForAttackTargetRate: 0.1
-  size: 2
+  size: 1.5
   arrow: {fileID: 8458770393523292580}
 --- !u!1 &8409013833408852297
 GameObject:

@@ -4706,7 +4706,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxHealth: 100
-  attack: 100
+  attack: 20
   attackRange: 7
   attackNoticeRange: 20
   attackRate: 2

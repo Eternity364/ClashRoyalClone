@@ -154,5 +154,5 @@ MonoBehaviour:
   navMeshObstacle: {fileID: 0}
   animator: {fileID: 0}
   checkForAttackTargetRate: 0.1
-  size: 5
+  size: 7
   arrow: {fileID: 0}
