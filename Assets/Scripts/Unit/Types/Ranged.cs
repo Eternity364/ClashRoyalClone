@@ -7,7 +7,7 @@ using System;
 using RPGCharacterAnims.Actions;
 
 namespace Assets.Scripts.Unit {
-    public class RangedUnit : Unit
+    public class Ranged : Unit
     {    
         [SerializeField]    
         private GameObject arrow;
@@ -16,7 +16,6 @@ namespace Assets.Scripts.Unit {
             base.Init(destination, bulletFactory, team, teamColor);
             
             SwitchWeaponContext context = new SwitchWeaponContext();
-            //Switch to unarmed.
             context.type = "Instant";
             context.side = "None";
             context.sheathLocation = "Back";
@@ -44,12 +43,14 @@ namespace Assets.Scripts.Unit {
         } 
 
         protected override void PerformAttack() {
+            base.PerformAttack();
+
             if (attackTarget != null) {
                 GameObject bullet = bulletFactory.Get();
                 bullet.transform.localScale = arrow.transform.lossyScale;
                 ArrowFlight arrowFlight = bullet.GetComponent<ArrowFlight>();
                 NavMeshAgent attackTargetNavMesh = attackTarget.GetComponent<NavMeshAgent>();
-                float attackTargetSize = attackTarget.Size;
+                float attackTargetSize = attackTarget.Radius;
                 Vector3 targetPosition = attackTarget.transform.position;
 
                 TriggerBowAnimation(() => {

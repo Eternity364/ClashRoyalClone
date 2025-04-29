@@ -39,7 +39,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 3.11, y: 3.11, z: 3.11}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 4893337981633909719}
@@ -99,7 +99,7 @@ MonoBehaviour:
   ikHands: {fileID: 0}
   ladder: {fileID: 0}
   cliff: {fileID: 0}
-  target: {fileID: 0}
+  target: {fileID: 6609973235916616172}
   isNearCliff: 0
   isNearLadder: 0
   isSitting: 0
@@ -312,7 +312,7 @@ NavMeshAgent:
   m_GameObject: {fileID: 3231107821499508076}
   m_Enabled: 1
   m_AgentTypeID: 0
-  m_Radius: 0.5
+  m_Radius: 1.24
   m_Speed: 15
   m_Acceleration: 200
   avoidancePriority: 50
@@ -335,7 +335,7 @@ NavMeshObstacle:
   m_Enabled: 0
   serializedVersion: 3
   m_Shape: 0
-  m_Extents: {x: 0.5, y: 1, z: 0.5}
+  m_Extents: {x: 1.24, y: 1, z: 1.24}
   m_MoveThreshold: 0.1
   m_Carve: 1
   m_CarveOnlyStationary: 1
@@ -366,7 +366,6 @@ MonoBehaviour:
   navMeshObstacle: {fileID: 3107644234196968788}
   animator: {fileID: 4893337981640854681}
   checkForAttackTargetRate: 0.1
-  size: 1.5
   arrow: {fileID: 8458770393523292580}
 --- !u!1 &8409013833408852297
 GameObject:
@@ -866,15 +865,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 482130, guid: f7e586317327fe240bef5a82944f49c2, type: 3}
       propertyPath: m_LocalScale.x
-      value: 1.48
+      value: 4.28
       objectReference: {fileID: 0}
     - target: {fileID: 482130, guid: f7e586317327fe240bef5a82944f49c2, type: 3}
       propertyPath: m_LocalScale.y
-      value: 1.48
+      value: 4.28
       objectReference: {fileID: 0}
     - target: {fileID: 482130, guid: f7e586317327fe240bef5a82944f49c2, type: 3}
       propertyPath: m_LocalScale.z
-      value: 1.48
+      value: 4.28
       objectReference: {fileID: 0}
     - target: {fileID: 482130, guid: f7e586317327fe240bef5a82944f49c2, type: 3}
       propertyPath: m_LocalPosition.x

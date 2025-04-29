@@ -467,7 +467,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0.01, z: 0}
-  m_LocalScale: {x: 1.79, y: 1.48, z: 1.97}
+  m_LocalScale: {x: 5.57, y: 3.7206705, z: 6.18}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 7413368972470695985}
@@ -4391,7 +4391,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 13.54185, y: 44.700012, z: 142.66449}
-  m_LocalScale: {x: 3.11, y: 3.11, z: 3.11}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 7413368972470742091}
@@ -4447,11 +4447,11 @@ MonoBehaviour:
   animator: {fileID: 0}
   animationSpeed: 1
   headLook: 0
-  idleAlert: 1
+  idleAlert: 0
   ikHands: {fileID: 0}
   ladder: {fileID: 0}
   cliff: {fileID: 0}
-  target: {fileID: 0}
+  target: {fileID: 7722257251997438091}
   isNearCliff: 0
   isNearLadder: 0
   isSitting: 0
@@ -4664,7 +4664,7 @@ NavMeshAgent:
   m_GameObject: {fileID: 7840963495349357989}
   m_Enabled: 1
   m_AgentTypeID: 0
-  m_Radius: 0.5
+  m_Radius: 1.33
   m_Speed: 15
   m_Acceleration: 200
   avoidancePriority: 50
@@ -4687,7 +4687,7 @@ NavMeshObstacle:
   m_Enabled: 0
   serializedVersion: 3
   m_Shape: 0
-  m_Extents: {x: 0.5, y: 1, z: 0.5}
+  m_Extents: {x: 1.33, y: 1, z: 1.33}
   m_MoveThreshold: 0.1
   m_Carve: 1
   m_CarveOnlyStationary: 1
@@ -4707,7 +4707,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxHealth: 100
   attack: 20
-  attackRange: 7
+  attackRange: 5
   attackNoticeRange: 20
   attackRate: 2
   team: 0
@@ -4718,6 +4718,5 @@ MonoBehaviour:
   navMeshObstacle: {fileID: 7290862605227990102}
   animator: {fileID: 7413368972480049925}
   checkForAttackTargetRate: 0.1
-  size: 2
   swordInHand: {fileID: 3926819761456522989}
   swordInTheBack: {fileID: 7413368972470626003}

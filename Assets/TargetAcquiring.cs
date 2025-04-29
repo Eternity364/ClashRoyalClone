@@ -8,6 +8,7 @@ public class TargetAcquiring : MonoBehaviour
     [SerializeField]
     private List<Unit> agents;
     [SerializeField]
+    [Tooltip("Set the enemy bases in the same order as the teams. So for team 0 enemy base should be team 1 and otherwise")]
     private List<Unit> enemyBases;
     [SerializeField]
     private float frequency = 0.2f;

@@ -40,8 +40,6 @@ namespace Assets.Scripts.Unit {
         protected Animator animator;
         [SerializeField]    
         protected float checkForAttackTargetRate = 0.1f;
-        [SerializeField]    
-        protected float size;
 
         /// <summary>
         /// Range, on which unit spots an enemy and starts walking to it. Must be equal or greater than attack range.
@@ -69,11 +67,11 @@ namespace Assets.Scripts.Unit {
                 return attackTarget;
             }
         }
-        public float Size
+        public float Radius
         {
             get
             {
-                return size;
+                return navMeshAgent.radius;
             }
         }
         public UnityAction<Unit> OnDeath;
@@ -89,14 +87,15 @@ namespace Assets.Scripts.Unit {
         protected bool attackTargetFound = false;
         protected Vector3 positionBefore;
         protected int health;
-        protected bool isDead = false;
+        protected bool isDead = true;
         
         protected RPGCharacterController rPGCharacterController;
 
         public void Awake() {
             originalColor = ren.material.color;
             rPGCharacterController = GetComponent<RPGCharacterController>();
-            rPGCharacterController.enabled = true;
+            if (rPGCharacterController != null)
+                rPGCharacterController.enabled = true;
         }   
 
         public virtual void Init(Transform destination, BulletFactory bulletFactory, int team, Color teamColor) {
@@ -105,7 +104,6 @@ namespace Assets.Scripts.Unit {
             this.team = team;
             health = maxHealth;
             ren.material.SetColor("_TeamColor", teamColor);
-            isDead = false;
 
             navMeshAgent.enabled = true;
             navMeshAgent.updateRotation = true;
@@ -115,6 +113,7 @@ namespace Assets.Scripts.Unit {
             if (attackRange > attackNoticeRange) {
                 Debug.LogError("Attack range must be equal or greater than attack notice range.");
             }
+            isDead = false;
         }   
 
         public virtual void SetAttackTarget(Unit unit) {
@@ -137,51 +136,62 @@ namespace Assets.Scripts.Unit {
         }
 
         protected virtual void CheckIfAttackTargetReachable() {
-            float distance = (transform.position - attackTarget.transform.position).magnitude - attackTarget.Size / 2;
-            if (distance > attackNoticeRange) {
-                attackTargetFound = false;
-                attackTarget.OnDeath -= ClearAttackTarget;
-                ClearAttackTarget(attackTarget);
-            } 
-            else if (distance <= attackNoticeRange) {
-                if (distance <= attackRange) {
+             if (navMeshObstacle.isActiveAndEnabled || navMeshAgent.isOnNavMesh) {
+                float distance = (transform.position - attackTarget.transform.position).magnitude - attackTarget.Radius;
+                if (distance > attackNoticeRange) {
                     attackTargetFound = false;
-                    navMeshAgent.isStopped = true;
-                    navMeshAgent.updateRotation = false;
-                    navMeshAgent.enabled = false;
-                    StartMovingAnimation(false);
-                    navMeshObstacle.enabled = true;
-                    RotateTowards(attackTarget.transform, OnAttackRotationComplete);
+                    attackTarget.OnDeath -= ClearAttackTarget;
+                    ClearAttackTarget(attackTarget);
+                } 
+                else if (distance <= attackNoticeRange) {
+                    if (distance <= attackRange) {
+                        attackTargetFound = false;
+                        StartMovement(false, Vector3.zero);
+                        RotateTowards(attackTarget.transform, OnAttackRotationComplete);
+                    }
+                    else
+                    {
+                        StartMovement(true, attackTarget.transform.position);
+                    }
                 }
-                else 
-                {
-                    navMeshAgent.SetDestination(attackTarget.transform.position);
-                }
-            }
+             }
         }
         
         protected virtual void ClearAttackTarget(Unit unit) {
+            if (isDead)
+                return;
+
             attackTarget = null;
-            //RotateTowards(null);
-            positionBefore = transform.position;
-            navMeshObstacle.enabled = false;
-            navMeshAgent.enabled = true;
-            navMeshAgent.isStopped = false;
-            navMeshAgent.updateRotation = true;
-            StartMovingAnimation(true);
-            StartCoroutine(nameof(PositionChecker));
+            
+            StartMovement(true, destination.position);
+            
             attackAllowed = false;
             attackTargetFound = false;
+        }
+
+        protected void StartMovement(bool isMoving, Vector3 destPos) {
+            positionBefore = transform.position;
+            navMeshObstacle.enabled = !isMoving;
+            navMeshAgent.enabled = isMoving;
+            if (navMeshAgent.isOnNavMesh) {
+                navMeshAgent.isStopped = !isMoving;
+                navMeshAgent.updateRotation = isMoving;
+            }
+            StartMovingAnimation(isMoving);
+
+            if (isMoving)
+                StartCoroutine(nameof(SetDestination), destPos);
         }
         
         /* Because after switching from NavMeshObstacle to NavMeshAgent back again, the position of the unit slightly changes,
             so we need to set it to one from the frame before (on current frame it's the same for some reason).*/
-        protected IEnumerator PositionChecker() {
+        protected IEnumerator SetDestination(Vector3 destPos) {
             yield return new WaitForNextFrameUnit();
             if (isDead)
                 yield break;
             transform.position = positionBefore;
-            navMeshAgent.SetDestination(destination.position);
+            if (navMeshAgent.isOnNavMesh)
+                navMeshAgent.SetDestination(destPos);
         }
 
         protected void StartMovingAnimation(bool isMoving) {
@@ -193,7 +203,6 @@ namespace Assets.Scripts.Unit {
             if (isDead)
                 return;
             
-            isDead = true;
             navMeshAgent.enabled = false;
             navMeshObstacle.enabled = false;
             attackAllowed = false;
@@ -211,9 +220,11 @@ namespace Assets.Scripts.Unit {
             DG.Tweening.Sequence deathSeq = DOTween.Sequence();
             deathSeq.Insert(1f, transform.DOBlendableMoveBy(new Vector3(0, -2, 0), 2f));
             deathSeq.InsertCallback(3f, () => {
-                ObjectPool.Instance.ReturnObject(gameObject);
                 rPGCharacterController.EndAction("Death");
+                ObjectPool.Instance.ReturnObject(gameObject);
             });
+            
+            isDead = true;
         }
 
         private void StartDamageAnimation() {
@@ -225,11 +236,18 @@ namespace Assets.Scripts.Unit {
             damageAnimation.Append(ren.material.DOColor(originalColor, 0.3f));
         }
 
-        protected abstract void PerformAttack();
+        protected virtual void PerformAttack() {
+            if (isDead)
+                return;
+        }
 
         private void Update() {
             if (isDead)
                 return;
+            if (this is Ranged)
+            {
+                int a = 9;
+            }
             if (attackTarget != null) {
                 if (attackTargetFound) {
                     timePassedSinceLastAttackTargetCheck += Time.deltaTime;

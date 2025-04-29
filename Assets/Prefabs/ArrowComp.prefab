@@ -45,7 +45,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6a1b845a9e2aa0c429cf641c651fb865, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  flightSpeed: 30
+  flightSpeed: 46
   curveHeight: 3
 --- !u!1001 &2631281620458964387
 PrefabInstance:

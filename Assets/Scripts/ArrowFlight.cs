@@ -6,11 +6,9 @@ public class ArrowFlight : MonoBehaviour
 {
     [SerializeField] private float flightSpeed = 1.0f;
     [SerializeField] private float curveHeight = 3.0f;
-    // Affects how close arrow will be to the target when hit occurs
-    [SerializeField] private float enemySizeMultiplier = 3.0f;
 
 
-    public void FlyArrow(Vector3 startPoint, Vector3 endPoint, float enemySize, TweenCallback OnArrowHit)
+    public void FlyArrow(Vector3 startPoint, Vector3 endPoint, float enemyRadius, TweenCallback OnArrowHit)
     {
         transform.position = startPoint;
 
@@ -40,6 +38,6 @@ public class ArrowFlight : MonoBehaviour
             }));
         
         // Calculate the time at which the arrow should hit the target based on its size
-        seq.InsertCallback(flightDuration * (distance - enemySize * enemySizeMultiplier) / distance, OnArrowHit);
+        seq.InsertCallback(flightDuration * (distance - enemyRadius - 1) / distance, OnArrowHit);
     }
 }

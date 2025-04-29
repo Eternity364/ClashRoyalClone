@@ -6,7 +6,7 @@ using RPGCharacterAnims.Actions;
 using System.Collections;
 
 namespace Assets.Scripts.Unit {
-    public class MeleeUnit : Unit
+    public class Melee : Unit
     {    
         [SerializeField]
         private GameObject swordInHand;
@@ -14,19 +14,6 @@ namespace Assets.Scripts.Unit {
         private GameObject swordInTheBack;
 
         protected Sequence seq;
-
-        void Start()
-        {
-            //StartCoroutine(Test());
-        }
-
-        IEnumerator Test() {
-            
-            yield return new WaitForSeconds(1f);
-            SheathWeapon(false);
-            yield return new WaitForSeconds(2f);
-            SheathWeapon(true);
-        }
 
         public override void Init(Transform destination, BulletFactory bulletFactory, int team, Color teamColor) {
             base.Init(destination, bulletFactory, team, teamColor);
@@ -43,6 +30,8 @@ namespace Assets.Scripts.Unit {
         }
 
         private void SheathWeapon(bool active) {
+            if (isDead)
+                return;
             SwitchWeaponContext context = new SwitchWeaponContext();
             float callbackDelay = active ? 0.6f : 0.1f;
             context.type = active ? "Sheath" : "Unsheath";
@@ -51,12 +40,6 @@ namespace Assets.Scripts.Unit {
             context.leftWeapon = (int)Weapon.Relax;
             context.rightWeapon = active ? (int)Weapon.Relax : (int)Weapon.RightSword;
             rPGCharacterController.StartAction("SwitchWeapon", context);
-            // if (!active) {
-            //     rPGCharacterController.StartAction("SwitchWeapon", context);
-            // }
-            // else {
-            //     rPGCharacterController.EndAction("Relax");
-            // }
 
             if (seq != null) {
                 seq.Kill();
@@ -77,6 +60,8 @@ namespace Assets.Scripts.Unit {
         protected override void OnAttackRotationComplete() {}
 
         protected override void PerformAttack() {
+            base.PerformAttack();
+
             if (attackTarget != null) {
                 animator.SetInteger("TriggerNumber", 6);
                 animator.SetBool("Trigger", true);
