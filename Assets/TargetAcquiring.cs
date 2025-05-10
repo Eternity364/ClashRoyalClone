@@ -13,6 +13,9 @@ public class TargetAcquiring : MonoBehaviour
     [SerializeField]
     private float frequency = 0.2f;
     [SerializeField]
+    [Tooltip("If a new possible target is closer than this value, it will be set as a target.")]
+    private float distanceDifferanceToChangeTarget = 2f;
+    [SerializeField]
     private ObjectPool objectPool;
 
     private float timePassed = 0;
@@ -39,12 +42,12 @@ public class TargetAcquiring : MonoBehaviour
             Unit agent = agents[i];
             Unit closestEnemy = null;
             float closestDistance = float.MaxValue;
+            float currentEnemyDistance = float.MaxValue;
+            if (agent.HasTarget && agent.Target != enemyBases[agent.Team]) {
+                currentEnemyDistance = (agent.transform.position - agent.Target.transform.position).magnitude;
+            }
             if (agent.IsDead) continue;
             int team = agent.Team;
-
-            if (agent is Melee && agent.Team == 0) {
-                int a = 9;
-            }
 
             for (int j = 0; j < agents.Count; j++)
             {
@@ -57,7 +60,7 @@ public class TargetAcquiring : MonoBehaviour
                    }
                 }
 
-                if (closestEnemy != null && agent.Target != closestEnemy) {
+                if (closestEnemy != null && agent.Target != closestEnemy && closestDistance < currentEnemyDistance - distanceDifferanceToChangeTarget) {
                     CheckAndSetTarget(agent, closestEnemy, closestDistance);
                 }
             }

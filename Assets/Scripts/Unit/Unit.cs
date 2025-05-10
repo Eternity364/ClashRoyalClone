@@ -99,6 +99,7 @@ namespace Assets.Scripts.Unit {
         }   
 
         public virtual void Init(Transform destination, BulletFactory bulletFactory, int team, Color teamColor) {
+            isDead = false;
             this.bulletFactory = bulletFactory;
             this.destination = destination;
             this.team = team;
@@ -113,7 +114,6 @@ namespace Assets.Scripts.Unit {
             if (attackRange > attackNoticeRange) {
                 Debug.LogError("Attack range must be equal or greater than attack notice range.");
             }
-            isDead = false;
         }   
 
         public virtual void SetAttackTarget(Unit unit) {
@@ -267,6 +267,8 @@ namespace Assets.Scripts.Unit {
         }
 
         protected virtual void StartAttacking() {
+            if (attackAllowed)
+                return;
             attackAllowed = true;
             timePassedSinceLastAttack = attackRate;
         }
