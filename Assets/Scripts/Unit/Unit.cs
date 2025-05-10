@@ -244,10 +244,6 @@ namespace Assets.Scripts.Unit {
         private void Update() {
             if (isDead)
                 return;
-            if (this is Ranged)
-            {
-                int a = 9;
-            }
             if (attackTarget != null) {
                 if (attackTargetFound) {
                     timePassedSinceLastAttackTargetCheck += Time.deltaTime;

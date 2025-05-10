@@ -37,18 +37,33 @@ public class TargetAcquiring : MonoBehaviour
         for (int i = 0; i < agents.Count; i++)
         {
             Unit agent = agents[i];
+            Unit closestEnemy = null;
+            float closestDistance = float.MaxValue;
             if (agent.IsDead) continue;
             int team = agent.Team;
+
+            if (agent is Melee && agent.Team == 0) {
+                int a = 9;
+            }
+
             for (int j = 0; j < agents.Count; j++)
             {
-                if (agents[j].IsDead || (agent.HasTarget && agent.Target != enemyBases[agent.Team])) continue;
+                if (agents[j].IsDead) continue;
                 if (i != j && team != agents[j].Team) {
-                    if (CheckAndSetTarget(agent, agents[j])) break;
+                   float distance = (agent.transform.position - agents[j].transform.position).magnitude;
+                   if (distance < closestDistance) {
+                       closestDistance = distance;
+                       closestEnemy = agents[j];
+                   }
+                }
+
+                if (closestEnemy != null && agent.Target != closestEnemy) {
+                    CheckAndSetTarget(agent, closestEnemy, closestDistance);
                 }
             }
             
             if (!agent.HasTarget) {
-               CheckAndSetTarget(agent, enemyBases[agent.Team]); 
+               CheckAndSetTarget(agent, enemyBases[agent.Team], (agent.transform.position - enemyBases[agent.Team].transform.position).magnitude); 
             }
         }
         // Units shouldn't be removed while we are iterating through them.
@@ -59,15 +74,10 @@ public class TargetAcquiring : MonoBehaviour
         toRemove.Clear();
     }
 
-    private bool CheckAndSetTarget(Unit attacker, Unit possibleEnemy) {
-        Vector3 position = attacker.transform.position;
-        float distance = (position - possibleEnemy.transform.position).magnitude;
-        bool targetValid = false;
-        if ((!attacker.HasTarget || attacker.Target == enemyBases[attacker.Team]) && attacker.AttackNoticeRange > distance) {
+    private void CheckAndSetTarget(Unit attacker, Unit possibleEnemy, float distance) {
+        if (attacker.AttackNoticeRange > distance) {
             attacker.SetAttackTarget(possibleEnemy);
-            targetValid = true;
         }
-        return targetValid;
     }
 
     void Update()

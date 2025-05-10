@@ -20,18 +20,26 @@ namespace Assets.Scripts.Unit {
         }
 
         public override void SetAttackTarget(Unit target) {
+            bool hadTargetBefore = HasTarget;
             base.SetAttackTarget(target);
-            SheathWeapon(false);
+            SheathWeapon(false, hadTargetBefore);
         }
 
         protected override void ClearAttackTarget(Unit unit) {
-            base.ClearAttackTarget(unit);
             SheathWeapon(true);
+            base.ClearAttackTarget(unit);
         }
 
-        private void SheathWeapon(bool active) {
+        private void SheathWeapon(bool active, bool forceStartAttacking = false) {
             if (isDead)
                 return;
+            if (HasTarget == active)
+            {
+                if (forceStartAttacking) {
+                    StartAttacking();
+                }
+                return;
+            }
             SwitchWeaponContext context = new SwitchWeaponContext();
             float callbackDelay = active ? 0.6f : 0.1f;
             context.type = active ? "Sheath" : "Unsheath";
@@ -41,9 +49,7 @@ namespace Assets.Scripts.Unit {
             context.rightWeapon = active ? (int)Weapon.Relax : (int)Weapon.RightSword;
             rPGCharacterController.StartAction("SwitchWeapon", context);
 
-            if (seq != null) {
-                seq.Kill();
-            }
+            seq?.Kill();
             seq = DOTween.Sequence();
             seq.InsertCallback(callbackDelay, () => {
                 swordInHand.SetActive(!active);
