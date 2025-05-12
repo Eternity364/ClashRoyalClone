@@ -146,7 +146,7 @@ GameObject:
   - component: {fileID: 6458729946174557564}
   - component: {fileID: 8028619864032727504}
   - component: {fileID: 5845128215112053782}
-  - component: {fileID: 2637745524343286918}
+  - component: {fileID: 8707442038023284082}
   m_Layer: 5
   m_Name: UnitButton
   m_TagString: Untagged
@@ -268,7 +268,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
---- !u!114 &2637745524343286918
+--- !u!114 &8707442038023284082
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -277,6 +277,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 7483543869518574959}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 802def690c1bcf54ca3e8afdfc2fcca7, type: 3}
+  m_Script: {fileID: 11500000, guid: db95e4ea0ed48c447ad448ab96796b64, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  unitButtonReferances: {fileID: 11400000, guid: dcc73362d79fb234799be3bffc210462,
+    type: 2}

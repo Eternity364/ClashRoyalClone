@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
-using Assets.Scripts.Unit;
+using Units;
 
 public class ObjectPool : MonoBehaviour
 {

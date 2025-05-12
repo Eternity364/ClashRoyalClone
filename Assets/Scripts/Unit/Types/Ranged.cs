@@ -6,7 +6,7 @@ using RPGCharacterAnims;
 using System;
 using RPGCharacterAnims.Actions;
 
-namespace Assets.Scripts.Unit {
+namespace Units{
     public class Ranged : Unit
     {    
         [SerializeField]    

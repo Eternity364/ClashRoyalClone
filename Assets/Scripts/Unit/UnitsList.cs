@@ -1,9 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
-using Assets.Scripts.Unit;
+using Units;
 using UnityEngine;
 
-namespace Assets.Scripts.Unit {
+namespace Units{
     public class UnitsList : MonoBehaviour
     {
         [SerializeField]
@@ -28,18 +28,6 @@ namespace Assets.Scripts.Unit {
                 Debug.LogWarning("Multiple UnitsList instances detected. Destroying duplicate.");
                 Destroy(gameObject);
             }
-        }
-
-        // Start is called before the first frame update
-        void Start()
-        {
-            
-        }
-
-        // Update is called once per frame
-        void Update()
-        {
-            
         }
     }
 }

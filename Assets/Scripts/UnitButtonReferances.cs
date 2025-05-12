@@ -2,12 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Assets.Scripts.Unit {
-    public class UnitButtonReferanceData {
-        public Unit unit;
-        public Texture texture;
-    }
-
+namespace Units{
     [CreateAssetMenu(fileName = "UnitButtonReferences", menuName = "ScriptableObjects/UnitButtonReferences", order = 1)]
     public class UnitButtonReferances : ScriptableObject
     {

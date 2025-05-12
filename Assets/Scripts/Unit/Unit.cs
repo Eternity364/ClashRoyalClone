@@ -8,7 +8,7 @@ using Unity.VisualScripting;
 using System.Collections;
 using System;
 
-namespace Assets.Scripts.Unit {
+namespace Units{
     public abstract class Unit : MonoBehaviour
     {    
 

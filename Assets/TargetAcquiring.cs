@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using Assets.Scripts.Unit;
+using Units;
 using UnityEngine;
 
 public class TargetAcquiring : MonoBehaviour

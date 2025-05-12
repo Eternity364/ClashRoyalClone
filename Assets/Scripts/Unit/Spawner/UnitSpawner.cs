@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-namespace Assets.Scripts.Unit {
+namespace Units{
     public class UnitSpawner : MonoBehaviour
     {
         [SerializeField]

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Assets.Scripts.Unit {
+namespace Units{
     public class UnitAutoSpawner : UnitSpawner
     {
         

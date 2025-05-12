@@ -5,7 +5,7 @@ using RPGCharacterAnims;
 using RPGCharacterAnims.Actions;
 using System.Collections;
 
-namespace Assets.Scripts.Unit {
+namespace Units{
     public class Base : Unit
     {    
         protected Sequence seq;

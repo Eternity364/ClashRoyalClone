@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.18028378, g: 0.22571412, b: 0.30692285, a: 1}
+  m_IndirectSpecularColor: {r: 0.18028334, g: 0.2257134, b: 0.30692226, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -783,7 +783,7 @@ GameObject:
   - component: {fileID: 332651949}
   - component: {fileID: 332651948}
   m_Layer: 5
-  m_Name: UserInterface
+  m_Name: UserInterfaceCanvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -7244,6 +7244,7 @@ GameObject:
   - component: {fileID: 1325028721}
   - component: {fileID: 1325028720}
   - component: {fileID: 1325028722}
+  - component: {fileID: 1325028723}
   m_Layer: 5
   m_Name: Panel
   m_TagString: Untagged
@@ -7338,6 +7339,23 @@ MonoBehaviour:
   m_ChildScaleWidth: 1
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
+--- !u!114 &1325028723
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1325028718}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4db762ff569d9e04fa07dee31287ed7e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  units:
+  - {fileID: 7308509031884456294, guid: 391a642033c5e634dab2ab25434f1e57, type: 3}
+  - {fileID: 6302694674362624318, guid: b5813654b784855468d9767bef561ac2, type: 3}
+  - {fileID: 7308509031884456294, guid: 391a642033c5e634dab2ab25434f1e57, type: 3}
+  - {fileID: 6302694674362624318, guid: b5813654b784855468d9767bef561ac2, type: 3}
 --- !u!1 &1326969171
 GameObject:
   m_ObjectHideFlags: 0
