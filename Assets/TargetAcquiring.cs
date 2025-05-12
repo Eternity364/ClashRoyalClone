@@ -35,6 +35,10 @@ public class TargetAcquiring : MonoBehaviour
         }
     }
 
+    public void ButtonTest () {
+        Debug.Log("Button pressed");
+    }
+
     private void Run() {
         removeLock = true;
         for (int i = 0; i < agents.Count; i++)
