@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace Units {
     public class UnitButtonPanel : MonoBehaviour
@@ -17,10 +18,13 @@ namespace Units {
         [SerializeField]
         float minCopyScale = 0.5f;
 
+        private UnityAction<Vector3, Unit> OnDragEndEvent;
+
         private UnitButton[] buttons;
         private UnitButton copyButton;
         private float originalDistance;
         private Vector3 originalScale;
+        
 
         
         void Start()
@@ -39,7 +43,10 @@ namespace Units {
             }
         }
 
-        
+        public void SetOnEndDragEvent(UnityAction<Vector3, Unit> onDragEndEvent)
+        {
+            OnDragEndEvent = onDragEndEvent;
+        }
 
         private void OnBeginDrag(UnitButton button)
         {
@@ -59,6 +66,12 @@ namespace Units {
             copyButton = null;
             originalScale = Vector3.zero;
             originalDistance = float.MaxValue;
+
+            Vector3 hitPosition = unitPlaceArea.GetMouseHitPosition();
+            if (hitPosition != Vector3.zero)
+            {
+                OnDragEndEvent?.Invoke(hitPosition, button.Unit);
+            }
         }
 
         private void UpdateButtonCopyPosition() {

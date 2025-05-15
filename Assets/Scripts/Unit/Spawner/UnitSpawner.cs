@@ -8,6 +8,8 @@ namespace Units{
         [SerializeField]
         ClickableArea area;
         [SerializeField]
+        UnitButtonPanel panel;
+        [SerializeField]
         TargetAcquiring targetAcquiring;
         [SerializeField]
         Transform target;
@@ -21,16 +23,12 @@ namespace Units{
         int team;
         
         void Start() {
-            area.SetOnClickEvent(Spawn);
+            panel.SetOnEndDragEvent(Spawn);
         }
 
-        public void Spawn(Vector3 position, int index)
+        public void Spawn(Vector3 position, Unit unitType)
         {
-            if (index < 0 || index >= UnitsList.Instance.Get().Count) {
-                Debug.LogError("Invalid index for unit prefab.");
-                return;
-            }
-            Unit unit = ObjectPool.Instance.GetObject(UnitsList.Instance.Get()[index].gameObject).GetComponent<Unit>();
+            Unit unit = ObjectPool.Instance.GetObject(unitType.gameObject).GetComponent<Unit>();
             unit.transform.SetParent(parent);
             unit.gameObject.SetActive(true);
             position.y = 0;

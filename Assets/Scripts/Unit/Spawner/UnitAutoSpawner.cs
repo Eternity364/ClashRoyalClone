@@ -7,7 +7,7 @@ namespace Units{
         [SerializeField]
         private float spawnRate;
         [SerializeField]
-        private int index;
+        private GameObject unitPrefab;
 
         private float timePassed = 0;
         
@@ -18,7 +18,7 @@ namespace Units{
         void Update() {
             timePassed += Time.deltaTime;
             if (timePassed > spawnRate) {
-                Spawn(transform.position, index);
+                Spawn(transform.position, unitPrefab.GetComponent<Unit>());
                 timePassed = 0;
             }
         }

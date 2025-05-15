@@ -6870,6 +6870,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   area: {fileID: 0}
+  panel: {fileID: 0}
   targetAcquiring: {fileID: 1082284949}
   target: {fileID: 208128927}
   parent: {fileID: 866699091}
@@ -6877,7 +6878,8 @@ MonoBehaviour:
   teamColor: {r: 0.745283, g: 0.0660911, b: 0.0660911, a: 0}
   team: 1
   spawnRate: 10
-  index: 1
+  unitPrefab: {fileID: 7840963495349357989, guid: 391a642033c5e634dab2ab25434f1e57,
+    type: 3}
 --- !u!65 &1044829380
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -8114,6 +8116,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   area: {fileID: 0}
+  panel: {fileID: 0}
   targetAcquiring: {fileID: 1082284949}
   target: {fileID: 208128927}
   parent: {fileID: 866699091}
@@ -8121,7 +8124,8 @@ MonoBehaviour:
   teamColor: {r: 0.745283, g: 0.0660911, b: 0.0660911, a: 0}
   team: 1
   spawnRate: 10
-  index: 0
+  unitPrefab: {fileID: 3231107821499508076, guid: b5813654b784855468d9767bef561ac2,
+    type: 3}
 --- !u!65 &1472674719
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -9249,6 +9253,16 @@ PrefabInstance:
       propertyPath: area
       value: 
       objectReference: {fileID: 397140016}
+    - target: {fileID: 5027094789416323413, guid: 30745e8b7734bca4f946c324ba20a54b,
+        type: 3}
+      propertyPath: team
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5027094789416323413, guid: 30745e8b7734bca4f946c324ba20a54b,
+        type: 3}
+      propertyPath: panel
+      value: 
+      objectReference: {fileID: 1325028723}
     - target: {fileID: 5027094789416323413, guid: 30745e8b7734bca4f946c324ba20a54b,
         type: 3}
       propertyPath: target
