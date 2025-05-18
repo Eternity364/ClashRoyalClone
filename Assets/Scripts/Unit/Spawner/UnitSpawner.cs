@@ -6,8 +6,6 @@ namespace Units{
     public class UnitSpawner : MonoBehaviour
     {
         [SerializeField]
-        ClickableArea area;
-        [SerializeField]
         UnitButtonPanel panel;
         [SerializeField]
         TargetAcquiring targetAcquiring;
@@ -21,20 +19,48 @@ namespace Units{
         Color teamColor;
         [SerializeField, Range(0, 1)]
         int team;
-        
-        void Start() {
-            panel.SetOnEndDragEvent(Spawn);
+
+        private GameObject unitCopy;
+
+        void Start()
+        {
+            panel.SetOnDragEvents(CreateUnitCopy, Spawn, UpdateUnitCopyPosition);
         }
 
         public void Spawn(Vector3 position, Unit unitType)
         {
-            Unit unit = ObjectPool.Instance.GetObject(unitType.gameObject).GetComponent<Unit>();
+            Unit unit = CreateUnit(position, unitType).GetComponent<Unit>();
+            unit.Init(target, bulletFactory, team, teamColor);
+            targetAcquiring.AddUnit(unit);
+            ObjectPool.Instance.ReturnObject(unitCopy);
+            unitCopy = null;
+        }
+
+        private void UpdateUnitCopyPosition(Vector3 position)
+        {
+            if (unitCopy != null)
+            {
+                position.y = 0;
+                unitCopy.transform.localPosition = position;
+            }
+        }
+
+        private void CreateUnitCopy(Vector3 position, Unit unitType)
+        {
+            unitCopy = CreateUnit(position, unitType);
+            unitCopy.GetComponent<Unit>().SetAlpha(0.5f);
+        }
+
+        private GameObject CreateUnit(Vector3 position, Unit unitType)
+        {
+            GameObject unit = ObjectPool.Instance.GetObject(unitType.gameObject);
             unit.transform.SetParent(parent);
             unit.gameObject.SetActive(true);
             position.y = 0;
             unit.transform.localPosition = position;
-            unit.Init(target, bulletFactory, team, teamColor);
-            targetAcquiring.AddUnit(unit);
+            unit.GetComponent<Unit>().SetTeamColor(teamColor);
+
+            return unit;
         }
     }
 }

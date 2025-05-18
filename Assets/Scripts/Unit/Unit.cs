@@ -7,6 +7,7 @@ using RPGCharacterAnims;
 using Unity.VisualScripting;
 using System.Collections;
 using System;
+using System.Collections.Generic;
 
 namespace Units{
     public abstract class Unit : MonoBehaviour
@@ -36,6 +37,8 @@ namespace Units{
         protected NavMeshAgent navMeshAgent;
         [SerializeField]    
         protected NavMeshObstacle navMeshObstacle;
+        [SerializeField]    
+        private List<Renderer> renderers;
         [SerializeField]    
         protected Animator animator;
         [SerializeField]    
@@ -104,15 +107,15 @@ namespace Units{
             this.destination = destination;
             this.team = team;
             health = maxHealth;
-            ren.material.SetColor("_TeamColor", teamColor);
+            SetTeamColor(teamColor);
 
             navMeshAgent.enabled = true;
             navMeshAgent.updateRotation = true;
             navMeshAgent.SetDestination(destination.position);
             StartMovingAnimation(true);
             
-            if (attackRange > attackNoticeRange) {
-                Debug.LogError("Attack range must be equal or greater than attack notice range.");
+            if (attackNoticeRange >= attackRange) {
+                Debug.LogError("Attack notice range must be equal or greater than attack range.");
             }
         }   
 
@@ -134,17 +137,34 @@ namespace Units{
             if (health <= 0)
                 PerformDeath();
         }
+        
+        public void SetTeamColor(Color color) {
+            ren.material.SetColor("_TeamColor", color);
+        }
 
-        protected virtual void CheckIfAttackTargetReachable() {
-             if (navMeshObstacle.isActiveAndEnabled || navMeshAgent.isOnNavMesh) {
+         public void SetAlpha(float value)
+        {
+            for (int i = 0; i < renderers.Count; i++)
+            {
+                renderers[i].material.SetColor("_Color", new Color(1, 1, 1, value));
+            }
+        } 
+
+        protected virtual void CheckIfAttackTargetReachable()
+        {
+            if (navMeshObstacle.isActiveAndEnabled || navMeshAgent.isOnNavMesh)
+            {
                 float distance = (transform.position - attackTarget.transform.position).magnitude - attackTarget.Radius;
-                if (distance > attackNoticeRange) {
+                if (distance > attackNoticeRange)
+                {
                     attackTargetFound = false;
                     attackTarget.OnDeath -= ClearAttackTarget;
                     ClearAttackTarget(attackTarget);
-                } 
-                else if (distance <= attackNoticeRange) {
-                    if (distance <= attackRange) {
+                }
+                else if (distance <= attackNoticeRange)
+                {
+                    if (distance <= attackRange)
+                    {
                         attackTargetFound = false;
                         StartMovement(false, Vector3.zero);
                         RotateTowards(attackTarget.transform, OnAttackRotationComplete);
@@ -154,7 +174,7 @@ namespace Units{
                         StartMovement(true, attackTarget.transform.position);
                     }
                 }
-             }
+            }
         }
         
         protected virtual void ClearAttackTarget(Unit unit) {
@@ -241,21 +261,27 @@ namespace Units{
                 return;
         }
 
-        private void Update() {
+        private void Update()
+        {
             if (isDead)
                 return;
-            if (attackTarget != null) {
-                if (attackTargetFound) {
+            if (attackTarget != null)
+            {
+                if (attackTargetFound)
+                {
                     timePassedSinceLastAttackTargetCheck += Time.deltaTime;
-                    if (timePassedSinceLastAttackTargetCheck >= checkForAttackTargetRate) {
-                        timePassedSinceLastAttackTargetCheck =- checkForAttackTargetRate;
+                    if (timePassedSinceLastAttackTargetCheck >= checkForAttackTargetRate)
+                    {
+                        timePassedSinceLastAttackTargetCheck = -checkForAttackTargetRate;
                         CheckIfAttackTargetReachable();
                     }
-                } 
-                else if (attackAllowed) {
+                }
+                else if (attackAllowed)
+                {
                     timePassedSinceLastAttack += Time.deltaTime;
-                    if (timePassedSinceLastAttack >= attackRate) {
-                        timePassedSinceLastAttack =- attackRate;
+                    if (timePassedSinceLastAttack >= attackRate)
+                    {
+                        timePassedSinceLastAttack = -attackRate;
                         PerformAttack();
                     }
                 }

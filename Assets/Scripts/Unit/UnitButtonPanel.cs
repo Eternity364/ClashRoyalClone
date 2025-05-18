@@ -16,9 +16,13 @@ namespace Units {
         [SerializeField]
         ClickableArea overallArea;
         [SerializeField]
+        ClickableArea playerBaseArea;
+        [SerializeField]
         float minCopyScale = 0.5f;
 
         private UnityAction<Vector3, Unit> OnDragEndEvent;
+        private UnityAction<Vector3, Unit> OnDragBeginEvent;
+        private UnityAction<Vector3> OnDragEvent;
 
         private UnitButton[] buttons;
         private UnitButton copyButton;
@@ -43,8 +47,10 @@ namespace Units {
             }
         }
 
-        public void SetOnEndDragEvent(UnityAction<Vector3, Unit> onDragEndEvent)
+        public void SetOnDragEvents(UnityAction<Vector3, Unit> onDragBeginEvent, UnityAction<Vector3, Unit> onDragEndEvent, UnityAction<Vector3> onDragEvent)
         {
+            OnDragBeginEvent = onDragBeginEvent;
+            OnDragEvent = onDragEvent;
             OnDragEndEvent = onDragEndEvent;
         }
 
@@ -58,6 +64,8 @@ namespace Units {
             Vector3 hitPosition = overallArea.GetMouseHitPosition();
             originalDistance = unitPlaceArea.GetDistanceToArea(hitPosition);
             originalScale = button.transform.localScale;
+
+            OnDragBeginEvent?.Invoke(hitPosition, button.Unit);
         }
 
         private void OnEndDrag(UnitButton button)
@@ -68,10 +76,12 @@ namespace Units {
             originalDistance = float.MaxValue;
 
             Vector3 hitPosition = unitPlaceArea.GetMouseHitPosition();
-            if (hitPosition != Vector3.zero)
+            if (playerBaseArea.GetMouseHitPosition() != Vector3.zero)
             {
-                OnDragEndEvent?.Invoke(hitPosition, button.Unit);
+                hitPosition = playerBaseArea.GetClosestPositionOutside(hitPosition);
             }
+
+            OnDragEndEvent?.Invoke(hitPosition, button.Unit);
         }
 
         private void UpdateButtonCopyPosition() {
@@ -82,6 +92,13 @@ namespace Units {
                 copyButton.transform.position = mousePosition;
                 Vector3 hitPosition = overallArea.GetMouseHitPosition();
                 SetCopyParametersDependingOnDistance(hitPosition);
+
+                if (playerBaseArea.GetMouseHitPosition() != Vector3.zero)
+                {
+                    hitPosition = playerBaseArea.GetClosestPositionOutside(hitPosition);
+                }
+
+                OnDragEvent?.Invoke(hitPosition);
             }
         }
         

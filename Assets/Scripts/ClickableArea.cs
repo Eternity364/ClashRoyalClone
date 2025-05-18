@@ -1,3 +1,4 @@
+using System;
 using System.Drawing;
 using UnityEngine;
 using UnityEngine.Events;
@@ -26,13 +27,43 @@ public class ClickableArea : MonoBehaviour
         return (position - coll.ClosestPoint(position)).magnitude;
     }
 
-    public Vector3 GetMouseHitPosition() {
+    public Vector3 GetClosestPositionOutside(Vector3 position)
+    {
+        print("Center: " + coll.bounds.center);
+        print("Position: " + position);
+        Vector3 distanceFromCenter = position - coll.bounds.center;
+        Vector3 sign = new Vector3(
+            Mathf.Sign(distanceFromCenter.x),
+            0,
+            Mathf.Sign(distanceFromCenter.z)
+        );
+        Vector3 extents = coll.bounds.extents;
+        Vector3 newPosition = coll.bounds.center + new Vector3(
+            extents.x * sign.x,
+            0,
+            extents.z * sign.z
+        );
+        if (position.x - newPosition.x > position.z - newPosition.z)
+        {
+            newPosition.x = position.x;
+        }
+        else
+        {
+            newPosition.z = position.z;
+        }
+        return newPosition;
+    }
+
+    public Vector3 GetMouseHitPosition()
+    {
         ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        if (coll == null) {
+        if (coll == null)
+        {
             Debug.LogError("Collider is not set.");
             return Vector3.zero;
         }
-        if (coll.Raycast(ray, out hit, 100f)) {
+        if (coll.Raycast(ray, out hit, 100f))
+        {
             return hit.point;
         }
         return Vector3.zero;

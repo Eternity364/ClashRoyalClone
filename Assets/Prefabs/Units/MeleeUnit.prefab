@@ -4390,7 +4390,7 @@ Transform:
   m_GameObject: {fileID: 7840963495349357989}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 13.54185, y: 44.700012, z: 142.66449}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 1
   m_Children:
@@ -4716,6 +4716,14 @@ MonoBehaviour:
   bulletFactory: {fileID: 0}
   navMeshAgent: {fileID: 4222657424285839976}
   navMeshObstacle: {fileID: 7290862605227990102}
+  renderers:
+  - {fileID: 7413368972484242945}
+  - {fileID: 7413368972472882595}
+  - {fileID: 7413368972472597631}
+  - {fileID: 7413368972472605315}
+  - {fileID: 7413368972472614725}
+  - {fileID: 7413368972472895655}
+  - {fileID: 7413368972472570171}
   animator: {fileID: 7413368972480049925}
   checkForAttackTargetRate: 0.1
   swordInHand: {fileID: 3926819761456522989}

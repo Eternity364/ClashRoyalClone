@@ -24,18 +24,20 @@ namespace Units{
             base.SetAttackTarget(target);
             SheathWeapon(false, hadTargetBefore);
         }
+        
 
         protected override void ClearAttackTarget(Unit unit) {
             SheathWeapon(true);
             base.ClearAttackTarget(unit);
         }
-
-        private void SheathWeapon(bool active, bool forceStartAttacking = false) {
+        private void SheathWeapon(bool active, bool forceStartAttacking = false)
+        {
             if (isDead)
                 return;
             if (HasTarget == active)
             {
-                if (forceStartAttacking) {
+                if (forceStartAttacking)
+                {
                     StartAttacking();
                 }
                 return;
@@ -43,7 +45,7 @@ namespace Units{
             SwitchWeaponContext context = new SwitchWeaponContext();
             float callbackDelay = active ? 0.6f : 0.1f;
             context.type = active ? "Sheath" : "Unsheath";
-            context.side = active ? "None": "Right";
+            context.side = active ? "None" : "Right";
             context.sheathLocation = "Back";
             context.leftWeapon = (int)Weapon.Relax;
             context.rightWeapon = active ? (int)Weapon.Relax : (int)Weapon.RightSword;
@@ -51,13 +53,15 @@ namespace Units{
 
             seq?.Kill();
             seq = DOTween.Sequence();
-            seq.InsertCallback(callbackDelay, () => {
+            seq.InsertCallback(callbackDelay, () =>
+            {
                 swordInHand.SetActive(!active);
                 swordInTheBack.SetActive(active);
                 if (active)
                     animator.SetBool("Trigger", true);
-            });            
-            seq.InsertCallback(1, () => {
+            });
+            seq.InsertCallback(1, () =>
+            {
                 if (!active)
                     StartAttacking();
             });

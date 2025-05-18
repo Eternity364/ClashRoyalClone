@@ -12,9 +12,10 @@ namespace Units{
         [SerializeField]    
         private GameObject arrow;
 
-        public override void Init(Transform destination, BulletFactory bulletFactory, int team, Color teamColor) {
+        public override void Init(Transform destination, BulletFactory bulletFactory, int team, Color teamColor)
+        {
             base.Init(destination, bulletFactory, team, teamColor);
-            
+
             SwitchWeaponContext context = new SwitchWeaponContext();
             context.type = "Instant";
             context.side = "None";
@@ -22,7 +23,7 @@ namespace Units{
             context.leftWeapon = -1;
             context.rightWeapon = (int)Weapon.TwoHandBow;
             rPGCharacterController.StartAction("SwitchWeapon", context);
-        }   
+        } 
 
         private void TriggerBowAnimation(Action OnComplete) {
             animator.SetBool("Aiming", true);
@@ -40,12 +41,14 @@ namespace Units{
                 arrow.SetActive(false);
                 OnComplete();
             });
-        } 
+        }
 
-        protected override void PerformAttack() {
+        protected override void PerformAttack()
+        {
             base.PerformAttack();
 
-            if (attackTarget != null) {
+            if (attackTarget != null)
+            {
                 GameObject bullet = bulletFactory.Get();
                 bullet.transform.localScale = arrow.transform.lossyScale;
                 ArrowFlight arrowFlight = bullet.GetComponent<ArrowFlight>();
@@ -53,12 +56,14 @@ namespace Units{
                 float attackTargetSize = attackTarget.Radius;
                 Vector3 targetPosition = attackTarget.transform.position;
 
-                TriggerBowAnimation(() => {
+                TriggerBowAnimation(() =>
+                {
                     bullet.SetActive(true);
                     arrowFlight.FlyArrow(arrow.transform.position, targetPosition, attackTargetSize, OnBulletFlyComplete);
                 });
 
-                void OnBulletFlyComplete() {
+                void OnBulletFlyComplete()
+                {
                     bullet.SetActive(false);
                     if (attackTarget != null)
                         attackTarget.ReceiveAttack(attack);
