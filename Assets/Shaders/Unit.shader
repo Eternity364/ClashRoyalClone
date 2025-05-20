@@ -11,14 +11,15 @@ Shader "Custom/Unit"
     }
     SubShader
     {
-        Tags { "RenderType"="Transparent" "Queue"="Transparent" }
+        Tags { "RenderType"="Opaque" "Queue"="Geometry" }
         LOD 200
 
-        Blend SrcAlpha OneMinusSrcAlpha
-        ZWrite Off
+        Blend One Zero
+        ZWrite On
 
         CGPROGRAM
-        #pragma surface surf Standard fullforwardshadows alpha:fade
+        #pragma surface surf Standard fullforwardshadows
+        #pragma shader_feature _ALPHABLEND_ON
         #pragma target 3.0
 
         sampler2D _MainTex;

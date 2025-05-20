@@ -8,29 +8,42 @@ public class ClickableArea : MonoBehaviour
     private RaycastHit hit;
     private Ray ray;
     [SerializeField]
-    private Collider coll; 
+    private Collider coll;
+    [SerializeField]
+    private Renderer ren;
+
+    private Material mat;
 
 
     private UnityAction<Vector3, int> OnClickEvent;
 
-    public void SetOnClickEvent(UnityAction<Vector3, int> onClickEvent) {
-        this.OnClickEvent += onClickEvent;
+    private void Awake()
+    {
+        mat = ren.material;
     }
 
+    public void SetOnClickEvent(UnityAction<Vector3, int> onClickEvent)
+    {
+        this.OnClickEvent += onClickEvent;
+    }
     
-    public float GetDistanceToArea(Vector3 position) {
-        if (coll == null) {
+    public void SetVisible(bool visible) {
+        ren.enabled = visible;
+    }
+
+    public float GetDistanceToArea(Vector3 position)
+    {
+        if (coll == null)
+        {
             Debug.LogError("Collider is not set.");
             return float.MaxValue;
         }
-        
+
         return (position - coll.ClosestPoint(position)).magnitude;
     }
 
     public Vector3 GetClosestPositionOutside(Vector3 position)
     {
-        print("Center: " + coll.bounds.center);
-        print("Position: " + position);
         Vector3 distanceFromCenter = position - coll.bounds.center;
         Vector3 sign = new Vector3(
             Mathf.Sign(distanceFromCenter.x),
@@ -79,11 +92,17 @@ public class ClickableArea : MonoBehaviour
         {
             OnClick(1);
         }
+        
+        if(mat != null)
+        {
+            mat.SetVector("_ObjectScale", transform.lossyScale);
+        }
     }
     
 
-    private void OnClick(int button) {
-        Vector3 hitPoint = GetMouseHitPosition(); 
+    private void OnClick(int button)
+    {
+        Vector3 hitPoint = GetMouseHitPosition();
         if (hitPoint != Vector3.zero && OnClickEvent != null)
         {
             OnClickEvent.Invoke(hitPoint, button);

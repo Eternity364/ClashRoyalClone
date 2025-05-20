@@ -64,6 +64,7 @@ namespace Units {
             Vector3 hitPosition = overallArea.GetMouseHitPosition();
             originalDistance = unitPlaceArea.GetDistanceToArea(hitPosition);
             originalScale = button.transform.localScale;
+            unitPlaceArea.SetVisible(true);
 
             OnDragBeginEvent?.Invoke(hitPosition, button.Unit);
         }
@@ -74,6 +75,7 @@ namespace Units {
             copyButton = null;
             originalScale = Vector3.zero;
             originalDistance = float.MaxValue;
+            unitPlaceArea.SetVisible(false);
 
             Vector3 hitPosition = unitPlaceArea.GetMouseHitPosition();
             if (playerBaseArea.GetMouseHitPosition() != Vector3.zero)

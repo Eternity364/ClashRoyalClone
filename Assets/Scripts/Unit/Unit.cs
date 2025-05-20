@@ -11,7 +11,7 @@ using System.Collections.Generic;
 
 namespace Units{
     public abstract class Unit : MonoBehaviour
-    {    
+    {
 
         [SerializeField]
         protected int maxHealth;
@@ -29,19 +29,19 @@ namespace Units{
         protected int team;
         [SerializeField]
         protected Color damageColor;
-        [SerializeField]    
+        [SerializeField]
         protected Renderer ren;
-        [SerializeField]    
+        [SerializeField]
         protected BulletFactory bulletFactory;
-        [SerializeField]    
+        [SerializeField]
         protected NavMeshAgent navMeshAgent;
-        [SerializeField]    
+        [SerializeField]
         protected NavMeshObstacle navMeshObstacle;
-        [SerializeField]    
+        [SerializeField]
         private List<Renderer> renderers;
-        [SerializeField]    
+        [SerializeField]
         protected Animator animator;
-        [SerializeField]    
+        [SerializeField]
         protected float checkForAttackTargetRate = 0.1f;
 
         /// <summary>
@@ -91,17 +91,19 @@ namespace Units{
         protected Vector3 positionBefore;
         protected int health;
         protected bool isDead = true;
-        
+
         protected RPGCharacterController rPGCharacterController;
 
-        public void Awake() {
+        public void Awake()
+        {
             originalColor = ren.material.color;
             rPGCharacterController = GetComponent<RPGCharacterController>();
             if (rPGCharacterController != null)
                 rPGCharacterController.enabled = true;
-        }   
+        }
 
-        public virtual void Init(Transform destination, BulletFactory bulletFactory, int team, Color teamColor) {
+        public virtual void Init(Transform destination, BulletFactory bulletFactory, int team, Color teamColor)
+        {
             isDead = false;
             this.bulletFactory = bulletFactory;
             this.destination = destination;
@@ -113,14 +115,17 @@ namespace Units{
             navMeshAgent.updateRotation = true;
             navMeshAgent.SetDestination(destination.position);
             StartMovingAnimation(true);
-            
-            if (attackNoticeRange >= attackRange) {
+
+            if (attackNoticeRange >= attackRange)
+            {
                 Debug.LogError("Attack notice range must be equal or greater than attack range.");
             }
-        }   
+        }
 
-        public virtual void SetAttackTarget(Unit unit) {
-            if (attackTarget != null) {
+        public virtual void SetAttackTarget(Unit unit)
+        {
+            if (attackTarget != null)
+            {
                 attackTarget.OnDeath -= ClearAttackTarget;
                 attackTarget = null;
             }
@@ -131,24 +136,51 @@ namespace Units{
             timePassedSinceLastAttackTargetCheck = checkForAttackTargetRate;
         }
 
-        public void ReceiveAttack(int damage) {
+        public void ReceiveAttack(int damage)
+        {
             health -= damage;
             StartDamageAnimation();
             if (health <= 0)
                 PerformDeath();
         }
-        
-        public void SetTeamColor(Color color) {
+
+        public void SetTeamColor(Color color)
+        {
             ren.material.SetColor("_TeamColor", color);
         }
 
-         public void SetAlpha(float value)
+        public void SetAlpha(float value)
         {
             for (int i = 0; i < renderers.Count; i++)
             {
                 renderers[i].material.SetColor("_Color", new Color(1, 1, 1, value));
             }
-        } 
+        }
+        
+        public void SetRenderMode(bool transparent)
+        {
+            for (int i = 0; i < renderers.Count; i++)
+            {
+                if (transparent)
+                {
+                    renderers[i].material.SetOverrideTag("RenderType", "Transparent");
+                    renderers[i].material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
+                    renderers[i].material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
+                    renderers[i].material.SetInt("_ZWrite", 0);
+                    renderers[i].material.renderQueue = (int)UnityEngine.Rendering.RenderQueue.Transparent;
+                    renderers[i].material.EnableKeyword("_ALPHABLEND_ON");
+                }
+                else
+                {
+                    renderers[i].material.SetOverrideTag("RenderType", "Opaque");
+                    renderers[i].material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.One);
+                    renderers[i].material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.Zero);
+                    renderers[i].material.SetInt("_ZWrite", 1);
+                    renderers[i].material.renderQueue = (int)UnityEngine.Rendering.RenderQueue.Geometry;
+                    renderers[i].material.DisableKeyword("_ALPHABLEND_ON");
+                }
+            }
+        }
 
         protected virtual void CheckIfAttackTargetReachable()
         {
@@ -176,24 +208,27 @@ namespace Units{
                 }
             }
         }
-        
-        protected virtual void ClearAttackTarget(Unit unit) {
+
+        protected virtual void ClearAttackTarget(Unit unit)
+        {
             if (isDead)
                 return;
 
             attackTarget = null;
-            
+
             StartMovement(true, destination.position);
-            
+
             attackAllowed = false;
             attackTargetFound = false;
         }
 
-        protected void StartMovement(bool isMoving, Vector3 destPos) {
+        protected void StartMovement(bool isMoving, Vector3 destPos)
+        {
             positionBefore = transform.position;
             navMeshObstacle.enabled = !isMoving;
             navMeshAgent.enabled = isMoving;
-            if (navMeshAgent.isOnNavMesh) {
+            if (navMeshAgent.isOnNavMesh)
+            {
                 navMeshAgent.isStopped = !isMoving;
                 navMeshAgent.updateRotation = isMoving;
             }
@@ -202,10 +237,11 @@ namespace Units{
             if (isMoving)
                 StartCoroutine(nameof(SetDestination), destPos);
         }
-        
+
         /* Because after switching from NavMeshObstacle to NavMeshAgent back again, the position of the unit slightly changes,
             so we need to set it to one from the frame before (on current frame it's the same for some reason).*/
-        protected IEnumerator SetDestination(Vector3 destPos) {
+        protected IEnumerator SetDestination(Vector3 destPos)
+        {
             yield return new WaitForNextFrameUnit();
             if (isDead)
                 yield break;
@@ -214,21 +250,24 @@ namespace Units{
                 navMeshAgent.SetDestination(destPos);
         }
 
-        protected void StartMovingAnimation(bool isMoving) {
+        protected void StartMovingAnimation(bool isMoving)
+        {
             animator.SetBool("Moving", isMoving);
             animator.SetFloat("Velocity Z", isMoving ? 1 : 0);
         }
 
-        protected void PerformDeath() {
+        protected void PerformDeath()
+        {
             if (isDead)
                 return;
-            
+
             navMeshAgent.enabled = false;
             navMeshObstacle.enabled = false;
             attackAllowed = false;
             attackTarget = null;
 
-            if (rotationAnimation != null) {
+            if (rotationAnimation != null)
+            {
                 rotationAnimation.Kill(false);
                 rotationAnimation = null;
             }
@@ -239,16 +278,19 @@ namespace Units{
 
             DG.Tweening.Sequence deathSeq = DOTween.Sequence();
             deathSeq.Insert(1f, transform.DOBlendableMoveBy(new Vector3(0, -2, 0), 2f));
-            deathSeq.InsertCallback(3f, () => {
+            deathSeq.InsertCallback(3f, () =>
+            {
                 rPGCharacterController.EndAction("Death");
                 ObjectPool.Instance.ReturnObject(gameObject);
             });
-            
+
             isDead = true;
         }
 
-        private void StartDamageAnimation() {
-            if (damageAnimation != null) {
+        private void StartDamageAnimation()
+        {
+            if (damageAnimation != null)
+            {
                 damageAnimation.Kill();
             }
             damageAnimation = DOTween.Sequence();
@@ -256,7 +298,8 @@ namespace Units{
             damageAnimation.Append(ren.material.DOColor(originalColor, 0.3f));
         }
 
-        protected virtual void PerformAttack() {
+        protected virtual void PerformAttack()
+        {
             if (isDead)
                 return;
         }
@@ -287,20 +330,24 @@ namespace Units{
                 }
             }
         }
-    
-        protected virtual void OnAttackRotationComplete() {
+
+        protected virtual void OnAttackRotationComplete()
+        {
             StartAttacking();
         }
 
-        protected virtual void StartAttacking() {
+        protected virtual void StartAttacking()
+        {
             if (attackAllowed)
                 return;
             attackAllowed = true;
             timePassedSinceLastAttack = attackRate;
         }
 
-        private void RotateTowards(Transform target, TweenCallback OnComplete = null) {
-            if (rotationAnimation != null) {
+        private void RotateTowards(Transform target, TweenCallback OnComplete = null)
+        {
+            if (rotationAnimation != null)
+            {
                 rotationAnimation.Kill(false);
                 rotationAnimation = null;
             }
