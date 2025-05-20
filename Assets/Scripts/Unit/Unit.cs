@@ -156,31 +156,6 @@ namespace Units{
                 renderers[i].material.SetColor("_Color", new Color(1, 1, 1, value));
             }
         }
-        
-        public void SetRenderMode(bool transparent)
-        {
-            for (int i = 0; i < renderers.Count; i++)
-            {
-                if (transparent)
-                {
-                    renderers[i].material.SetOverrideTag("RenderType", "Transparent");
-                    renderers[i].material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
-                    renderers[i].material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
-                    renderers[i].material.SetInt("_ZWrite", 0);
-                    renderers[i].material.renderQueue = (int)UnityEngine.Rendering.RenderQueue.Transparent;
-                    renderers[i].material.EnableKeyword("_ALPHABLEND_ON");
-                }
-                else
-                {
-                    renderers[i].material.SetOverrideTag("RenderType", "Opaque");
-                    renderers[i].material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.One);
-                    renderers[i].material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.Zero);
-                    renderers[i].material.SetInt("_ZWrite", 1);
-                    renderers[i].material.renderQueue = (int)UnityEngine.Rendering.RenderQueue.Geometry;
-                    renderers[i].material.DisableKeyword("_ALPHABLEND_ON");
-                }
-            }
-        }
 
         protected virtual void CheckIfAttackTargetReachable()
         {

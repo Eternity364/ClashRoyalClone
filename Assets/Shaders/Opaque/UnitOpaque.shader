@@ -1,4 +1,4 @@
-Shader "Custom/Unit"
+Shader "Custom/UnitOpaque"
 {
     Properties
     {

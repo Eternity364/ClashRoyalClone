@@ -23,7 +23,7 @@ GameObject:
   - component: {fileID: 3107644234196968788}
   - component: {fileID: 6302694674362624318}
   m_Layer: 10
-  m_Name: RangedUnit
+  m_Name: Ranged
   m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

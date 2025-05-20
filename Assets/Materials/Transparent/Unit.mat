@@ -20,8 +20,8 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: RangedEnemy
-  m_Shader: {fileID: 4800000, guid: d0573bc617f97a8418fb67bd50213f20, type: 3}
+  m_Name: Unit
+  m_Shader: {fileID: 4800000, guid: 5ed9340be523f304eb909ce2d5986026, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []

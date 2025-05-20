@@ -30,11 +30,8 @@ namespace Units{
         public void Spawn(Vector3 position, Unit unitType)
         {
             Unit unit = CreateUnit(position, unitType).GetComponent<Unit>();
-            unit.SetRenderMode(false);
             unit.Init(target, bulletFactory, team, teamColor);
             targetAcquiring.AddUnit(unit);
-            unitCopy.GetComponent<Unit>().SetRenderMode(false);
-            unitCopy.GetComponent<Unit>().SetAlpha(1f);
             ObjectPool.Instance.ReturnObject(unitCopy);
             unitCopy = null;
         }
@@ -50,15 +47,19 @@ namespace Units{
 
         private void CreateUnitCopy(Vector3 position, Unit unitType)
         {
-            unitCopy = CreateUnit(position, unitType);
+            unitCopy = CreateUnit(position, unitType, true);
             Unit unit = unitCopy.GetComponent<Unit>();
-            unit.SetRenderMode(true);
             unit.SetAlpha(0.5f);
         }
 
-        private GameObject CreateUnit(Vector3 position, Unit unitType)
+        private GameObject CreateUnit(Vector3 position, Unit unitType, bool isCopy = false)
         {
-            GameObject unit = ObjectPool.Instance.GetObject(unitType.gameObject);
+            GameObject prefab = unitType.gameObject;
+            if (isCopy)
+            {
+                prefab = UnitsList.Instance.GetTransparent(unitType);
+            }
+            GameObject unit = ObjectPool.Instance.GetObject(prefab);
             unit.transform.SetParent(parent);
             unit.gameObject.SetActive(true);
             position.y = 0;
