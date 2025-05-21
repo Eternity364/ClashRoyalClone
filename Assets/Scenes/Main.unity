@@ -7426,6 +7426,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   coll: {fileID: 1105211809}
   ren: {fileID: 0}
+  closestPointOffset: 3
 --- !u!64 &1105211809
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -7959,7 +7960,7 @@ Material:
     - _GlossMapScale: 0
     - _Glossiness: 0
     - _GlossyReflections: 0
-    - _InsideAlpha: 0.364
+    - _InsideAlpha: 0.315
     - _Metallic: 0
     - _OcclusionStrength: 1
     - _Parallax: 0.005
@@ -7975,7 +7976,7 @@ Material:
     - _ZWrite: 1
     m_Colors:
     - _BaseColor: {r: 1, g: 1, b: 1, a: 0}
-    - _Color: {r: 0.9056604, g: 0.123033054, b: 0.123033054, a: 1}
+    - _Color: {r: 0.9056604, g: 0.12303286, b: 0.12303286, a: 0}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _ObjectScale: {r: 4.67, g: 3.95, b: 2.94, a: 0}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
@@ -9435,7 +9436,7 @@ MeshRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2079601234}
-  m_Enabled: 0
+  m_Enabled: 1
   m_CastShadows: 0
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
@@ -9507,6 +9508,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   coll: {fileID: 2079601235}
   ren: {fileID: 2079601236}
+  closestPointOffset: 3
 --- !u!1 &2114211192
 GameObject:
   m_ObjectHideFlags: 0

@@ -24,14 +24,23 @@ namespace Units{
 
         void Start()
         {
-            panel.SetOnDragEvents(CreateUnitCopy, Spawn, UpdateUnitCopyPosition);
+            panel.SetOnDragEvents(CreateUnitCopy, TrySpawn, UpdateUnitCopyPosition);
         }
 
-        public void Spawn(Vector3 position, Unit unitType)
+        public void TrySpawn(Vector3 position, Unit unitType, bool spawn)
         {
-            Unit unit = CreateUnit(position, unitType).GetComponent<Unit>();
-            unit.Init(target, bulletFactory, team, teamColor);
-            targetAcquiring.AddUnit(unit);
+            if (spawn)
+            {
+                Unit unit = CreateUnit(position, unitType).GetComponent<Unit>();
+                unit.Init(target, bulletFactory, team, teamColor);
+                targetAcquiring.AddUnit(unit);
+            }
+
+            if (unitCopy == null)
+            {
+                return;
+            }
+
             ObjectPool.Instance.ReturnObject(unitCopy);
             unitCopy = null;
         }
@@ -47,6 +56,10 @@ namespace Units{
 
         private void CreateUnitCopy(Vector3 position, Unit unitType)
         {
+            if (unitCopy != null)
+            {
+                return;
+            }
             unitCopy = CreateUnit(position, unitType, true);
             Unit unit = unitCopy.GetComponent<Unit>();
             unit.SetAlpha(0.5f);

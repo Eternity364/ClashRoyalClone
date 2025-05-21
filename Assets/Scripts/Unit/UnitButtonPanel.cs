@@ -20,14 +20,16 @@ namespace Units {
         [SerializeField]
         float minCopyScale = 0.5f;
 
-        private UnityAction<Vector3, Unit> OnDragEndEvent;
-        private UnityAction<Vector3, Unit> OnDragBeginEvent;
+        private UnityAction<Vector3, Unit, bool> OnDragEndEvent;
+        private UnityAction<Vector3, Unit> OnEnteredUnitPlaceAreaEvent;
         private UnityAction<Vector3> OnDragEvent;
 
         private UnitButton[] buttons;
         private UnitButton copyButton;
         private float originalDistance;
         private Vector3 originalScale;
+        private Vector3 lastHitPosition;
+        private bool enteredUnitPlaceArea = false;
         
 
         
@@ -47,9 +49,9 @@ namespace Units {
             }
         }
 
-        public void SetOnDragEvents(UnityAction<Vector3, Unit> onDragBeginEvent, UnityAction<Vector3, Unit> onDragEndEvent, UnityAction<Vector3> onDragEvent)
+        public void SetOnDragEvents(UnityAction<Vector3, Unit> onEnteredUnitPlaceAreaEvent, UnityAction<Vector3, Unit, bool> onDragEndEvent, UnityAction<Vector3> onDragEvent)
         {
-            OnDragBeginEvent = onDragBeginEvent;
+            OnEnteredUnitPlaceAreaEvent = onEnteredUnitPlaceAreaEvent;
             OnDragEvent = onDragEvent;
             OnDragEndEvent = onDragEndEvent;
         }
@@ -65,8 +67,6 @@ namespace Units {
             originalDistance = unitPlaceArea.GetDistanceToArea(hitPosition);
             originalScale = button.transform.localScale;
             unitPlaceArea.SetVisible(true);
-
-            OnDragBeginEvent?.Invoke(hitPosition, button.Unit);
         }
 
         private void OnEndDrag(UnitButton button)
@@ -77,13 +77,10 @@ namespace Units {
             originalDistance = float.MaxValue;
             unitPlaceArea.SetVisible(false);
 
-            Vector3 hitPosition = unitPlaceArea.GetMouseHitPosition();
-            if (playerBaseArea.GetMouseHitPosition() != Vector3.zero)
-            {
-                hitPosition = playerBaseArea.GetClosestPositionOutside(hitPosition);
-            }
+            OnDragEndEvent?.Invoke(lastHitPosition, button.Unit, enteredUnitPlaceArea);
 
-            OnDragEndEvent?.Invoke(hitPosition, button.Unit);
+            enteredUnitPlaceArea = false;
+            lastHitPosition = Vector3.zero;
         }
 
         private void UpdateButtonCopyPosition() {
@@ -92,26 +89,50 @@ namespace Units {
                 Vector3 mousePosition = Input.mousePosition;
                 mousePosition.z = 0;
                 copyButton.transform.position = mousePosition;
+
                 Vector3 hitPosition = overallArea.GetMouseHitPosition();
-                SetCopyParametersDependingOnDistance(hitPosition);
-
-                if (playerBaseArea.GetMouseHitPosition() != Vector3.zero)
+                // We can place unit on board only if we have entered UnitPlaceArea at least once
+                if (unitPlaceArea.IsMouseOver())
                 {
-                    hitPosition = playerBaseArea.GetClosestPositionOutside(hitPosition);
+                    enteredUnitPlaceArea = true;
+                    OnEnteredUnitPlaceAreaEvent?.Invoke(hitPosition, copyButton.Unit);
                 }
-
-                OnDragEvent?.Invoke(hitPosition);
+                else if (!unitPlaceArea.IsMousePositionAboveCenter(hitPosition))
+                {
+                    enteredUnitPlaceArea = false;
+                }
+                SetCopyParametersDependingOnDistance(hitPosition);
+                lastHitPosition = AdjustHitPosition(hitPosition);
+                OnDragEvent?.Invoke(lastHitPosition);
             }
+        }
+        
+        private Vector3 AdjustHitPosition(Vector3 hitPosition)
+        {
+            if (playerBaseArea.GetMouseHitPosition() != Vector3.zero)
+            {
+                hitPosition = playerBaseArea.GetClosestPositionOutside(hitPosition);
+            }
+
+            if (!unitPlaceArea.IsMouseOver())
+            {
+                hitPosition = unitPlaceArea.GetClosestPoint(hitPosition);
+            }
+
+            return hitPosition;
         }
         
         private void SetCopyParametersDependingOnDistance(Vector3 hitPosition)
         {
             if (copyButton != null)
             {
-                float t = Mathf.Clamp01(1f - (unitPlaceArea.GetDistanceToArea(hitPosition) / originalDistance));
+                float alpha = unitPlaceArea.GetDistanceToArea(hitPosition) / originalDistance;
+                float t = Mathf.Clamp01(1f - alpha);
+                if (unitPlaceArea.IsMousePositionAboveCenter(hitPosition))
+                    alpha = 0;
                 float scale = Mathf.Lerp(1f, minCopyScale, t);
                 copyButton.transform.localScale = originalScale * scale;
-                copyButton.SetAlpha(Mathf.Clamp01(unitPlaceArea.GetDistanceToArea(hitPosition) / originalDistance));
+                copyButton.SetAlpha(Mathf.Clamp01(alpha));
             }
         }
     }

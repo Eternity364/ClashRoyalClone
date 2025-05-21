@@ -1,5 +1,6 @@
 using System;
 using System.Drawing;
+using DG.Tweening;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -11,11 +12,25 @@ public class ClickableArea : MonoBehaviour
     private Collider coll;
     [SerializeField]
     private Renderer ren;
+    [SerializeField]
+    private float closestPointOffset = 3f;
 
     private Material mat;
+    private Sequence appearAnimation;
 
 
     private UnityAction<Vector3, int> OnClickEvent;
+
+    public bool IsMouseOver()
+    {
+        ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        return coll.Raycast(ray, out hit, 100f);
+    }
+
+    public bool IsMousePositionAboveCenter(Vector3 mousePosition)
+    {
+        return mousePosition.z > coll.bounds.center.z;
+    }
 
     private void Awake()
     {
@@ -26,9 +41,15 @@ public class ClickableArea : MonoBehaviour
     {
         this.OnClickEvent += onClickEvent;
     }
-    
-    public void SetVisible(bool visible) {
-        ren.enabled = visible;
+
+    public void SetVisible(bool visible)
+    {
+        if (appearAnimation != null)
+        {
+            appearAnimation.Kill();
+        }
+        appearAnimation = DOTween.Sequence();
+        appearAnimation.Append(ren.material.DOFade(visible ? 1 : 0, 0.5f));
     }
 
     public float GetDistanceToArea(Vector3 position)
@@ -40,6 +61,13 @@ public class ClickableArea : MonoBehaviour
         }
 
         return (position - coll.ClosestPoint(position)).magnitude;
+    }
+
+    public Vector3 GetClosestPoint(Vector3 position)
+    {
+        Vector3 closestPoint = coll.ClosestPoint(position);
+        Vector3 returnValue = closestPoint + (coll.bounds.center - closestPoint).normalized * closestPointOffset;
+        return returnValue;
     }
 
     public Vector3 GetClosestPositionOutside(Vector3 position)

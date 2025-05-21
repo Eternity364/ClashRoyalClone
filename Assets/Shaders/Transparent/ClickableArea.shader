@@ -79,7 +79,7 @@ Shader "Custom/ClickableArea"
             float fillAlpha = _InsideAlpha;   // Less opaque inside
 
             // If edgeMask > 0, use edgeAlpha; else if fillMask > 0, use fillAlpha; else 0
-            float alpha = lerp(fillAlpha, edgeAlpha, edgeMask) * fillMask;
+            float alpha = lerp(fillAlpha, edgeAlpha, edgeMask) * fillMask * _Color.a;
 
             o.Albedo = c.rgb;
             o.Metallic = _Metallic;
