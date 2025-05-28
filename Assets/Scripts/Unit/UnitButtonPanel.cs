@@ -18,6 +18,8 @@ namespace Units {
         [SerializeField]
         ClickableArea playerBaseArea;
         [SerializeField]
+        ClickableArea panelArea;
+        [SerializeField]
         float minCopyScale = 0.5f;
 
         private UnityAction<Vector3, Unit, bool> OnDragEndEvent;
@@ -59,8 +61,7 @@ namespace Units {
         private void OnBeginDrag(UnitButton button)
         {
             copyButton = Instantiate(button, parentForCopy);
-            button.transform.GetLocalPositionAndRotation(out var localPos, out var localRot);
-            copyButton.transform.SetLocalPositionAndRotation(localPos, localRot);
+
             copyButton.transform.localScale = button.transform.localScale;
             copyButton.SetValue(button.Unit);
             Vector3 hitPosition = overallArea.GetMouseHitPosition();
@@ -86,11 +87,9 @@ namespace Units {
         private void UpdateButtonCopyPosition() {
             if (copyButton != null)
             {
-                Vector3 mousePosition = Input.mousePosition;
-                mousePosition.z = 0;
-                copyButton.transform.position = mousePosition;
-
                 Vector3 hitPosition = overallArea.GetMouseHitPosition();
+                copyButton.transform.position = panelArea.GetMouseHitPosition();
+
                 // We can place unit on board only if we have entered UnitPlaceArea at least once
                 if (unitPlaceArea.IsMouseOver())
                 {
