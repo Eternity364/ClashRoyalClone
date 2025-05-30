@@ -32,6 +32,7 @@ public class ProgressBar : MonoBehaviour
     private float imageWidth;
     private List<GameObject> segments = new List<GameObject>();
     private List<GameObject> divisors = new List<GameObject>();
+    private List<bool> segmentsState = new List<bool>();
 
     void Awake()
     {
@@ -57,10 +58,10 @@ public class ProgressBar : MonoBehaviour
         {
             float value = (i + 1) * 100f / segmentsCount;
             bool isActive = value <= fillAmount;
-            if (!segments[i].activeSelf && isActive)
+            if (!segmentsState[i] && isActive)
                 StartSegmentAppearAnimation(segments[i], i);
-            else if (segments[i].activeSelf && !isActive)
-                StartSegmentDisappearAnimation(segments[i]);
+            else if (segmentsState[i] && !isActive)
+                StartSegmentDisappearAnimation(segments[i], i);
             if (i < segmentsCount - 1)
             {
                 divisors[i].SetActive(isActive);
@@ -70,6 +71,8 @@ public class ProgressBar : MonoBehaviour
 
     private void StartSegmentAppearAnimation(GameObject segment, int index)
     {
+        segmentsState[index] = true;
+
         float x = imageWidth * (1f / segmentsCount * index - 1f / 2f + 1f / segmentsCount / 2f);
         float segmentWidth = imageWidth / segmentsCount;
         Vector3 targetPosition = new Vector3(x, segment.transform.localPosition.y, segment.transform.localPosition.z);
@@ -93,8 +96,10 @@ public class ProgressBar : MonoBehaviour
         );
     }
 
-    private void StartSegmentDisappearAnimation(GameObject segment)
+    private void StartSegmentDisappearAnimation(GameObject segment, int index)
     {
+        segmentsState[index] = false;
+
         Material segmentMaterial = segment.GetComponent<Image>().material;
         void UpdateSegmentMaterial(float brightness)
         {
@@ -132,6 +137,7 @@ public class ProgressBar : MonoBehaviour
             segmentMaterial.color = color;
             segment.SetActive(true);
             segments.Insert(0, segment);
+            segmentsState.Insert(0, false);
         }
 
         for (int i = 0; i < segmentsCount; i++)
