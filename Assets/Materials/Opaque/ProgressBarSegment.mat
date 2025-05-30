@@ -80,7 +80,7 @@ Material:
     - _UVSec: 0
     - _ZWrite: 1
     m_Colors:
-    - _Color: {r: 0.9607843, g: 0.34117648, b: 0.7921569, a: 1}
+    - _Color: {r: 0.96078426, g: 0.34117645, b: 0.7921569, a: 1}
     - _EmissionColor: {r: 1, g: 1, b: 1, a: 1}
     - _TeamColor: {r: 1, g: 1, b: 1, a: 1}
     - _TeamColorBase: {r: 1, g: 1, b: 1, a: 1}

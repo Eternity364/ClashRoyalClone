@@ -4,9 +4,8 @@ Shader "Custom/UIProgressBarSegment"
     {
         _Color ("Color", Color) = (1,1,1,1)
         _MainTex ("Sprite Texture", 2D) = "white" {}
-        _Brightness ("Brightness", Range(0,1)) = 0
         _EmissionColor ("Emission Color", Color) = (0,0,0,0)
-        _EmissionStrength ("Emission Strength", Range(0,5)) = 1
+        _EmissionStrength ("Emission Strength", Range(0,1)) = 1
     }
     SubShader
     {
@@ -55,7 +54,6 @@ Shader "Custom/UIProgressBarSegment"
             sampler2D _MainTex;
             float4 _MainTex_ST;
             fixed4 _Color;
-            float _Brightness;
             fixed4 _EmissionColor;
             float _EmissionStrength;
 
@@ -70,8 +68,9 @@ Shader "Custom/UIProgressBarSegment"
             fixed4 frag(v2f i) : SV_Target
             {
                 fixed4 c = tex2D(_MainTex, i.uv) * _Color;
-                c.rgb = lerp(c.rgb, 1, _Brightness);
+                c.rgb = c.rgb;
                 c.rgb += _EmissionColor.rgb * _EmissionStrength;
+                c.a = c.a * _Color.a;
                 return c;
             }
             ENDCG
