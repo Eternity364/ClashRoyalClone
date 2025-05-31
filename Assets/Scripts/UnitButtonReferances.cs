@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace Units{
-    [CreateAssetMenu(fileName = "UnitButtonReferences", menuName = "ScriptableObjects/UnitButtonReferences", order = 1)]
+    [CreateAssetMenu(fileName = "UnitButtonReferences", menuName = "Units/UnitButtonReferences", order = 1)]
     public class UnitButtonReferances : ScriptableObject
     {
         [SerializeField]

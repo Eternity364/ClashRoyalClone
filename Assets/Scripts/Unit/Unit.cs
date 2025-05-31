@@ -12,21 +12,8 @@ using System.Collections.Generic;
 namespace Units{
     public abstract class Unit : MonoBehaviour
     {
-
         [SerializeField]
-        protected int maxHealth;
-        [SerializeField]
-        protected int attack;
-        [SerializeField]
-        [Tooltip("On this range unit starts actually attacking enemy.")]
-        protected float attackRange;
-        [SerializeField]
-        [Tooltip("Range, on which unit spots an enemy and starts walking to it. Must be equal or greater than attack range.")]
-        protected float attackNoticeRange;
-        [SerializeField]
-        protected float attackRate;
-        [SerializeField]
-        protected int team;
+        protected UnitData data;
         [SerializeField]
         protected Color damageColor;
         [SerializeField]
@@ -47,7 +34,7 @@ namespace Units{
         /// <summary>
         /// Range, on which unit spots an enemy and starts walking to it. Must be equal or greater than attack range.
         /// </summary>
-        public float AttackNoticeRange => attackNoticeRange;
+        public float AttackNoticeRange => data.AttackNoticeRange;
         public int Team => team;
         public bool IsDead
         {
@@ -77,10 +64,18 @@ namespace Units{
                 return navMeshAgent.radius;
             }
         }
+        public UnitData Data
+        {
+            get
+            {
+                return data;
+            }
+        }
         public UnityAction<Unit> OnDeath;
 
         protected Transform destination;
         protected Unit attackTarget;
+        protected int team;
         protected float timePassedSinceLastAttack = 0;
         protected float timePassedSinceLastAttackTargetCheck = 0;
         protected Color originalColor;
@@ -108,7 +103,7 @@ namespace Units{
             this.bulletFactory = bulletFactory;
             this.destination = destination;
             this.team = team;
-            health = maxHealth;
+            health = data.MaxHealth;
             SetTeamColor(teamColor);
 
             navMeshAgent.enabled = true;
@@ -116,7 +111,7 @@ namespace Units{
             navMeshAgent.SetDestination(destination.position);
             StartMovingAnimation(true);
 
-            if (attackNoticeRange >= attackRange)
+            if (data.AttackNoticeRange >= data.AttackRange)
             {
                 Debug.LogError("Attack notice range must be equal or greater than attack range.");
             }
@@ -162,15 +157,15 @@ namespace Units{
             if (navMeshObstacle.isActiveAndEnabled || navMeshAgent.isOnNavMesh)
             {
                 float distance = (transform.position - attackTarget.transform.position).magnitude - attackTarget.Radius;
-                if (distance > attackNoticeRange)
+                if (distance > data.AttackNoticeRange)
                 {
                     attackTargetFound = false;
                     attackTarget.OnDeath -= ClearAttackTarget;
                     ClearAttackTarget(attackTarget);
                 }
-                else if (distance <= attackNoticeRange)
+                else if (distance <= data.AttackNoticeRange)
                 {
-                    if (distance <= attackRange)
+                    if (distance <= data.AttackRange)
                     {
                         attackTargetFound = false;
                         StartMovement(false, Vector3.zero);
@@ -297,9 +292,9 @@ namespace Units{
                 else if (attackAllowed)
                 {
                     timePassedSinceLastAttack += Time.deltaTime;
-                    if (timePassedSinceLastAttack >= attackRate)
+                    if (timePassedSinceLastAttack >= data.AttackRate)
                     {
-                        timePassedSinceLastAttack = -attackRate;
+                        timePassedSinceLastAttack = -data.AttackRate;
                         PerformAttack();
                     }
                 }
@@ -316,7 +311,7 @@ namespace Units{
             if (attackAllowed)
                 return;
             attackAllowed = true;
-            timePassedSinceLastAttack = attackRate;
+            timePassedSinceLastAttack = data.AttackRate;
         }
 
         private void RotateTowards(Transform target, TweenCallback OnComplete = null)

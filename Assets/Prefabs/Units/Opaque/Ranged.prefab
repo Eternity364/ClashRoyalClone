@@ -353,12 +353,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 08bb17868fffa144c963002bf0db3e44, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 80
-  attack: 20
-  attackRange: 20
-  attackNoticeRange: 20
-  attackRate: 2
-  team: 0
+  data: {fileID: 11400000, guid: 64114ec8fa656e54e9fbc7079f42be35, type: 2}
   damageColor: {r: 1, g: 0, b: 0, a: 0}
   ren: {fileID: 4893337981645129531}
   bulletFactory: {fileID: 0}

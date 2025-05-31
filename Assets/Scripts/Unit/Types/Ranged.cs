@@ -66,7 +66,7 @@ namespace Units{
                 {
                     bullet.SetActive(false);
                     if (attackTarget != null)
-                        attackTarget.ReceiveAttack(attack);
+                        attackTarget.ReceiveAttack(data.Attack);
                 }
             }
         }

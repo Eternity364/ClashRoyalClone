@@ -34,8 +34,9 @@ public class ProgressBar : MonoBehaviour
     private List<GameObject> divisors = new List<GameObject>();
     private List<bool> segmentsState = new List<bool>();
 
-    void Awake()
+    public void Init(int segmentsCount)
     {
+        this.segmentsCount = segmentsCount;
         imageWidth = fillImage.rectTransform.sizeDelta.x;
         CreateSegments();
         SetFillAmount(fillAmount);
@@ -43,16 +44,13 @@ public class ProgressBar : MonoBehaviour
 
     public void SetFillAmount(float value)
     {
-        if (value < 0)
-            value = 0;
-        else if (value > 100)
-            value = 100;
+        value = Mathf.Clamp(value, 0, 100);
         fillAmount = value;
         fillTransform.localPosition = new Vector3(-(imageWidth * (100 - fillAmount)) / 100f, fillTransform.localPosition.y, fillTransform.localPosition.z);
-        SetSegments();
+        UpdateSegments();
     }
 
-    private void SetSegments()
+    private void UpdateSegments()
     {
         for (int i = 0; i < segmentsCount; i++)
         {

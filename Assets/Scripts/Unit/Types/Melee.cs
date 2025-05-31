@@ -81,7 +81,7 @@ namespace Units{
                 }
                 seq = DOTween.Sequence();
                 seq.InsertCallback(0.5f, () => {
-                    attackTarget.ReceiveAttack(attack);
+                    attackTarget.ReceiveAttack(data.Attack);
                 });
             }
         }

@@ -63,7 +63,7 @@ namespace Units {
             copyButton = Instantiate(button, parentForCopy);
 
             copyButton.transform.localScale = button.transform.localScale;
-            copyButton.SetValue(button.Unit);
+            copyButton.SetValue(button.Unit, true);
             Vector3 hitPosition = overallArea.GetMouseHitPosition();
             originalDistance = unitPlaceArea.GetDistanceToArea(hitPosition);
             originalScale = button.transform.localScale;

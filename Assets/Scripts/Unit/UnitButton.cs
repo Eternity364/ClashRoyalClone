@@ -1,4 +1,5 @@
 using System;
+using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -12,12 +13,16 @@ namespace Units{
         private EventTrigger eventTrigger;
         [SerializeField]
         private Image image;
+        [SerializeField]
+        private TextMeshProUGUI costText;
+        [SerializeField]
+        private GameObject elixirIcon;
 
         public Unit Unit => unit;
 
         private Unit unit;
 
-        public void SetValue(Unit unit)
+        public void SetValue(Unit unit, bool isCopy = false)
         {
             this.unit = unit;
             if (unitButtonReferances.Data.TryGetValue(unit, out Texture texture))
@@ -27,20 +32,21 @@ namespace Units{
                 {
                     image.sprite = Sprite.Create((Texture2D)texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f));
                 }
+                costText.text = unit.Data.Cost.ToString();
             }
             else
             {
                 Debug.LogError("Unit not found in UnitButtonReferences.");
             }
+            elixirIcon.SetActive(!isCopy);
         }
-        
+
         public void SetAlpha(float alpha)
         {
             Color color = image.color;
             color.a = alpha;
             image.color = color;
         }
-
         
         public void SetBeginDrag(Action OnBeginDrag)
         {
