@@ -34,6 +34,7 @@ namespace Units{
                 Unit unit = CreateUnit(position, unitType).GetComponent<Unit>();
                 unit.Init(target, bulletFactory, team, teamColor);
                 targetAcquiring.AddUnit(unit);
+                ElixirManager.Instance.ChangeValue(-unitType.Data.Cost);
             }
 
             if (unitCopy == null)

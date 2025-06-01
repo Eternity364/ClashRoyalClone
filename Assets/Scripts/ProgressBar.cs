@@ -18,9 +18,7 @@ public class ProgressBar : MonoBehaviour
     [SerializeField]
     private GameObject divisorPrefab;
     [SerializeField]
-    private int segmentsCount = 10;
     [Range(0, 1)]
-    [SerializeField]
     private float segmentBrightness1 = 0.4f;
     [Range(0, 1)]
     [SerializeField]
@@ -30,6 +28,7 @@ public class ProgressBar : MonoBehaviour
     private float fillAmount = 0.0f;
 
     private float imageWidth;
+    private int segmentsCount;
     private List<GameObject> segments = new List<GameObject>();
     private List<GameObject> divisors = new List<GameObject>();
     private List<bool> segmentsState = new List<bool>();
@@ -150,10 +149,5 @@ public class ProgressBar : MonoBehaviour
                 divisors.Add(divisor);
             }
         }
-    }
-
-    private void OnValidate()
-    {
-        SetFillAmount(fillAmount);
     }
 }

@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.UI;
 
 namespace Units {
     public class UnitButtonPanel : MonoBehaviour
@@ -32,9 +33,9 @@ namespace Units {
         private Vector3 originalScale;
         private Vector3 lastHitPosition;
         private bool enteredUnitPlaceArea = false;
-        
 
-        
+
+
         void Start()
         {
             buttons = GetComponentsInChildren<UnitButton>();
@@ -49,6 +50,7 @@ namespace Units {
                     buttons[i].SetOnDrag(UpdateButtonCopyPosition);
                 }
             }
+            ElixirManager.Instance.AddOnValueChangedListener(UpdateButtonsStatus);
         }
 
         public void SetOnDragEvents(UnityAction<Vector3, Unit> onEnteredUnitPlaceAreaEvent, UnityAction<Vector3, Unit, bool> onDragEndEvent, UnityAction<Vector3> onDragEvent)
@@ -58,8 +60,25 @@ namespace Units {
             OnDragEndEvent = onDragEndEvent;
         }
 
+        private void UpdateButtonsStatus(float elixirValue)
+        {
+            for (int i = 0; i < buttons.Length; i++)
+            {
+                buttons[i].SetCostProgress(elixirValue / units[i].Data.Cost);
+                if (i < units.Length)
+                {
+                    buttons[i].GetComponent<Button>().interactable = units[i].Data.Cost <= elixirValue;
+                }
+            }
+        }
+
         private void OnBeginDrag(UnitButton button)
         {
+            if (!button.GetComponent<Button>().interactable)
+            {
+                return;
+            }
+
             copyButton = Instantiate(button, parentForCopy);
 
             copyButton.transform.localScale = button.transform.localScale;
@@ -72,6 +91,11 @@ namespace Units {
 
         private void OnEndDrag(UnitButton button)
         {
+            if (copyButton == null)
+            {
+                return;
+            }
+
             Destroy(copyButton.gameObject);
             copyButton = null;
             originalScale = Vector3.zero;

@@ -1,4 +1,5 @@
 using System;
+using DG.Tweening;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -21,6 +22,14 @@ namespace Units{
         public Unit Unit => unit;
 
         private Unit unit;
+        private Material material;
+        private bool canAfford = false;
+        private Vector3 originalScale;
+
+        void Awake()
+        {
+            originalScale = transform.localScale;
+        }
 
         public void SetValue(Unit unit, bool isCopy = false)
         {
@@ -28,9 +37,13 @@ namespace Units{
             if (unitButtonReferances.Data.TryGetValue(unit, out Texture texture))
             {
                 Image image = GetComponent<Image>();
+                image.material = new Material(image.material);
+                material = image.material;
                 if (image != null)
                 {
-                    image.sprite = Sprite.Create((Texture2D)texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f));
+                    Sprite sprite = Sprite.Create((Texture2D)texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f));
+                    image.sprite = sprite;
+                    image.material.mainTexture = sprite.texture;
                 }
                 costText.text = unit.Data.Cost.ToString();
             }
@@ -43,9 +56,24 @@ namespace Units{
 
         public void SetAlpha(float alpha)
         {
-            Color color = image.color;
+            Color color = material.color;
             color.a = alpha;
-            image.color = color;
+            material.color = color;
+        }
+
+        public void SetCostProgress(float value)
+        {
+            value = Mathf.Clamp01(value);
+            material.SetFloat("_Progress", value);
+            if (!canAfford && value == 1)
+            {
+                canAfford = true;
+                Sequence seq = DOTween.Sequence();
+                seq.Append(transform.DOScale(originalScale * 1.05f, 0.1f).SetEase(Ease.InSine))
+                   .Append(transform.DOScale(originalScale, 0.1f).SetEase(Ease.OutSine));
+            }
+            if (value < 1)
+                canAfford = false;
         }
         
         public void SetBeginDrag(Action OnBeginDrag)

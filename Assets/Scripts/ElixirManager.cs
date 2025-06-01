@@ -1,5 +1,6 @@
 using TMPro;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class ElixirManager : MonoBehaviour
 {
@@ -15,12 +16,29 @@ public class ElixirManager : MonoBehaviour
     private int maxValue = 10;
     [SerializeField]
     private float changeSpeed = 1.0f;
-
+    [SerializeField]
     private float value = 0f;
+    
+    private UnityAction<float> onValueChanged;
 
     public int Value
     {
         get { return (int)value; }
+    }
+
+    public void AddOnValueChangedListener(UnityAction<float> listener)
+    {
+        onValueChanged += listener;
+    }
+
+    public void RemoveOnValueChangedListener(UnityAction<float> listener)
+    {
+        onValueChanged -= listener;
+    }
+
+    public void ChangeValue(int change)
+    {
+        UpdateValue(value + change);
     }
 
     private void Awake()
@@ -42,16 +60,12 @@ public class ElixirManager : MonoBehaviour
         maxValueText.text = "Max: " + maxValue.ToString();
     }
 
-    public void ChangeValue(int change)
-    {
-        UpdateValue(value + change);
-    }
-
     private void UpdateValue(float newValue)
     {
         value = Mathf.Clamp(newValue, 0, maxValue);
         progressBar.SetFillAmount(value / maxValue * 100f);
         currentValueText.text = Value.ToString();
+        onValueChanged?.Invoke(value);
     }
 
     private void Update()
