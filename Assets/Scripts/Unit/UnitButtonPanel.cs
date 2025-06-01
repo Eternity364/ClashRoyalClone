@@ -67,14 +67,14 @@ namespace Units {
                 buttons[i].SetCostProgress(elixirValue / units[i].Data.Cost);
                 if (i < units.Length)
                 {
-                    buttons[i].GetComponent<Button>().interactable = units[i].Data.Cost <= elixirValue;
+                    buttons[i].GetComponentInChildren<Button>().interactable = units[i].Data.Cost <= elixirValue;
                 }
             }
         }
 
         private void OnBeginDrag(UnitButton button)
         {
-            if (!button.GetComponent<Button>().interactable)
+            if (!button.GetComponentInChildren<Button>().interactable)
             {
                 return;
             }

@@ -7194,7 +7194,7 @@ MonoBehaviour:
   maxValueText: {fileID: 595844664}
   maxValue: 10
   changeSpeed: 0.3
-  value: 1.8
+  value: 0
 --- !u!1 &961739749
 GameObject:
   m_ObjectHideFlags: 0

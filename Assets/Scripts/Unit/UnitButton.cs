@@ -15,11 +15,14 @@ namespace Units{
         [SerializeField]
         private Image image;
         [SerializeField]
+        private Button button;
+        [SerializeField]
         private TextMeshProUGUI costText;
         [SerializeField]
         private GameObject elixirIcon;
 
         public Unit Unit => unit;
+        public Button Button => button;
 
         private Unit unit;
         private Material material;
@@ -36,7 +39,6 @@ namespace Units{
             this.unit = unit;
             if (unitButtonReferances.Data.TryGetValue(unit, out Texture texture))
             {
-                Image image = GetComponent<Image>();
                 image.material = new Material(image.material);
                 material = image.material;
                 if (image != null)
@@ -83,7 +85,7 @@ namespace Units{
             entry.callback.AddListener((eventData) =>
             {
                 OnBeginDrag();
-                this.gameObject.GetComponent<Button>().interactable = false;
+                button.interactable = false;
             });
             eventTrigger.triggers.Add(entry);
         }
@@ -93,7 +95,7 @@ namespace Units{
             entry.eventID = EventTriggerType.EndDrag;
             entry.callback.AddListener( (eventData) => {
                 OnEndDrag();
-                this.gameObject.GetComponent<Button>().interactable = true;
+                button.interactable = true;
             } );
             eventTrigger.triggers.Add(entry);
         }

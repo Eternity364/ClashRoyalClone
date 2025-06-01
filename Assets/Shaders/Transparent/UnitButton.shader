@@ -23,6 +23,14 @@ Shader "Custom/UnitButton"
         ZWrite Off
         Blend SrcAlpha OneMinusSrcAlpha
 
+        Stencil
+        {
+            Ref 1
+            Comp Equal
+            Pass Keep
+            ReadMask 255
+            WriteMask 255
+        }
 
         Pass
         {
