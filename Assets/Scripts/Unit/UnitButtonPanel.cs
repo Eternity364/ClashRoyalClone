@@ -13,6 +13,8 @@ namespace Units {
         [SerializeField]
         Transform parentForCopy;
         [SerializeField]
+        ProgressBar progressBar;
+        [SerializeField]
         ClickableArea unitPlaceArea;
         [SerializeField]
         ClickableArea overallArea;
@@ -87,6 +89,7 @@ namespace Units {
             originalDistance = unitPlaceArea.GetDistanceToArea(hitPosition);
             originalScale = button.transform.localScale;
             unitPlaceArea.SetVisible(true);
+            progressBar.ShowCostHighlight(true, button.Unit.Data.Cost);
         }
 
         private void OnEndDrag(UnitButton button)
@@ -106,6 +109,7 @@ namespace Units {
 
             enteredUnitPlaceArea = false;
             lastHitPosition = Vector3.zero;
+            progressBar.ShowCostHighlight(false);
         }
 
         private void UpdateButtonCopyPosition() {
