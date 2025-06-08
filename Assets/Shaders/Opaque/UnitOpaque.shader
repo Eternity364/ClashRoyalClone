@@ -5,6 +5,8 @@ Shader "Custom/UnitOpaque_URP_PBR"
         _Color ("Color", Color) = (1,1,1,1)
         _TeamColorBase ("TeamColorBase", Color) = (1,1,1,1)
         _TeamColor ("TeamColor", Color) = (1,1,1,1)
+        _EmissionColor ("Emission Color", Color) = (0,0,0,0)
+        _EmissionStrength ("Emission Strength", Range(0,1)) = 1
         _MainTex ("Albedo (RGB)", 2D) = "white" {}
         _Glossiness ("Smoothness", Range(0,1)) = 0.5
         _Metallic ("Metallic", Range(0,1)) = 0.0
@@ -55,6 +57,8 @@ Shader "Custom/UnitOpaque_URP_PBR"
             float _Metallic;
             float4 _TeamColorBase;
             float4 _TeamColor;
+            float4 _EmissionColor;
+            float _EmissionStrength;
 
             float3 getTeamColor(float3 col) {
                 if (abs(col.r - _TeamColorBase.r) < 0.1 && abs(col.g - _TeamColorBase.g) < 0.1 && abs(col.b - _TeamColorBase.b) < 0.1)
@@ -95,7 +99,7 @@ Shader "Custom/UnitOpaque_URP_PBR"
                 surfaceData.specular = 0; // Not used in metallic workflow
                 surfaceData.smoothness = smoothness;
                 surfaceData.normalTS = normalWS;
-                surfaceData.emission = 0;
+                surfaceData.emission = _EmissionColor.rgb * _EmissionStrength;
                 surfaceData.occlusion = 1;
                 surfaceData.alpha = 1;
                 surfaceData.clearCoatMask = 0;

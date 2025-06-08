@@ -22,11 +22,11 @@ namespace Units{
             SheathWeapon(false, hadTargetBefore);
         }
         
-
         protected override void ClearAttackTarget(Unit unit) {
             SheathWeapon(true);
             base.ClearAttackTarget(unit);
         }
+        
         private void SheathWeapon(bool active, bool forceStartAttacking = false)
         {
             if (isDead)

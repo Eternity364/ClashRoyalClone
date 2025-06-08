@@ -11,7 +11,7 @@ namespace Units{
     {    
         protected Sequence seq;
 
-        public override void Init(Transform destination, BulletFactory bulletFactory, int team, Color teamColor, UnityAction onSpawnAnimationFinish) {}
+        public override void Init(Transform destination, BulletFactory bulletFactory, int team, Color teamColor) {}
 
         public override void SetAttackTarget(Unit target) {}
 

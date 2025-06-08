@@ -312,7 +312,7 @@ NavMeshAgent:
   m_GameObject: {fileID: 3231107821499508076}
   m_Enabled: 1
   m_AgentTypeID: 0
-  m_Radius: 1.24
+  m_Radius: 1.5
   m_Speed: 15
   m_Acceleration: 200
   avoidancePriority: 50
@@ -335,7 +335,7 @@ NavMeshObstacle:
   m_Enabled: 0
   serializedVersion: 3
   m_Shape: 0
-  m_Extents: {x: 1.24, y: 1, z: 1.24}
+  m_Extents: {x: 1.5, y: 1, z: 1.5}
   m_MoveThreshold: 0.1
   m_Carve: 1
   m_CarveOnlyStationary: 1
@@ -517,6 +517,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: 2Hand-Bow
+      objectReference: {fileID: 0}
+    - target: {fileID: 5890740663701679769, guid: 8dff5f2032a18c74fb911f81a7b5ad71,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

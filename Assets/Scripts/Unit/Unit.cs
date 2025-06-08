@@ -87,7 +87,6 @@ namespace Units{
         protected int health;
         protected bool isDead = true;
         protected RPGCharacterController rPGCharacterController;
-        protected UnityAction OnSpawnAnimationFinish;
 
         public void Awake()
         {
@@ -97,7 +96,7 @@ namespace Units{
                 rPGCharacterController.enabled = true;
         }
 
-        public virtual void Init(Transform destination, BulletFactory bulletFactory, int team, Color teamColor, UnityAction onSpawnAnimationFinish)
+        public virtual void Init(Transform destination, BulletFactory bulletFactory, int team, Color teamColor)
         {
             isDead = false;
             this.bulletFactory = bulletFactory;
@@ -106,15 +105,12 @@ namespace Units{
             health = data.MaxHealth;
             SetTeamColor(teamColor);
 
-            OnSpawnAnimationFinish += InitNavMesh;
-            OnSpawnAnimationFinish += onSpawnAnimationFinish;
+            InitNavMesh();
 
             if (data.AttackNoticeRange >= data.AttackRange)
             {
                 Debug.LogError("Attack notice range must be equal or greater than attack range.");
             }
-
-            StartSpawnAnimation();
         }
 
         public virtual void SetAttackTarget(Unit unit)
@@ -149,6 +145,14 @@ namespace Units{
             for (int i = 0; i < renderers.Count; i++)
             {
                 renderers[i].material.SetColor("_Color", new Color(1, 1, 1, value));
+            }
+        }
+
+        public void SetEmissionStrenght(float value)
+        {
+            for (int i = 0; i < renderers.Count; i++)
+            {
+                renderers[i].material.SetFloat("_EmissionStrength", value);
             }
         }
 
@@ -320,23 +324,6 @@ namespace Units{
             attackAllowed = true;
             timePassedSinceLastAttack = data.AttackRate;
         }
-
-        protected virtual void StartSpawnAnimation()
-        {
-            Vector3 startPosition = transform.localPosition;
-            Vector3 startScale = transform.localScale;
-            transform.localPosition = new Vector3(startPosition.x, startPosition.y, startPosition.z);
-            DG.Tweening.Sequence spawnAnimation = DOTween.Sequence();
-            // spawnAnimation.Append(transform.DOLocalMoveY(startPosition.y, 0.6f).SetEase(Ease.InQuad));
-            // spawnAnimation.Append(transform.DOScale(startScale - new Vector3(0, startScale.y * 0.2f, 0), 0.2f).SetEase(Ease.InQuad));
-            // spawnAnimation.Append(transform.DOScale(startScale, 0.2f).SetEase(Ease.OutQuad));
-            spawnAnimation.OnComplete(() =>
-                {
-                    OnSpawnAnimationFinish?.Invoke();
-                    OnSpawnAnimationFinish = null;
-                });
-        }
-
 
         private void RotateTowards(Transform target, TweenCallback OnComplete = null)
         {

@@ -25,7 +25,7 @@ public class ObjectPool : MonoBehaviour
     }
 
     // Retrieve an object from the pool
-    public GameObject GetObject(GameObject prefab)
+    public GameObject GetObject(GameObject prefab, bool setActive = true)
     {
         string key = prefab.name;
 
@@ -40,7 +40,7 @@ public class ObjectPool : MonoBehaviour
         {
             if (!obj.activeInHierarchy)
             {
-                obj.SetActive(true);
+                obj.SetActive(setActive);
                 return obj;
             }
         }

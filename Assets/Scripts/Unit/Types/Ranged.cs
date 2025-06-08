@@ -5,7 +5,6 @@ using DG.Tweening;
 using RPGCharacterAnims;
 using System;
 using RPGCharacterAnims.Actions;
-using UnityEngine.Events;
 
 namespace Units{
     public class Ranged : Unit
@@ -13,8 +12,8 @@ namespace Units{
         [SerializeField]    
         private GameObject arrow;
 
-        public override void Init(Transform destination, BulletFactory bulletFactory, int team, Color teamColor, UnityAction onSpawnAnimationFinish) {
-            base.Init(destination, bulletFactory, team, teamColor, onSpawnAnimationFinish);
+        public override void Init(Transform destination, BulletFactory bulletFactory, int team, Color teamColor) {
+            base.Init(destination, bulletFactory, team, teamColor);
 
             SwitchWeaponContext context = new SwitchWeaponContext();
             context.type = "Instant";
