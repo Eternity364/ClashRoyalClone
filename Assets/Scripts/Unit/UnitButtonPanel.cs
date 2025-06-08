@@ -23,6 +23,8 @@ namespace Units {
         [SerializeField]
         ClickableArea panelArea;
         [SerializeField]
+        Transform iconPrefab;
+        [SerializeField]
         float minCopyScale = 0.5f;
 
         private UnityAction<Vector3, Unit, bool> OnDragEndEvent;
@@ -60,6 +62,12 @@ namespace Units {
             OnEnteredUnitPlaceAreaEvent = onEnteredUnitPlaceAreaEvent;
             OnDragEvent = onDragEvent;
             OnDragEndEvent = onDragEndEvent;
+        }
+
+        public void CreateFieldElixirAnimation()
+        {
+            Vector3 hitPosition = overallArea.GetMouseHitPosition();
+            iconPrefab.localPosition = hitPosition;
         }
 
         private void UpdateButtonsStatus(float elixirValue)

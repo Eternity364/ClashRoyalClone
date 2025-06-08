@@ -10,13 +10,11 @@ namespace Units{
         [SerializeField]
         UnitButtonPanel panel;
         [SerializeField]
+        SpawnParticles spawnParticlesPrefab;
+        [SerializeField]
         TargetAcquiring targetAcquiring;
         [SerializeField]
         Transform target;
-        [SerializeField]
-        GameObject spawnLightParticlesPrefab;
-        [SerializeField]
-        GameObject spawnDebrisParticlesPrefab;
         [SerializeField]
         Transform parent;
         [SerializeField]
@@ -41,7 +39,6 @@ namespace Units{
 
         private IEnumerator TrySpawnCor(Vector3 position, Unit unitType, bool spawn)
         {
-            ElixirManager.Instance.ChangeValue(-unitType.Data.Cost);
             GameObject oldUnitCopy = unitCopy;
             unitCopy = null;
 
@@ -51,18 +48,18 @@ namespace Units{
                 yield break;
             }
 
+            ElixirManager.Instance.ChangeValue(-unitType.Data.Cost);
+            panel.CreateFieldElixirAnimation();
+
             yield return new WaitForSeconds(delayBeforeSpawn);
 
-            if (spawn)
+            Unit unit = CreateUnit(position, unitType).GetComponent<Unit>();
+            StartSpawnAnimation(unit, () =>
             {
-                Unit unit = CreateUnit(position, unitType).GetComponent<Unit>();
-                StartSpawnAnimation(unit, () =>
-                {
-                    unit.Init(target, bulletFactory, team, teamColor);
-                    targetAcquiring.AddUnit(unit);
-                });
-                ObjectPool.Instance.ReturnObject(oldUnitCopy);
-            }
+                unit.Init(target, bulletFactory, team, teamColor);
+                targetAcquiring.AddUnit(unit);
+            });
+            ObjectPool.Instance.ReturnObject(oldUnitCopy);
         }
 
         private void UpdateUnitCopyPosition(Vector3 position)
@@ -102,48 +99,10 @@ namespace Units{
             return unit;
         }
 
-        // Move it to animation helpers
         private void StartSpawnAnimation(Unit unit, TweenCallback OnSpawnAnimationFinish = null)
         {
-            Transform unitTransform = unit.transform;
-            Vector3 startPosition = unitTransform.localPosition;
-            Vector3 originalScale = unitTransform.localScale;
-            float yUpOffset = 10f;
-            unitTransform.localPosition = new Vector3(startPosition.x, startPosition.y + yUpOffset, startPosition.z);
-            Vector3 startScale = new Vector3(originalScale.x, originalScale.y * 1.7f, originalScale.z);
-            unitTransform.localScale = startScale;
-            unit.SetEmissionStrenght(0.78f);
-
-            GameObject spawnLightParticles = ObjectPool.Instance.GetObject(this.spawnLightParticlesPrefab, false);
-            float yPos = spawnLightParticles.transform.localPosition.y;
-            spawnLightParticles.transform.SetParent(parent);
-            spawnLightParticles.transform.localPosition = new Vector3(startPosition.x, 0 + yPos, startPosition.z);
-
-            GameObject spawnDebrisParticles = ObjectPool.Instance.GetObject(this.spawnDebrisParticlesPrefab, false);
-            yPos = spawnDebrisParticles.transform.localPosition.y;
-            spawnDebrisParticles.transform.SetParent(parent);
-            spawnDebrisParticles.transform.localPosition = new Vector3(startPosition.x, 0 + yPos, startPosition.z);
-
-            Sequence spawnAnimation = DOTween.Sequence();
-            spawnAnimation.Append(unitTransform.DOLocalMoveY(startPosition.y, 0.45f).SetEase(Ease.InQuad));
-            spawnAnimation.Insert(0f, unitTransform.DOScale(startScale - new Vector3(0, startScale.y * 0.7f, 0), 0.4f).SetEase(Ease.InQuad));
-            spawnAnimation.Insert(0.4f, unitTransform.DOScale(originalScale, 1f).SetEase(Ease.OutBounce));
-            spawnAnimation.InsertCallback(0.1f, () =>
-                {
-                    spawnLightParticles.SetActive(true);
-                });
-            spawnAnimation.InsertCallback(0.6f, () =>
-                {
-                    spawnDebrisParticles.SetActive(true);
-                });
-            spawnAnimation.Insert(0.6f,
-                DOTween.To(unit.SetEmissionStrenght, 0.78f, 0f, 0.8f).SetEase(Ease.InQuad)
-            );
-            spawnAnimation.InsertCallback(1.4f, () =>
-                {
-                    OnSpawnAnimationFinish?.Invoke();
-                    //ObjectPool.Instance.ReturnObject(spawnLightParticles);
-                });
+            GameObject spawnParticles = ObjectPool.Instance.GetObject(this.spawnParticlesPrefab.gameObject);
+            spawnParticles.GetComponent<SpawnParticles>().StartSpawnAnimation(unit, parent, OnSpawnAnimationFinish);
         }
     }
 }
