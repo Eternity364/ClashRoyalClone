@@ -312,7 +312,7 @@ NavMeshAgent:
   m_GameObject: {fileID: 3231107821499508076}
   m_Enabled: 1
   m_AgentTypeID: 0
-  m_Radius: 1.5
+  m_Radius: 1
   m_Speed: 15
   m_Acceleration: 200
   avoidancePriority: 50
@@ -335,7 +335,7 @@ NavMeshObstacle:
   m_Enabled: 0
   serializedVersion: 3
   m_Shape: 0
-  m_Extents: {x: 1.5, y: 1, z: 1.5}
+  m_Extents: {x: 1, y: 1, z: 1}
   m_MoveThreshold: 0.1
   m_Carve: 1
   m_CarveOnlyStationary: 1
@@ -870,15 +870,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 482130, guid: f7e586317327fe240bef5a82944f49c2, type: 3}
       propertyPath: m_LocalScale.x
-      value: 4.28
+      value: 2.85
       objectReference: {fileID: 0}
     - target: {fileID: 482130, guid: f7e586317327fe240bef5a82944f49c2, type: 3}
       propertyPath: m_LocalScale.y
-      value: 4.28
+      value: 2.85
       objectReference: {fileID: 0}
     - target: {fileID: 482130, guid: f7e586317327fe240bef5a82944f49c2, type: 3}
       propertyPath: m_LocalScale.z
-      value: 4.28
+      value: 2.85
       objectReference: {fileID: 0}
     - target: {fileID: 482130, guid: f7e586317327fe240bef5a82944f49c2, type: 3}
       propertyPath: m_LocalPosition.x

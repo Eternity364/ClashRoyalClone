@@ -88,7 +88,7 @@ namespace Units{
         protected bool isDead = true;
         protected RPGCharacterController rPGCharacterController;
 
-        public void Awake()
+        protected virtual void Awake()
         {
             originalColor = ren.material.color;
             rPGCharacterController = GetComponent<RPGCharacterController>();
@@ -275,8 +275,8 @@ namespace Units{
                 damageAnimation.Kill();
             }
             damageAnimation = DOTween.Sequence();
-            damageAnimation.Append(ren.material.DOColor(damageColor, 0.1f));
-            damageAnimation.Append(ren.material.DOColor(originalColor, 0.3f));
+            damageAnimation.Append(ren.material.DOColor(damageColor, 0.1f).SetEase(Ease.InQuad));
+            damageAnimation.Append(ren.material.DOColor(originalColor, 0.15f).SetEase(Ease.OutQuad));
         }
 
         protected virtual void PerformAttack()

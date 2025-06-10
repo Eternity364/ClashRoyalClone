@@ -18,7 +18,7 @@ namespace Units{
         void Update() {
             timePassed += Time.deltaTime;
             if (timePassed > spawnRate) {
-                TrySpawn(transform.position, unitPrefab.GetComponent<Unit>(), true);
+                TrySpawn(transform.position, unitPrefab.GetComponent<Unit>(), true, false);
                 timePassed = 0;
             }
         }

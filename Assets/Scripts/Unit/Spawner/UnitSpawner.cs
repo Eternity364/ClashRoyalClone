@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using DG.Tweening;
 using UnityEngine;
 
@@ -32,12 +31,12 @@ namespace Units{
             panel.SetOnDragEvents(CreateUnitCopy, TrySpawn, UpdateUnitCopyPosition);
         }
 
-        public void TrySpawn(Vector3 position, Unit unitType, bool spawn)
+        public void TrySpawn(Vector3 position, Unit unitType, bool spawn, bool payElixir)
         {
-            StartCoroutine(TrySpawnCor(position, unitType, spawn));
+            StartCoroutine(TrySpawnCor(position, unitType, spawn, payElixir));
         }
 
-        private IEnumerator TrySpawnCor(Vector3 position, Unit unitType, bool spawn)
+        private IEnumerator TrySpawnCor(Vector3 position, Unit unitType, bool spawn, bool payElixir)
         {
             GameObject oldUnitCopy = unitCopy;
             unitCopy = null;
@@ -48,8 +47,11 @@ namespace Units{
                 yield break;
             }
 
-            ElixirManager.Instance.ChangeValue(-unitType.Data.Cost);
-            panel.CreateFieldElixirAnimation(unitType.Data.Cost);
+            if (payElixir)
+            {
+                ElixirManager.Instance.ChangeValue(-unitType.Data.Cost);
+                panel.CreateFieldElixirAnimation(unitType.Data.Cost);
+            }
 
             yield return new WaitForSeconds(delayBeforeSpawn);
 
