@@ -49,6 +49,8 @@ public class ObjectPool : MonoBehaviour
         GameObject newObj = Instantiate(prefab);
         newObj.name = prefab.name; // Ensure the name matches the prefab
         pools[key].Add(newObj);
+        newObj.SetActive(setActive);
+        
         return newObj;
     }
 

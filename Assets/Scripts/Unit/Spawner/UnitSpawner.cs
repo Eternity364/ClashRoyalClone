@@ -49,7 +49,7 @@ namespace Units{
             }
 
             ElixirManager.Instance.ChangeValue(-unitType.Data.Cost);
-            panel.CreateFieldElixirAnimation();
+            panel.CreateFieldElixirAnimation(unitType.Data.Cost);
 
             yield return new WaitForSeconds(delayBeforeSpawn);
 
@@ -78,8 +78,6 @@ namespace Units{
                 return;
             }
             unitCopy = CreateUnit(position, unitType, true);
-            Unit unit = unitCopy.GetComponent<Unit>();
-            unit.SetAlpha(0.5f);
         }
 
         private GameObject CreateUnit(Vector3 position, Unit unitType, bool isCopy = false)

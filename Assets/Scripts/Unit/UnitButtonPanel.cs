@@ -1,5 +1,5 @@
-using System.Collections;
-using System.Collections.Generic;
+using DG.Tweening;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
@@ -14,12 +14,25 @@ namespace Units {
         Transform parentForCopy;
         [SerializeField]
         ProgressBar progressBar;
+        // <summary>
+        /// Area where we can place units
+        /// </summary>
         [SerializeField]
         ClickableArea unitPlaceArea;
+        // <summary>
+        /// Whole area of the game field
+        /// </summary>
         [SerializeField]
         ClickableArea overallArea;
+        // <summary>
+        /// Area which player base occupies
+        /// This area is used to prevent placing units on the player base
+        /// </summary>
         [SerializeField]
         ClickableArea playerBaseArea;
+        // <summary>
+        /// Whole area of the game UI plane
+        /// </summary>
         [SerializeField]
         ClickableArea panelArea;
         [SerializeField]
@@ -64,10 +77,32 @@ namespace Units {
             OnDragEndEvent = onDragEndEvent;
         }
 
-        public void CreateFieldElixirAnimation()
+        public void CreateFieldElixirAnimation(float value)
         {
-            Vector3 hitPosition = overallArea.GetMouseHitPosition();
-            iconPrefab.localPosition = hitPosition;
+            GameObject icon = ObjectPool.Instance.GetObject(iconPrefab.gameObject);
+            Vector3 originalScale = icon.transform.localScale;
+            icon.transform.SetParent(parentForCopy);
+            icon.transform.localRotation = Quaternion.identity;
+            Vector3 hitPosition = panelArea.GetMouseHitPosition();
+            icon.transform.position = hitPosition;
+            icon.transform.localScale = new Vector3(originalScale.x * 0.5f, originalScale.y * 0.15f, originalScale.z);
+            var image = icon.GetComponent<Image>();
+            image.material = new Material(image.material);
+            image.material.color = new Color(image.material.color.r, image.material.color.g, image.material.color.b, 0);
+            TextMeshProUGUI costText = icon.GetComponentInChildren<TextMeshProUGUI>();
+            costText.text = "-" + value.ToString();
+
+            Sequence sequence = DOTween.Sequence();
+            sequence.Append(icon.transform.DOLocalMoveY(icon.transform.localPosition.y + 800f, 1f).SetEase(Ease.OutCirc));
+            sequence.Insert(0, icon.transform.DOScale(originalScale, 1.5f).SetEase(Ease.OutElastic));
+
+            sequence.Insert(0, image.material.DOFade(1, 0.4f).SetEase(Ease.OutCubic));
+            sequence.Insert(1.4f, image.material.DOFade(0, 0.4f).SetEase(Ease.InCubic));
+            sequence.Insert(1.501f, icon.transform.DOScale(Vector3.zero, 0.4f).SetEase(Ease.InCirc));
+            sequence.OnComplete(() => {
+                icon.transform.localScale = originalScale;
+                ObjectPool.Instance.ReturnObject(icon);
+            });
         }
 
         private void UpdateButtonsStatus(float elixirValue)
