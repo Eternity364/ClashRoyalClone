@@ -13,7 +13,7 @@ Shader "Custom/UnitOpaque_URP_PBR"
     }
     SubShader
     {
-        Tags { "RenderPipeline"="UniversalRenderPipeline" "RenderType"="Opaque" "Queue"="Geometry" }
+        Tags { "RenderPipeline"="UniversalPipeline" "RenderType"="Opaque" "Queue"="Geometry" }
         LOD 200
 
         Blend One Zero
@@ -27,9 +27,9 @@ Shader "Custom/UnitOpaque_URP_PBR"
             HLSLPROGRAM
             #pragma vertex vert
             #pragma fragment frag
-            #pragma shader_feature  _MAIN_LIGHT_SHADOWS
-            #pragma shader_feature  _SHADOWS_SOFT
-            #pragma shader_feature  _ADDITIONAL_LIGHTS_VERTEX _ADDITIONAL_LIGHTS
+            #pragma multi_compile  _MAIN_LIGHT_SHADOWS
+            #pragma multi_compile  _SHADOWS_SOFT
+            #pragma multi_compile  _ADDITIONAL_LIGHTS_VERTEX _ADDITIONAL_LIGHTS
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
             #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/BSDF.hlsl"

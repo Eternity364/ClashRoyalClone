@@ -20,7 +20,7 @@ Shader "Example/URPUnlitShaderBasic"
     {
         // SubShader Tags define when and under which conditions a SubShader block or
         // a pass is executed.
-        Tags { "RenderPipeline"="UniversalRenderPipeline" "RenderType"="Transparent" "Queue"="Transparent" }
+        Tags { "RenderPipeline"="UniversalPipeline" "RenderType"="Transparent" "Queue"="Transparent" }
         LOD 200
 
         Blend SrcAlpha OneMinusSrcAlpha

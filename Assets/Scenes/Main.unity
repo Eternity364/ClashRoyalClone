@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.17317525, g: 0.21644944, b: 0.2984737, a: 1}
+  m_IndirectSpecularColor: {r: 0.1731779, g: 0.21645232, b: 0.29847774, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -3794,6 +3794,8 @@ GameObject:
   - component: {fileID: 961739752}
   - component: {fileID: 961739751}
   - component: {fileID: 961739755}
+  - component: {fileID: 961739756}
+  - component: {fileID: 961739757}
   m_Layer: 11
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -3919,6 +3921,31 @@ MonoBehaviour:
     mipBias: 0
     varianceClampScale: 0.9
     contrastAdaptiveSharpening: 0
+--- !u!114 &961739756
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 961739749}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f8502dffc4bb6234987c17e1503f73da, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetAspect: 0.5625
+--- !u!114 &961739757
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 961739749}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 73e244f45cd9c224782f4a00fc7559a6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &967596706
 GameObject:
   m_ObjectHideFlags: 0
@@ -4036,7 +4063,7 @@ MonoBehaviour:
   bulletFactory: {fileID: 2114211193}
   teamColor: {r: 0.745283, g: 0.0660911, b: 0.0660911, a: 0}
   team: 1
-  spawnRate: 12
+  spawnRate: 15
   unitPrefab: {fileID: 7840963495349357989, guid: 391a642033c5e634dab2ab25434f1e57,
     type: 3}
 --- !u!65 &1044829380
@@ -5813,7 +5840,7 @@ MonoBehaviour:
   bulletFactory: {fileID: 2114211193}
   teamColor: {r: 0.745283, g: 0.0660911, b: 0.0660911, a: 0}
   team: 1
-  spawnRate: 12
+  spawnRate: 15
   unitPrefab: {fileID: 3231107821499508076, guid: b5813654b784855468d9767bef561ac2,
     type: 3}
 --- !u!65 &1472674719
