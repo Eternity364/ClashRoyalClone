@@ -55,6 +55,7 @@ namespace Units{
         protected int team;
         protected float timePassedSinceLastAttack = 0;
         protected float timePassedSinceLastAttackTargetCheck = 0;
+        protected float deathAnimationDepth = 2;
         protected Color originalColor;
         protected DG.Tweening.Sequence damageAnimation;
         protected DG.Tweening.Sequence rotationAnimation;
@@ -169,8 +170,7 @@ namespace Units{
         {
             navMeshAgent.enabled = true;
             navMeshAgent.updateRotation = true;
-            navMeshAgent.SetDestination(destination.position);
-            StartMovingAnimation(true);
+            StartMovement(true, destination.position);
         }
 
         protected virtual void CheckIfAttackTargetReachable()
@@ -254,7 +254,7 @@ namespace Units{
             animator.SetFloat("Velocity Z", isMoving ? 1 : 0);
         }
 
-        protected void PerformDeath()
+        protected virtual void PerformDeath()
         {
             if (isDead)
                 return;
@@ -271,14 +271,15 @@ namespace Units{
             }
             OnDeath?.Invoke(this);
             OnDeath = null;
+            transform.localRotation = Quaternion.identity;
 
+            rPGCharacterController.EndAction("Death");
             rPGCharacterController.StartAction("Death");
 
             DG.Tweening.Sequence deathSeq = DOTween.Sequence();
-            deathSeq.Insert(1f, transform.DOBlendableMoveBy(new Vector3(0, -2, 0), 2f));
+            deathSeq.Insert(1f, transform.DOBlendableMoveBy(new Vector3(0, -deathAnimationDepth, 0), 2f));
             deathSeq.InsertCallback(3f, () =>
             {
-                rPGCharacterController.EndAction("Death");
                 ObjectPool.Instance.ReturnObject(gameObject);
             });
 

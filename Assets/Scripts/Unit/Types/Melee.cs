@@ -1,10 +1,6 @@
 
 using UnityEngine;
 using DG.Tweening;
-using RPGCharacterAnims;
-using RPGCharacterAnims.Actions;
-using System.Collections;
-using UnityEngine.Events;
 
 namespace Units{
     public class Melee : Unit
@@ -16,7 +12,6 @@ namespace Units{
 
             if (attackTarget != null)
             {
-                Debug.Log("Performing melee attack on " + attackTarget.name);
                 animator.SetInteger("TriggerNumber", 6);
                 animator.SetBool("Trigger", true);
 

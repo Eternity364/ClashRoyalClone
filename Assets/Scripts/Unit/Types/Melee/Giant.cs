@@ -13,11 +13,19 @@ namespace Units{
         private bool clearTargetLock = false;
         private List<Transform> pushbackTargets = new List<Transform>();
 
-        private void OnEnable()
+        public override void Init(Transform destination, BulletFactory bulletFactory, int team, Color teamColor)
         {
             rPGCharacterController.EndAction("Relax");
             rPGCharacterController.StartAction("Relax", true);
             allowedTargets = AllowedTargets.Base;
+            deathAnimationDepth = 5f;
+            StartCoroutine(BaseInit(destination, bulletFactory, team, teamColor));
+        }
+
+        private void OnEnable()
+        {
+            rPGCharacterController.EndAction("Relax");
+            rPGCharacterController.StartAction("Relax", true);
         }
 
         protected override void StartMovingAnimation(bool isMoving)
@@ -28,17 +36,15 @@ namespace Units{
 
         protected void OnTriggerEnter(Collider other)
         {
-            if (other.gameObject.tag != "Unit")
+            if (isDead || other.gameObject.tag != "Unit")
                 return;
-            Debug.Log("Pushback target added: " + other.gameObject.name);
             PushBack(other.gameObject.transform);
         }
 
         protected void OnTriggerExit(Collider other)
         {
-            if (other.gameObject.tag != "Unit")
+            if (isDead || other.gameObject.tag != "Unit")
                 return;
-            Debug.Log("Pushback target removed: " + other.gameObject.name);
             pushbackTargets.Remove(other.gameObject.transform);
         }
 
@@ -46,6 +52,12 @@ namespace Units{
         {
             pushbackTargets.Add(encounter);
             StartCoroutine(PushBackCoroutine(encounter));
+        }
+
+        protected override void PerformDeath()
+        {
+            pushbackTargets.Clear();
+            base.PerformDeath();
         }
 
         IEnumerator PushBackCoroutine(Transform encounter)
@@ -59,6 +71,9 @@ namespace Units{
             Vector3 direction;
             Vector3 positionToCheck;
             Vector3 hitPosition;
+            Unit unit = encounter.GetComponent<Unit>();
+            if (unit == null || unit.IsDead)
+                yield break;
 
             do
             {
@@ -98,7 +113,7 @@ namespace Units{
                 encounter.DOMove(hitPosition, pushbackDelay - 0.01f).SetEase(Ease.OutQuad);
 
                 yield return new WaitForSeconds(pushbackDelay);
-            } while (IsTargetInPushbackArea(encounter));
+            } while (IsTargetInPushbackArea(encounter) && !unit.IsDead);
         }
 
         private bool CheckOtherPushbackTargetsDistances(Transform target)
@@ -133,6 +148,13 @@ namespace Units{
             yield return new WaitForSeconds(0.1f);
             base.ClearAttackTarget(unit);
             clearTargetLock = false;
+        }
+
+        
+        IEnumerator BaseInit(Transform destination, BulletFactory bulletFactory, int team, Color teamColor)
+        {
+            yield return new WaitForSeconds(0.1f);
+            base.Init(destination, bulletFactory, team, teamColor);
         }
     }
 }
