@@ -15,7 +15,9 @@ namespace Units{
         [SerializeField]
         Transform target;
         [SerializeField]
-        Transform parent;
+        Transform normiesParent;
+        [SerializeField]
+        Transform giantsParent;
         [SerializeField]
         BulletFactory bulletFactory;
         [SerializeField]
@@ -56,6 +58,7 @@ namespace Units{
             yield return new WaitForSeconds(delayBeforeSpawn);
 
             Unit unit = CreateUnit(position, unitType).GetComponent<Unit>();
+            unit.SetTeamColor(teamColor);
             StartSpawnAnimation(unit, () =>
             {
                 unit.Init(target, bulletFactory, team, teamColor);
@@ -85,16 +88,17 @@ namespace Units{
         private GameObject CreateUnit(Vector3 position, Unit unitType, bool isCopy = false)
         {
             GameObject prefab = unitType.gameObject;
-            if (isCopy)
-            {
-                prefab = UnitsList.Instance.GetTransparent(unitType);
-            }
             GameObject unit = ObjectPool.Instance.GetObject(prefab);
+            Transform parent = unitType is Giant ? giantsParent : normiesParent;
             unit.transform.SetParent(parent);
             unit.gameObject.SetActive(true);
             position.y = 0;
             unit.transform.localPosition = position;
-            unit.GetComponent<Unit>().SetTeamColor(teamColor);
+            unit.GetComponent<Collider>().enabled = !isCopy;
+            Unit unitComp = unit.GetComponent<Unit>();
+            unitComp.SetTransparent(isCopy);
+            if (isCopy)
+                unitComp.SetAlpha(0.25f);
 
             return unit;
         }
@@ -102,7 +106,7 @@ namespace Units{
         private void StartSpawnAnimation(Unit unit, TweenCallback OnSpawnAnimationFinish = null)
         {
             GameObject spawnParticles = ObjectPool.Instance.GetObject(this.spawnParticlesPrefab.gameObject);
-            spawnParticles.GetComponent<SpawnParticles>().StartSpawnAnimation(unit, parent, OnSpawnAnimationFinish);
+            spawnParticles.GetComponent<SpawnParticles>().StartSpawnAnimation(unit, normiesParent, OnSpawnAnimationFinish);
         }
     }
 }

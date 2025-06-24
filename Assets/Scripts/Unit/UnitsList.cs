@@ -6,18 +6,12 @@ namespace Units{
     {
         [SerializeField]
         private List<Unit> unitPrefabs = new List<Unit>();
-        [SerializeField]
-        private List<GameObject> transparentUnitPrefabs = new List<GameObject>();
         
         // Singleton instance
         public static UnitsList Instance { get; private set; }
 
         public List<Unit> Get() {
             return new List<Unit>(unitPrefabs);
-        }
-
-        public GameObject GetTransparent(Unit unit) {
-            return transparentUnitPrefabs[unitPrefabs.IndexOf(unit)];
         }
 
         private void Awake()

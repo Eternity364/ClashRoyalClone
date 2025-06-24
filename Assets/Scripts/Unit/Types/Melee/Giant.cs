@@ -1,0 +1,138 @@
+using UnityEngine;
+using System.Collections;
+using UnityEngine.AI;
+using DG.Tweening;
+using System.Collections.Generic;
+
+namespace Units{
+    public class Giant : Melee
+    {
+        private float pushbackForce = 0.8f;
+        private float pushbackDelay = 0.35f;
+
+        private bool clearTargetLock = false;
+        private List<Transform> pushbackTargets = new List<Transform>();
+
+        private void OnEnable()
+        {
+            rPGCharacterController.EndAction("Relax");
+            rPGCharacterController.StartAction("Relax", true);
+            allowedTargets = AllowedTargets.Base;
+        }
+
+        protected override void StartMovingAnimation(bool isMoving)
+        {
+            animator.SetBool("Moving", isMoving);
+            animator.SetFloat("Velocity Z", isMoving ? 0.2f : 0);
+        }
+
+        protected void OnTriggerEnter(Collider other)
+        {
+            if (other.gameObject.tag != "Unit")
+                return;
+            Debug.Log("Pushback target added: " + other.gameObject.name);
+            PushBack(other.gameObject.transform);
+        }
+
+        protected void OnTriggerExit(Collider other)
+        {
+            if (other.gameObject.tag != "Unit")
+                return;
+            Debug.Log("Pushback target removed: " + other.gameObject.name);
+            pushbackTargets.Remove(other.gameObject.transform);
+        }
+
+        protected void PushBack(Transform encounter)
+        {
+            pushbackTargets.Add(encounter);
+            StartCoroutine(PushBackCoroutine(encounter));
+        }
+
+        IEnumerator PushBackCoroutine(Transform encounter)
+        {
+            int area = NavMesh.GetAreaFromName("Giants");
+            int areaMask = 1 << area;
+            NavMeshHit hit;
+            Vector3 encounterPosition;
+            Vector3 myPosition;
+            Vector3 originalDirection;
+            Vector3 direction;
+            Vector3 positionToCheck;
+            Vector3 hitPosition;
+
+            do
+            {
+                encounterPosition = new Vector3(encounter.position.x, 0, encounter.position.z);
+                myPosition = new Vector3(transform.position.x, 0, transform.position.z);
+                float initialDistance = Vector3.Distance(myPosition, encounterPosition);
+                originalDirection = (encounterPosition - myPosition).normalized;
+
+                float y = 0;
+                Vector3 myPos = transform.position + new Vector3(0, -transform.localPosition.y, 0);
+                if (NavMesh.SamplePosition(myPos, out hit, 4f, areaMask))
+                {
+                    y = hit.position.y;
+                }
+                encounterPosition.y = y;
+                direction = originalDirection;
+                hitPosition = encounterPosition;
+                float distance = initialDistance;
+
+                do
+                {
+                    positionToCheck = encounterPosition + direction * pushbackForce;
+                    if (NavMesh.SamplePosition(positionToCheck, out hit, 2f, areaMask))
+                    {
+                        float newDistance = Vector3.Distance(transform.position, hit.position);
+                        if (newDistance > distance && CheckOtherPushbackTargetsDistances(encounter))
+                        {
+                            hitPosition = hit.position;
+                            distance = newDistance;
+                        }
+                    }
+                    direction = Quaternion.Euler(0, 45, 0) * direction;
+                }
+                while (direction != originalDirection);
+
+                hitPosition.y = encounter.position.y;
+                encounter.DOMove(hitPosition, pushbackDelay - 0.01f).SetEase(Ease.OutQuad);
+
+                yield return new WaitForSeconds(pushbackDelay);
+            } while (IsTargetInPushbackArea(encounter));
+        }
+
+        private bool CheckOtherPushbackTargetsDistances(Transform target)
+        {
+            for (int i = 0; i < pushbackTargets.Count; i++)
+            {
+                if (target == pushbackTargets[i]) continue;
+                if (Vector3.Distance(target.position, pushbackTargets[i].position) < 0.4f)
+                    return false;
+            }
+            return true;
+        }
+
+        private bool IsTargetInPushbackArea(Transform target)
+        {
+            return pushbackTargets.Contains(target);
+        }
+
+        protected override void ClearAttackTarget(Unit unit)
+        {
+            if (clearTargetLock)
+                return;
+            rPGCharacterController.EndAction("Relax");
+            rPGCharacterController.StartAction("Relax");
+            StartCoroutine(BaseClearAttackTarget(unit));
+            clearTargetLock = true;
+        }
+
+        // This delay is needed to ensure that character is in relaxed state before it starts moving again.
+        IEnumerator BaseClearAttackTarget(Unit unit)
+        {
+            yield return new WaitForSeconds(0.1f);
+            base.ClearAttackTarget(unit);
+            clearTargetLock = false;
+        }
+    }
+}

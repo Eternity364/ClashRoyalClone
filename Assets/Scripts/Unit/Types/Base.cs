@@ -20,6 +20,6 @@ namespace Units{
 
         public override void SetAttackTarget(Unit target) { }
 
-        protected override void PerformAttack() {}
+        protected override void PerformAttack(TweenCallback OnFinish) {}
     }
 }

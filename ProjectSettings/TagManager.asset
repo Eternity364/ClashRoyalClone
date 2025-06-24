@@ -6,6 +6,8 @@ TagManager:
   tags:
   - Shadow
   - Collide
+  - Unit
+  - Giant
   layers:
   - Default
   - TransparentFX

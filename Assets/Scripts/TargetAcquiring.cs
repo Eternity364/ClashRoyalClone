@@ -44,34 +44,43 @@ public class TargetAcquiring : MonoBehaviour
         for (int i = 0; i < agents.Count; i++)
         {
             Unit agent = agents[i];
+
+            if (agent.IsDead) continue;
+
             Unit closestEnemy = null;
             float closestDistance = float.MaxValue;
             float currentEnemyDistance = float.MaxValue;
             if (agent.HasTarget && agent.Target != enemyBases[agent.Team]) {
                 currentEnemyDistance = (agent.transform.position - agent.Target.transform.position).magnitude;
             }
-            if (agent.IsDead) continue;
             int team = agent.Team;
 
-            for (int j = 0; j < agents.Count; j++)
+            if (agent.AllowedTargets != AllowedTargets.Base)
             {
-                if (agents[j].IsDead) continue;
-                if (i != j && team != agents[j].Team) {
-                   float distance = (agent.transform.position - agents[j].transform.position).magnitude;
-                   if (distance < closestDistance) {
-                       closestDistance = distance;
-                       closestEnemy = agents[j];
-                   }
-                }
+                for (int j = 0; j < agents.Count; j++)
+                {
+                    if (agents[j].IsDead) continue;
+                    if (i != j && team != agents[j].Team)
+                    {
+                        float distance = (agent.transform.position - agents[j].transform.position).magnitude;
+                        if (distance < closestDistance)
+                        {
+                            closestDistance = distance;
+                            closestEnemy = agents[j];
+                        }
+                    }
 
-                if (closestEnemy != null && agent.Target != closestEnemy && closestDistance < currentEnemyDistance - distanceDifferanceToChangeTarget) {
-                    CheckAndSetTarget(agent, closestEnemy, closestDistance);
+                    if (closestEnemy != null && agent.Target != closestEnemy && closestDistance < currentEnemyDistance - distanceDifferanceToChangeTarget)
+                    {
+                        CheckAndSetTarget(agent, closestEnemy, closestDistance);
+                    }
                 }
             }
             
-            if (!agent.HasTarget) {
-               CheckAndSetTarget(agent, enemyBases[agent.Team], (agent.transform.position - enemyBases[agent.Team].transform.position).magnitude); 
-            }
+            if (!agent.HasTarget)
+                {
+                    CheckAndSetTarget(agent, enemyBases[agent.Team], (agent.transform.position - enemyBases[agent.Team].transform.position).magnitude);
+                }
         }
         // Units shouldn't be removed while we are iterating through them.
         removeLock = false;

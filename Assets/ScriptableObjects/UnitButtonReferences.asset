@@ -13,8 +13,10 @@ MonoBehaviour:
   m_Name: UnitButtonReferences
   m_EditorClassIdentifier: 
   unitTypes:
-  - {fileID: 7308509031884456294, guid: 391a642033c5e634dab2ab25434f1e57, type: 3}
+  - {fileID: -3097958103367793821, guid: 391a642033c5e634dab2ab25434f1e57, type: 3}
   - {fileID: 6302694674362624318, guid: b5813654b784855468d9767bef561ac2, type: 3}
+  - {fileID: 345719639570813046, guid: d447a58d7798b414ca462105208c9072, type: 3}
   textures:
-  - {fileID: 2800000, guid: 499b0c38c6b07aa429a14ea3d493c3ae, type: 3}
+  - {fileID: 2800000, guid: bbdb779f7759b6942ac33858e5526b5e, type: 3}
   - {fileID: 2800000, guid: d14af460c37a79f49939088ad0f16e1e, type: 3}
+  - {fileID: 2800000, guid: 6e791a2872505db4b8520caae370fac1, type: 3}

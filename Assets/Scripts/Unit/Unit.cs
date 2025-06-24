@@ -10,6 +10,12 @@ using System;
 using System.Collections.Generic;
 
 namespace Units{
+    public enum AllowedTargets
+    {
+        All,
+        Base
+    }
+
     public abstract class Unit : MonoBehaviour
     {
         [SerializeField]
@@ -36,41 +42,12 @@ namespace Units{
         /// </summary>
         public float AttackNoticeRange => data.AttackNoticeRange;
         public int Team => team;
-        public bool IsDead
-        {
-            get
-            {
-                return isDead;
-            }
-        }
-        public bool HasTarget
-        {
-            get
-            {
-                return attackTarget != null;
-            }
-        }
-        public Unit Target
-        {
-            get
-            {
-                return attackTarget;
-            }
-        }
-        public float Radius
-        {
-            get
-            {
-                return navMeshAgent.radius;
-            }
-        }
-        public UnitData Data
-        {
-            get
-            {
-                return data;
-            }
-        }
+        public bool IsDead => isDead;
+        public bool HasTarget => attackTarget != null;
+        public Unit Target => attackTarget;
+        public AllowedTargets AllowedTargets => allowedTargets;
+        public float Radius => navMeshAgent.radius;
+        public UnitData Data => data;
         public UnityAction<Unit> OnDeath;
 
         protected Transform destination;
@@ -83,9 +60,11 @@ namespace Units{
         protected DG.Tweening.Sequence rotationAnimation;
         protected bool attackAllowed = false;
         protected bool attackTargetFound = false;
+        protected bool mandatoryFirstAttack = false;
         protected Vector3 positionBefore;
         protected int health;
         protected bool isDead = true;
+        protected AllowedTargets allowedTargets = AllowedTargets.All;
         protected RPGCharacterController rPGCharacterController;
 
         protected virtual void Awake()
@@ -96,6 +75,10 @@ namespace Units{
                 rPGCharacterController.enabled = true;
         }
 
+        protected virtual void Start()
+        {
+        }
+
         public virtual void Init(Transform destination, BulletFactory bulletFactory, int team, Color teamColor)
         {
             isDead = false;
@@ -103,6 +86,7 @@ namespace Units{
             this.destination = destination;
             this.team = team;
             health = data.MaxHealth;
+            timePassedSinceLastAttack = data.AttackRate;
             SetTeamColor(teamColor);
 
             InitNavMesh();
@@ -144,7 +128,32 @@ namespace Units{
         {
             for (int i = 0; i < renderers.Count; i++)
             {
-                renderers[i].material.SetColor("_Color", new Color(1, 1, 1, value));
+                Color color = renderers[i].material.color;
+                color.a = value;
+                renderers[i].material.color = color;
+            }
+        }
+
+        public void SetTransparent(bool enabled)
+        {
+            for (int i = 0; i < renderers.Count; i++)
+            {
+                if (!enabled) // Opaque
+                {
+                    renderers[i].material.SetOverrideTag("RenderType", "Opaque");
+                    renderers[i].material.renderQueue = (int)UnityEngine.Rendering.RenderQueue.Geometry;
+                    renderers[i].material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.One);
+                    renderers[i].material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.Zero);
+                    renderers[i].material.SetInt("_ZWrite", 1);
+                }
+                else // Transparent
+                {
+                    renderers[i].material.SetOverrideTag("RenderType", "Transparent");
+                    renderers[i].material.renderQueue = (int)UnityEngine.Rendering.RenderQueue.Transparent;
+                    renderers[i].material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
+                    renderers[i].material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
+                    renderers[i].material.SetInt("_ZWrite", 0);
+                }
             }
         }
 
@@ -156,7 +165,8 @@ namespace Units{
             }
         }
 
-        private void InitNavMesh() {
+        private void InitNavMesh()
+        {
             navMeshAgent.enabled = true;
             navMeshAgent.updateRotation = true;
             navMeshAgent.SetDestination(destination.position);
@@ -178,12 +188,18 @@ namespace Units{
                 {
                     if (distance <= data.AttackRange)
                     {
-                        attackTargetFound = false;
-                        StartMovement(false, Vector3.zero);
-                        RotateTowards(attackTarget.transform, OnAttackRotationComplete);
+                        //attackTargetFound = false;
+                        if (navMeshAgent.enabled)
+                        {
+                            StartMovement(false, Vector3.zero);
+                            mandatoryFirstAttack = true;
+                        }
+                        RotateTowards(attackTarget.transform);
+                        StartAttacking();
                     }
                     else
                     {
+                        attackAllowed = false;
                         StartMovement(true, attackTarget.transform.position);
                     }
                 }
@@ -201,6 +217,7 @@ namespace Units{
 
             attackAllowed = false;
             attackTargetFound = false;
+            mandatoryFirstAttack = false;
         }
 
         protected void StartMovement(bool isMoving, Vector3 destPos)
@@ -231,7 +248,7 @@ namespace Units{
                 navMeshAgent.SetDestination(destPos);
         }
 
-        protected void StartMovingAnimation(bool isMoving)
+        protected virtual void StartMovingAnimation(bool isMoving)
         {
             animator.SetBool("Moving", isMoving);
             animator.SetFloat("Velocity Z", isMoving ? 1 : 0);
@@ -275,11 +292,11 @@ namespace Units{
                 damageAnimation.Kill();
             }
             damageAnimation = DOTween.Sequence();
-            damageAnimation.Append(ren.material.DOColor(damageColor, 0.1f).SetEase(Ease.InQuad));
+            damageAnimation.Append(ren.material.DOColor(damageColor, 0.2f).SetEase(Ease.InQuad));
             damageAnimation.Append(ren.material.DOColor(originalColor, 0.15f).SetEase(Ease.OutQuad));
         }
 
-        protected virtual void PerformAttack()
+        protected virtual void PerformAttack(TweenCallback OnFinish)
         {
             if (isDead)
                 return;
@@ -289,32 +306,32 @@ namespace Units{
         {
             if (isDead)
                 return;
+            
+            timePassedSinceLastAttack += Time.deltaTime;
+
             if (attackTarget != null)
             {
                 if (attackTargetFound)
                 {
                     timePassedSinceLastAttackTargetCheck += Time.deltaTime;
-                    if (timePassedSinceLastAttackTargetCheck >= checkForAttackTargetRate)
+                    if (timePassedSinceLastAttackTargetCheck >= checkForAttackTargetRate && !mandatoryFirstAttack)
                     {
                         timePassedSinceLastAttackTargetCheck = -checkForAttackTargetRate;
                         CheckIfAttackTargetReachable();
                     }
-                }
-                else if (attackAllowed)
-                {
-                    timePassedSinceLastAttack += Time.deltaTime;
-                    if (timePassedSinceLastAttack >= data.AttackRate)
+                    if (attackAllowed)
                     {
-                        timePassedSinceLastAttack = -data.AttackRate;
-                        PerformAttack();
+                        if (timePassedSinceLastAttack >= data.AttackRate)
+                        {
+                            timePassedSinceLastAttack = 0;
+                            PerformAttack(() =>
+                            {
+                                mandatoryFirstAttack = false;
+                            });
+                        }
                     }
                 }
             }
-        }
-
-        protected virtual void OnAttackRotationComplete()
-        {
-            StartAttacking();
         }
 
         protected virtual void StartAttacking()
@@ -334,9 +351,10 @@ namespace Units{
             }
 
             rotationAnimation = DOTween.Sequence();
-            rotationAnimation.OnComplete(OnComplete);
             float angle = Mathf.Atan2(target.position.x - transform.position.x, target.position.z - transform.position.z) * Mathf.Rad2Deg;
             rotationAnimation.Append(transform.DORotate(new Vector3(0, angle, 0), Math.Abs(angle) / navMeshAgent.angularSpeed));
+            if (OnComplete != null)
+                rotationAnimation.OnComplete(OnComplete);
         }
     }
 }

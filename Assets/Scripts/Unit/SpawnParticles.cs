@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using DG.Tweening;
 using UnityEngine;
+using UnityEngine.AI;
 
 namespace Units
 {
@@ -35,7 +36,8 @@ namespace Units
         public void StartSpawnAnimation(Unit unit, Transform parent, TweenCallback OnSpawnAnimationFinish = null)
         {
             Transform unitTransform = unit.transform;
-            Vector3 startPosition = unitTransform.localPosition;
+            float baseOffset = unit.gameObject.GetComponent<NavMeshAgent>().baseOffset;
+            Vector3 startPosition = unitTransform.localPosition + new Vector3(0, baseOffset, 0);
             Vector3 originalScale = unitTransform.localScale;
             float yUpOffset = 10f;
             unitTransform.localPosition = new Vector3(startPosition.x, startPosition.y + yUpOffset, startPosition.z);

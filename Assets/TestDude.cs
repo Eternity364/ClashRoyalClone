@@ -1,24 +1,18 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using DG.Tweening;
 using UnityEngine.AI;
 
 public class TestDude : MonoBehaviour
 {
-    
-    [SerializeField]    
-    private NavMeshAgent navMeshAgent;
-    [SerializeField]    
-    private Transform destination;
+    [SerializeField]
+    Transform destination;
 
-    void Start()
+    public void Update()
     {
-        navMeshAgent.updateRotation = false;
-    }
-
-    void Update()
-    {
-        transform.LookAt(destination.position);
-        navMeshAgent.SetDestination(destination.position);
+        if (destination == null)
+            return;
+        GetComponent<NavMeshAgent>().SetDestination(destination.position);
     }
 }

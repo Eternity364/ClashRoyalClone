@@ -42,9 +42,9 @@ namespace Units{
             });
         }
 
-        protected override void PerformAttack()
+        protected override void PerformAttack(TweenCallback OnFinish)
         {
-            base.PerformAttack();
+            base.PerformAttack(OnFinish);
 
             if (attackTarget != null)
             {
@@ -66,6 +66,7 @@ namespace Units{
                     bullet.SetActive(false);
                     if (attackTarget != null)
                         attackTarget.ReceiveAttack(data.Attack);
+                    OnFinish();
                 }
             }
         }
