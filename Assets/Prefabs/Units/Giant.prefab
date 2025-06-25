@@ -225,8 +225,8 @@ CapsuleCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 4.69
-  m_Height: 25.76
+  m_Radius: 3.87
+  m_Height: 16.01
   m_Direction: 1
   m_Center: {x: 0, y: 5.88, z: 0}
 --- !u!114 &5938028760130641289
@@ -380,6 +380,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_IsActive
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 424867396430313195, guid: 13849262306f1d745b4088e8ee71062b,
+        type: 3}
+      propertyPath: m_CastShadows
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 424867396430313195, guid: 13849262306f1d745b4088e8ee71062b,
+        type: 3}
+      propertyPath: m_StaticShadowCaster
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 424867396430313195, guid: 13849262306f1d745b4088e8ee71062b,
         type: 3}

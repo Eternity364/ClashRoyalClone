@@ -89,13 +89,14 @@ namespace Units{
             health = data.MaxHealth;
             timePassedSinceLastAttack = data.AttackRate;
             SetTeamColor(teamColor);
-
             InitNavMesh();
+            GetComponent<Collider>().enabled = true;
 
             if (data.AttackNoticeRange >= data.AttackRange)
             {
                 Debug.LogError("Attack notice range must be equal or greater than attack range.");
             }
+            
         }
 
         public virtual void SetAttackTarget(Unit unit)
@@ -272,6 +273,7 @@ namespace Units{
             OnDeath?.Invoke(this);
             OnDeath = null;
             transform.localRotation = Quaternion.identity;
+            GetComponent<Collider>().enabled = false;
 
             rPGCharacterController.EndAction("Death");
             rPGCharacterController.StartAction("Death");

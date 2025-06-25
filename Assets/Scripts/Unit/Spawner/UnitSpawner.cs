@@ -90,11 +90,11 @@ namespace Units{
             GameObject prefab = unitType.gameObject;
             GameObject unit = ObjectPool.Instance.GetObject(prefab);
             Transform parent = unitType is Giant ? giantsParent : normiesParent;
+            unit.GetComponent<Collider>().enabled = false;
             unit.transform.SetParent(parent);
             unit.gameObject.SetActive(true);
             position.y = 0;
             unit.transform.localPosition = position;
-            unit.GetComponent<Collider>().enabled = !isCopy;
             Unit unitComp = unit.GetComponent<Unit>();
             unitComp.SetTransparent(isCopy);
             if (isCopy)
