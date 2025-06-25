@@ -1,6 +1,7 @@
 using System.Collections;
 using DG.Tweening;
 using UnityEngine;
+using UnityEngine.AI;
 
 
 namespace Units{
@@ -71,7 +72,7 @@ namespace Units{
         {
             if (unitCopy != null)
             {
-                position.y = 0;
+                position.y = unitCopy.GetComponent<NavMeshAgent>().baseOffset;
                 unitCopy.transform.localPosition = position;
             }
         }
@@ -97,6 +98,7 @@ namespace Units{
             unit.transform.localPosition = position;
             Unit unitComp = unit.GetComponent<Unit>();
             unitComp.SetTransparent(isCopy);
+            unitComp.SetShadowCastingMode(!isCopy);
             if (isCopy)
                 unitComp.SetAlpha(0.25f);
 

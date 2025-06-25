@@ -167,6 +167,22 @@ namespace Units{
             }
         }
 
+        
+        public void SetShadowCastingMode(bool enabled)
+        {
+            for (int i = 0; i < renderers.Count; i++)
+            {
+                if (enabled)
+                {
+                    renderers[i].shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.On;
+                }
+                else
+                {
+                    renderers[i].shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+                }
+            }
+        }
+
         private void InitNavMesh()
         {
             navMeshAgent.enabled = true;
