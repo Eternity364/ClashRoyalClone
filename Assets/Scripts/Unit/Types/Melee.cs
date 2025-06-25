@@ -1,5 +1,3 @@
-
-using UnityEngine;
 using DG.Tweening;
 
 namespace Units{

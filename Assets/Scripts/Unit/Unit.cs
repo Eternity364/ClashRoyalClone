@@ -110,7 +110,7 @@ namespace Units{
             attackTarget.OnDeath += ClearAttackTarget;
             attackAllowed = false;
             attackTargetFound = true;
-            timePassedSinceLastAttackTargetCheck = checkForAttackTargetRate;
+            timePassedSinceLastAttackTargetCheck = 0;
         }
 
         public void ReceiveAttack(int damage)
@@ -205,6 +205,12 @@ namespace Units{
                     }
                 }
             }
+        }
+
+        protected bool IsTargetInAttackRange()
+        {
+            float distance = (transform.position - attackTarget.transform.position).magnitude - attackTarget.Radius;
+            return distance <= data.AttackRange;
         }
 
         protected virtual void ClearAttackTarget(Unit unit)
