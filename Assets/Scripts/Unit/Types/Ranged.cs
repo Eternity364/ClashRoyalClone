@@ -12,8 +12,8 @@ namespace Units{
         [SerializeField]    
         private GameObject arrow;
 
-        public override void Init(Transform destination, BulletFactory bulletFactory, int team, Color teamColor) {
-            base.Init(destination, bulletFactory, team, teamColor);
+        public override void Init(Transform destination, BulletFactory bulletFactory, int team) {
+            base.Init(destination, bulletFactory, team);
 
             SwitchWeaponContext context = new SwitchWeaponContext();
             context.type = "Instant";

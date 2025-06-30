@@ -33,6 +33,18 @@ namespace Units
             }
         }
 
+        private Dictionary<GameObject, List<Size>> sizeParts;
+
+        void Awake()
+        {
+            sizeParts = new Dictionary<GameObject, List<Size>>
+            {
+                { lightPart, new List<Size> { Size.Big, Size.Medium } },
+                { debrisPart, new List<Size> { Size.Big } },
+                { smokePart, new List<Size> { Size.Big } }
+            };
+        } 
+
         public void StartSpawnAnimation(Unit unit, Transform parent, TweenCallback OnSpawnAnimationFinish = null)
         {
             Transform unitTransform = unit.transform;
@@ -43,7 +55,7 @@ namespace Units
             unitTransform.localPosition = new Vector3(startPosition.x, startPosition.y + yUpOffset, startPosition.z);
             Vector3 startScale = new Vector3(originalScale.x, originalScale.y * 1.7f, originalScale.z);
             unitTransform.localScale = startScale;
-            unit.SetEmissionStrenght(0.78f);
+            unit.SetEmissionStrenght(0.68f);
 
             float yPos = transform.localPosition.y;
             transform.SetParent(parent);
@@ -55,14 +67,17 @@ namespace Units
             spawnAnimation.Insert(0.4f, unitTransform.DOScale(originalScale, 1f).SetEase(Ease.OutBounce));
             foreach (var part in Parts)
             {
-                spawnAnimation.InsertCallback(part.Key, () =>
+                if (sizeParts[part.Value].Contains(unit.Data.Size))
                 {
-                    part.Value.SetActive(true);
-                    part.Value.GetComponent<ParticleSystem>().Play();
-                });
+                    spawnAnimation.InsertCallback(part.Key, () =>
+                    {
+                        part.Value.SetActive(true);
+                        part.Value.GetComponent<ParticleSystem>().Play();
+                    });
+                }
             }
             spawnAnimation.Insert(0.6f,
-                DOTween.To(unit.SetEmissionStrenght, 0.78f, 0f, 0.8f).SetEase(Ease.InQuad)
+                DOTween.To(unit.SetEmissionStrenght, 0.68f, 0f, 2f).SetEase(Ease.InQuad)
             );
             spawnAnimation.InsertCallback(1.4f, () =>
                 {

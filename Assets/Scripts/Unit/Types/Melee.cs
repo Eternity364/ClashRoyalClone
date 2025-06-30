@@ -1,7 +1,7 @@
 using DG.Tweening;
 
 namespace Units{
-    public class Melee : Unit
+    public abstract class Melee : Unit
     {    
         protected Sequence seq;
 

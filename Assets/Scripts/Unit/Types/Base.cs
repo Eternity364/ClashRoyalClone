@@ -10,7 +10,7 @@ namespace Units{
         
         protected Sequence seq;
 
-        public override void Init(Transform destination, BulletFactory bulletFactory, int team, Color teamColor) { }
+        public override void Init(Transform destination, BulletFactory bulletFactory, int team) { }
 
         protected override void Awake()
         {
@@ -18,7 +18,7 @@ namespace Units{
             SetTeamColor(teamColor);
         }
 
-        public override void SetAttackTarget(Unit target) { }
+        public override void SetAttackTarget(Unit target, bool overrideMandatoryFirstAttack = false) { }
 
         protected override void PerformAttack(TweenCallback OnFinish) {}
     }

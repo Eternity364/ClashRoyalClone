@@ -18,6 +18,8 @@ namespace Units{
         private float attackNoticeRange;
         [SerializeField]
         private float attackRate;
+        [SerializeField]
+        private Size size;
 
         public int MaxHealth => maxHealth;
         public int Attack => attack;
@@ -25,5 +27,6 @@ namespace Units{
         public float AttackRange => attackRange;
         public float AttackNoticeRange => attackNoticeRange;
         public float AttackRate => attackRate;
+        public Size Size => size;
     }
 }

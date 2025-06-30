@@ -13,17 +13,18 @@ namespace Units{
         private bool clearTargetLock = false;
         private List<Transform> pushbackTargets = new List<Transform>();
 
-        public override void Init(Transform destination, BulletFactory bulletFactory, int team, Color teamColor)
+        public override void Init(Transform destination, BulletFactory bulletFactory, int team)
         {
             rPGCharacterController.EndAction("Relax");
             rPGCharacterController.StartAction("Relax", true);
             allowedTargets = AllowedTargets.Base;
             deathAnimationDepth = 5f;
-            StartCoroutine(BaseInit(destination, bulletFactory, team, teamColor));
+            StartCoroutine(BaseInit(destination, bulletFactory, team));
         }
 
-        private void OnEnable()
+        protected override void OnEnable()
         {
+            base.OnEnable();
             rPGCharacterController.EndAction("Relax");
             rPGCharacterController.StartAction("Relax", true);
         }
@@ -151,10 +152,10 @@ namespace Units{
         }
 
         
-        IEnumerator BaseInit(Transform destination, BulletFactory bulletFactory, int team, Color teamColor)
+        IEnumerator BaseInit(Transform destination, BulletFactory bulletFactory, int team)
         {
             yield return new WaitForSeconds(0.1f);
-            base.Init(destination, bulletFactory, team, teamColor);
+            base.Init(destination, bulletFactory, team);
         }
     }
 }

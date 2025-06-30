@@ -1,7 +1,6 @@
 using System.Collections;
 using DG.Tweening;
 using UnityEngine;
-using UnityEngine.AI;
 
 
 namespace Units{
@@ -44,7 +43,7 @@ namespace Units{
             GameObject oldUnitCopy = unitCopy;
             unitCopy = null;
 
-            if (!spawn)
+            if (!spawn && oldUnitCopy != null)
             {
                 ObjectPool.Instance.ReturnObject(oldUnitCopy);
                 yield break;
@@ -58,21 +57,27 @@ namespace Units{
 
             yield return new WaitForSeconds(delayBeforeSpawn);
 
-            Unit unit = CreateUnit(position, unitType).GetComponent<Unit>();
-            unit.SetTeamColor(teamColor);
-            StartSpawnAnimation(unit, () =>
+            ISpawnable spawnable = CreateUnit(position, unitType).GetComponent<ISpawnable>();
+            spawnable.SetTeamColor(teamColor);
+            StartSpawnAnimation(spawnable, () =>
             {
-                unit.Init(target, bulletFactory, team, teamColor);
-                targetAcquiring.AddUnit(unit);
+                spawnable.PerformActionForEachUnit(unit =>
+                {
+                    targetAcquiring.AddUnit(unit);
+                });
+                spawnable.Init(target, bulletFactory, team);
             });
-            ObjectPool.Instance.ReturnObject(oldUnitCopy);
+            if(oldUnitCopy != null)
+            {
+                ObjectPool.Instance.ReturnObject(oldUnitCopy);
+            }
         }
 
         private void UpdateUnitCopyPosition(Vector3 position)
         {
             if (unitCopy != null)
             {
-                position.y = unitCopy.GetComponent<NavMeshAgent>().baseOffset;
+                position.y = unitCopy.GetComponent<ISpawnable>().baseOffset;
                 unitCopy.transform.localPosition = position;
             }
         }
@@ -88,27 +93,43 @@ namespace Units{
 
         private GameObject CreateUnit(Vector3 position, Unit unitType, bool isCopy = false)
         {
-            GameObject prefab = unitType.gameObject;
-            GameObject unit = ObjectPool.Instance.GetObject(prefab);
+            GameObject prefab = unitType.Spawnable.GetGameObject();
+            GameObject go = ObjectPool.Instance.GetObject(prefab);
             Transform parent = unitType is Giant ? giantsParent : normiesParent;
-            unit.GetComponent<Collider>().enabled = false;
-            unit.transform.SetParent(parent);
-            unit.gameObject.SetActive(true);
+            go.transform.SetParent(parent);
+            go.gameObject.SetActive(true);
             position.y = 0;
-            unit.transform.localPosition = position;
-            Unit unitComp = unit.GetComponent<Unit>();
-            unitComp.SetTransparent(isCopy);
-            unitComp.SetShadowCastingMode(!isCopy);
-            if (isCopy)
-                unitComp.SetAlpha(0.25f);
+            go.transform.localPosition = position;
+            ISpawnable spawnable = go.GetComponent<ISpawnable>();
+            spawnable.SetCopyMode(isCopy);
 
-            return unit;
+            return go;
         }
 
-        private void StartSpawnAnimation(Unit unit, TweenCallback OnSpawnAnimationFinish = null)
+        private void StartSpawnAnimation(ISpawnable spawnable, TweenCallback OnSpawnAnimationFinish = null)
         {
-            GameObject spawnParticles = ObjectPool.Instance.GetObject(this.spawnParticlesPrefab.gameObject);
-            spawnParticles.GetComponent<SpawnParticles>().StartSpawnAnimation(unit, normiesParent, OnSpawnAnimationFinish);
+            Sequence seq = DOTween.Sequence();
+            float minRandom = 0.1f;
+            float maxRandom = 0.6f;
+            if (spawnable is Unit)
+            {
+                minRandom = 0;
+                maxRandom = 0;
+            } else if (spawnable is SpawnGroup)
+            {
+                SpawnGroup group = spawnable as SpawnGroup;
+                group.SetParentForUnits(group.transform.parent);
+            }
+            spawnable.PerformActionForEachUnit(unit =>
+            {
+                unit.gameObject.SetActive(false || spawnable is not SpawnGroup);
+                seq.InsertCallback(Random.Range(minRandom, maxRandom), () =>
+                {
+                    unit.gameObject.SetActive(true);
+                    GameObject spawnParticles = ObjectPool.Instance.GetObject(this.spawnParticlesPrefab.gameObject);
+                    spawnParticles.GetComponent<SpawnParticles>().StartSpawnAnimation(unit, normiesParent, OnSpawnAnimationFinish);
+                });
+            });
         }
     }
 }

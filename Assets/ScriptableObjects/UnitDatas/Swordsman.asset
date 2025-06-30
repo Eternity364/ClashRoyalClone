@@ -16,5 +16,6 @@ MonoBehaviour:
   attack: 20
   cost: 2
   attackRange: 4
-  attackNoticeRange: 20
+  attackNoticeRange: 15
   attackRate: 2
+  size: 1

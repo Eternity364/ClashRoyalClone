@@ -15,15 +15,20 @@ namespace Units{
         All,
         Base
     }
+    
+    public enum Size
+    {
+        Big,
+        Medium,
+        Small
+    }
 
-    public abstract class Unit : MonoBehaviour
+    public abstract class Unit : MonoBehaviour, ISpawnable
     {
         [SerializeField]
         protected UnitData data;
         [SerializeField]
         protected Color damageColor;
-        [SerializeField]
-        protected Renderer ren;
         [SerializeField]
         protected BulletFactory bulletFactory;
         [SerializeField]
@@ -37,6 +42,7 @@ namespace Units{
         [SerializeField]
         protected float checkForAttackTargetRate = 0.1f;
 
+        public virtual ISpawnable Spawnable => this;
         /// <summary>
         /// Range, on which unit spots an enemy and starts walking to it. Must be equal or greater than attack range.
         /// </summary>
@@ -45,6 +51,7 @@ namespace Units{
         public bool IsDead => isDead;
         public bool HasTarget => attackTarget != null;
         public Unit Target => attackTarget;
+        public float baseOffset => navMeshAgent.baseOffset;
         public AllowedTargets AllowedTargets => allowedTargets;
         public float Radius => navMeshAgent.radius;
         public UnitData Data => data;
@@ -56,7 +63,7 @@ namespace Units{
         protected float timePassedSinceLastAttack = 0;
         protected float timePassedSinceLastAttackTargetCheck = 0;
         protected float deathAnimationDepth = 2;
-        protected Color originalColor;
+        protected Color originalColor = Color.white;
         protected DG.Tweening.Sequence damageAnimation;
         protected DG.Tweening.Sequence rotationAnimation;
         protected bool attackAllowed = false;
@@ -70,17 +77,12 @@ namespace Units{
 
         protected virtual void Awake()
         {
-            originalColor = ren.material.color;
             rPGCharacterController = GetComponent<RPGCharacterController>();
             if (rPGCharacterController != null)
                 rPGCharacterController.enabled = true;
         }
 
-        protected virtual void Start()
-        {
-        }
-
-        public virtual void Init(Transform destination, BulletFactory bulletFactory, int team, Color teamColor)
+        public virtual void Init(Transform destination, BulletFactory bulletFactory, int team)
         {
             isDead = false;
             this.bulletFactory = bulletFactory;
@@ -88,24 +90,41 @@ namespace Units{
             this.team = team;
             health = data.MaxHealth;
             timePassedSinceLastAttack = data.AttackRate;
-            SetTeamColor(teamColor);
             InitNavMesh();
             GetComponent<Collider>().enabled = true;
 
-            if (data.AttackNoticeRange >= data.AttackRange)
+            if (data.AttackNoticeRange < data.AttackRange)
             {
                 Debug.LogError("Attack notice range must be equal or greater than attack range.");
             }
-            
+
         }
 
-        public virtual void SetAttackTarget(Unit unit)
+        public void PerformActionForEachUnit(Action<Unit> Action)
         {
+            Action(this);
+        }
+
+        public virtual GameObject GetGameObject()
+        {
+            return gameObject;
+        }
+
+        public virtual void SetAttackTarget(Unit unit, bool overrideMandatoryFirstAttack = false)
+        {
+            if (isDead)
+                return;
+
             if (attackTarget != null)
             {
                 attackTarget.OnDeath -= ClearAttackTarget;
-                attackTarget = null;
             }
+
+            if (overrideMandatoryFirstAttack)
+            {
+                mandatoryFirstAttack = false;
+            }
+
             attackTarget = unit;
             attackTarget.OnDeath += ClearAttackTarget;
             attackAllowed = false;
@@ -123,52 +142,70 @@ namespace Units{
 
         public void SetTeamColor(Color color)
         {
-            ren.material.SetColor("_TeamColor", color);
+            DoActionForAllMaterials(mat =>
+            {
+                mat.SetColor("_TeamColor", color);
+            });
         }
 
-        public void SetAlpha(float value)
+        public void SetCopyMode(bool enabled)
         {
-            for (int i = 0; i < renderers.Count; i++)
+            SetTransparent(enabled);
+            SetShadowCastingMode(!enabled);
+            if (enabled)
             {
-                Color color = renderers[i].material.color;
-                color.a = value;
-                renderers[i].material.color = color;
-            }
-        }
-
-        public void SetTransparent(bool enabled)
-        {
-            for (int i = 0; i < renderers.Count; i++)
-            {
-                if (!enabled) // Opaque
-                {
-                    renderers[i].material.SetOverrideTag("RenderType", "Opaque");
-                    renderers[i].material.renderQueue = (int)UnityEngine.Rendering.RenderQueue.Geometry;
-                    renderers[i].material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.One);
-                    renderers[i].material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.Zero);
-                    renderers[i].material.SetInt("_ZWrite", 1);
-                }
-                else // Transparent
-                {
-                    renderers[i].material.SetOverrideTag("RenderType", "Transparent");
-                    renderers[i].material.renderQueue = (int)UnityEngine.Rendering.RenderQueue.Transparent;
-                    renderers[i].material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
-                    renderers[i].material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
-                    renderers[i].material.SetInt("_ZWrite", 0);
-                }
+                SetAlpha(0.4f);
+                SetTeamColor(Color.white);
             }
         }
 
         public void SetEmissionStrenght(float value)
         {
-            for (int i = 0; i < renderers.Count; i++)
+            DoActionForAllMaterials(mat =>
             {
-                renderers[i].material.SetFloat("_EmissionStrength", value);
-            }
+                mat.SetFloat("_EmissionStrength", value);
+            });
         }
 
-        
-        public void SetShadowCastingMode(bool enabled)
+        protected virtual void OnEnable()
+        {
+
+            GetComponent<Collider>().enabled = false;
+        }
+
+        private void SetAlpha(float value)
+        {
+            DoActionForAllMaterials(mat =>
+            {
+                Color color = mat.color;
+                color.a = value;
+                mat.color = color;
+            });
+        }
+
+        private void SetTransparent(bool enabled)
+        {
+            DoActionForAllMaterials(mat =>
+            {
+                if (enabled)
+                {
+                    mat.SetFloat("_Mode", 2f);
+                    mat.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
+                    mat.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
+                    mat.SetInt("_ZWrite", 0);
+                }
+                else
+                {
+                    mat.SetFloat("_Mode", 0f);
+                    mat.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.One);
+                    mat.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.Zero);
+                    mat.SetInt("_ZWrite", 1);
+                }
+            });
+        }
+
+
+        private void SetShadowCastingMode(bool enabled)
         {
             for (int i = 0; i < renderers.Count; i++)
             {
@@ -235,12 +272,11 @@ namespace Units{
                 return;
 
             attackTarget = null;
-
-            StartMovement(true, destination.position);
-
             attackAllowed = false;
             attackTargetFound = false;
             mandatoryFirstAttack = false;
+
+            StartMovement(true, destination.position);
         }
 
         protected void StartMovement(bool isMoving, Vector3 destPos)
@@ -264,8 +300,10 @@ namespace Units{
         protected IEnumerator SetDestination(Vector3 destPos)
         {
             yield return new WaitForNextFrameUnit();
+
             if (isDead)
                 yield break;
+
             transform.position = positionBefore;
             if (navMeshAgent.isOnNavMesh)
                 navMeshAgent.SetDestination(destPos);
@@ -286,6 +324,8 @@ namespace Units{
             navMeshObstacle.enabled = false;
             attackAllowed = false;
             attackTarget = null;
+            mandatoryFirstAttack = false;
+            attackTargetFound = false;
 
             if (rotationAnimation != null)
             {
@@ -317,8 +357,11 @@ namespace Units{
                 damageAnimation.Kill();
             }
             damageAnimation = DOTween.Sequence();
-            damageAnimation.Append(ren.material.DOColor(damageColor, 0.2f).SetEase(Ease.InQuad));
-            damageAnimation.Append(ren.material.DOColor(originalColor, 0.15f).SetEase(Ease.OutQuad));
+            DoActionForAllMaterials(mat =>
+            {
+                damageAnimation.Append(mat.DOColor(damageColor, 0.2f).SetEase(Ease.InQuad));
+                damageAnimation.Append(mat.DOColor(originalColor, 0.15f).SetEase(Ease.OutQuad));
+            });
         }
 
         protected virtual void PerformAttack(TweenCallback OnFinish)
@@ -331,29 +374,26 @@ namespace Units{
         {
             if (isDead)
                 return;
-            
-            timePassedSinceLastAttack += Time.deltaTime;
 
-            if (attackTarget != null)
+
+            if (attackTarget != null && attackTargetFound)
             {
-                if (attackTargetFound)
+                timePassedSinceLastAttackTargetCheck += Time.deltaTime;
+                if (timePassedSinceLastAttackTargetCheck >= checkForAttackTargetRate && !mandatoryFirstAttack)
                 {
-                    timePassedSinceLastAttackTargetCheck += Time.deltaTime;
-                    if (timePassedSinceLastAttackTargetCheck >= checkForAttackTargetRate && !mandatoryFirstAttack)
+                    timePassedSinceLastAttackTargetCheck %= checkForAttackTargetRate;
+                    CheckIfAttackTargetReachable();
+                }
+                if (attackAllowed)
+                {
+                    timePassedSinceLastAttack += Time.deltaTime;
+                    if (timePassedSinceLastAttack >= data.AttackRate)
                     {
-                        timePassedSinceLastAttackTargetCheck = -checkForAttackTargetRate;
-                        CheckIfAttackTargetReachable();
-                    }
-                    if (attackAllowed)
-                    {
-                        if (timePassedSinceLastAttack >= data.AttackRate)
+                        timePassedSinceLastAttack = 0;
+                        PerformAttack(() =>
                         {
-                            timePassedSinceLastAttack = 0;
-                            PerformAttack(() =>
-                            {
-                                mandatoryFirstAttack = false;
-                            });
-                        }
+                            mandatoryFirstAttack = false;
+                        });
                     }
                 }
             }
@@ -364,7 +404,7 @@ namespace Units{
             if (attackAllowed)
                 return;
             attackAllowed = true;
-            timePassedSinceLastAttack = data.AttackRate;
+            timePassedSinceLastAttack += UnityEngine.Random.Range(0f, 0.1f * data.AttackRate);
         }
 
         private void RotateTowards(Transform target, TweenCallback OnComplete = null)
@@ -380,6 +420,17 @@ namespace Units{
             rotationAnimation.Append(transform.DORotate(new Vector3(0, angle, 0), Math.Abs(angle) / navMeshAgent.angularSpeed));
             if (OnComplete != null)
                 rotationAnimation.OnComplete(OnComplete);
+        }
+
+        private void DoActionForAllMaterials(Action<Material> Action)
+        {
+            foreach (Renderer ren in renderers)
+            {
+                foreach (Material mat in ren.materials)
+                {
+                    Action(mat);
+                }
+            }
         }
     }
 }

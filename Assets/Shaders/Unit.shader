@@ -9,7 +9,7 @@ Shader "Custom/Unit"
         _TeamColorPosConstrainV1 ("TeamColorPosConstrainV1", Range(0,1)) = 0
         _TeamColorPosConstrainU2 ("TeamColorPosConstrainU2", Range(0,1)) = 1
         _TeamColorPosConstrainV2 ("TeamColorPosConstrainV2", Range(0,1)) = 1
-        _EmissionColor ("Emission Color", Color) = (0,0,0,0)
+        [HDR] _EmissionColor ("Emission Color", Color) = (0,0,0,0)
         _EmissionStrength ("Emission Strength", Range(0,1)) = 1
         _MainTex ("Albedo (RGB)", 2D) = "white" {}
         _Glossiness ("Smoothness", Range(0,1)) = 0.5

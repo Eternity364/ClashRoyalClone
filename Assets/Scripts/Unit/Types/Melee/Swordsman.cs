@@ -12,9 +12,9 @@ namespace Units{
         [SerializeField]
         private GameObject swordInTheBack;
 
-        public override void SetAttackTarget(Unit target) {
+        public override void SetAttackTarget(Unit target, bool overrideMandatoryFirstAttack = false) {
             bool hadTargetBefore = HasTarget;
-            base.SetAttackTarget(target);
+            base.SetAttackTarget(target, overrideMandatoryFirstAttack);
             SheathWeapon(false, hadTargetBefore);
         }
         
@@ -27,14 +27,12 @@ namespace Units{
         {
             if (isDead)
                 return;
-            if (HasTarget == active)
+            if (HasTarget != active && forceStartAttacking)
             {
-                if (forceStartAttacking)
-                {
-                    StartAttacking();
-                }
+                StartAttacking();
                 return;
             }
+            
             SwitchWeaponContext context = new SwitchWeaponContext();
             float callbackDelay = active ? 0.6f : 0.1f;
             context.type = active ? "Sheath" : "Unsheath";
