@@ -93,9 +93,8 @@ namespace Units
             if (units == null || units.Count == 0) return;
 
             int count = units.Count;
-            // Estimate grid size: ensure enough white cells for all units
             int gridSize = 1;
-            while ((gridSize * gridSize + 1) / 2 < count) // number of white cells on a checkerboard
+            while ((gridSize * gridSize + 1) / 2 < count)
                 gridSize++;
 
             float cellWidth = areaWidth / gridSize;
@@ -106,13 +105,11 @@ namespace Units
             {
                 for (int col = 0; col < gridSize && placed < count; col++)
                 {
-                    // Checkerboard: only place on "white" cells (row+col even)
                     if ((row + col) % 2 == 0)
                     {
                         float x = -areaWidth / 2f + col * cellWidth + cellWidth / 2f;
                         float z = -areaLength / 2f + row * cellLength + cellLength / 2f;
 
-                        // Add randomness within a fraction of the cell size
                         float randX = UnityEngine.Random.Range(-cellWidth * randomOffset, cellWidth * randomOffset);
                         float randZ = UnityEngine.Random.Range(-cellLength * randomOffset, cellLength * randomOffset);
 

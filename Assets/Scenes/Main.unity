@@ -2934,7 +2934,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 4294967295
   m_UseGeometry: 0
-  m_DefaultArea: 0
+  m_DefaultArea: 4
   m_GenerateLinks: 0
   m_IgnoreNavMeshAgent: 1
   m_IgnoreNavMeshObstacle: 1
@@ -5094,7 +5094,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1044829379
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5117,7 +5117,7 @@ MonoBehaviour:
   bulletFactory: {fileID: 2114211193}
   teamColor: {r: 0.745283, g: 0.0660911, b: 0.0660911, a: 0}
   team: 1
-  spawnRate: 7
+  spawnRate: 12
   unitPrefab: {fileID: 7840963495349357989, guid: 391a642033c5e634dab2ab25434f1e57,
     type: 3}
 --- !u!65 &1044829380
@@ -7321,8 +7321,8 @@ MonoBehaviour:
   bulletFactory: {fileID: 2114211193}
   teamColor: {r: 0.745283, g: 0.0660911, b: 0.0660911, a: 0}
   team: 1
-  spawnRate: 30
-  unitPrefab: {fileID: 4392560655695614523, guid: d447a58d7798b414ca462105208c9072,
+  spawnRate: 12
+  unitPrefab: {fileID: 3231107821499508076, guid: b5813654b784855468d9767bef561ac2,
     type: 3}
 --- !u!65 &1472674719
 BoxCollider:
@@ -11246,7 +11246,7 @@ PrefabInstance:
     - target: {fileID: 1475403950515795645, guid: 6cda68b015ef5824eb3b0e439cdf476c,
         type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4955476018583674129, guid: 6cda68b015ef5824eb3b0e439cdf476c,
         type: 3}

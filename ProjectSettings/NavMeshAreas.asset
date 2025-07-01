@@ -11,9 +11,9 @@ NavMeshProjectSettings:
     cost: 1
   - name: Jump
     cost: 2
-  - name: Giants
+  - name: Giant
     cost: 1
-  - name: 
+  - name: Unit
     cost: 1
   - name: 
     cost: 1

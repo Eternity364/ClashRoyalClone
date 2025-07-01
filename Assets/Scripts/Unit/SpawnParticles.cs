@@ -50,6 +50,8 @@ namespace Units
             Transform unitTransform = unit.transform;
             float baseOffset = unit.gameObject.GetComponent<NavMeshAgent>().baseOffset;
             Vector3 startPosition = unitTransform.localPosition + new Vector3(0, baseOffset, 0);
+            //startPosition = GetAvailablePositionOnNavMesh(startPosition, unit.gameObject, 5f);
+            
             Vector3 originalScale = unitTransform.localScale;
             float yUpOffset = 10f;
             unitTransform.localPosition = new Vector3(startPosition.x, startPosition.y + yUpOffset, startPosition.z);
@@ -87,6 +89,16 @@ namespace Units
                 {
                     ObjectPool.Instance.ReturnObject(this.gameObject);
                 });
+        }
+
+        Vector3 GetAvailablePositionOnNavMesh(Vector3 position, GameObject unitGameObject, float maxDistance = 5f)
+        {
+            int areaMask = NavMesh.GetAreaFromName(unitGameObject.tag);
+            if (NavMesh.SamplePosition(position, out NavMeshHit hit, maxDistance, areaMask))
+            {
+                return hit.position;
+            }
+            return position;
         }
 
         

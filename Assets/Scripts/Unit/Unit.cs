@@ -359,8 +359,8 @@ namespace Units{
             damageAnimation = DOTween.Sequence();
             DoActionForAllMaterials(mat =>
             {
-                damageAnimation.Append(mat.DOColor(damageColor, 0.2f).SetEase(Ease.InQuad));
-                damageAnimation.Append(mat.DOColor(originalColor, 0.15f).SetEase(Ease.OutQuad));
+                damageAnimation.Append(mat.DOColor(damageColor, 0.1f).SetEase(Ease.InSine));
+                damageAnimation.Append(mat.DOColor(originalColor, 0.1f).SetEase(Ease.OutSine));
             });
         }
 

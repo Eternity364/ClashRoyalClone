@@ -115,7 +115,8 @@ namespace Units{
             {
                 minRandom = 0;
                 maxRandom = 0;
-            } else if (spawnable is SpawnGroup)
+            }
+            else if (spawnable is SpawnGroup)
             {
                 SpawnGroup group = spawnable as SpawnGroup;
                 group.SetParentForUnits(group.transform.parent);

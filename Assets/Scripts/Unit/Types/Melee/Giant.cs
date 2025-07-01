@@ -40,6 +40,7 @@ namespace Units{
             if (isDead || other.gameObject.tag != "Unit")
                 return;
             PushBack(other.gameObject.transform);
+            print("trigger enter: " + other.gameObject.name);
         }
 
         protected void OnTriggerExit(Collider other)
@@ -63,7 +64,7 @@ namespace Units{
 
         IEnumerator PushBackCoroutine(Transform encounter)
         {
-            int area = NavMesh.GetAreaFromName("Giants");
+            int area = NavMesh.GetAreaFromName(this.gameObject.tag);
             int areaMask = 1 << area;
             NavMeshHit hit;
             Vector3 encounterPosition;
