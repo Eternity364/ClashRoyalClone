@@ -1,6 +1,9 @@
 using System.Collections;
+using System.Collections.Generic;
 using DG.Tweening;
+using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.AI;
 
 
 namespace Units{
@@ -17,8 +20,6 @@ namespace Units{
         [SerializeField]
         Transform normiesParent;
         [SerializeField]
-        Transform giantsParent;
-        [SerializeField]
         BulletFactory bulletFactory;
         [SerializeField]
         Color teamColor;
@@ -33,12 +34,12 @@ namespace Units{
             panel.SetOnDragEvents(CreateUnitCopy, TrySpawn, UpdateUnitCopyPosition);
         }
 
-        public void TrySpawn(Vector3 position, Unit unitType, bool spawn, bool payElixir)
+        public void TrySpawn(Vector3 position, Type unitType, bool spawn, bool payElixir)
         {
             StartCoroutine(TrySpawnCor(position, unitType, spawn, payElixir));
         }
 
-        private IEnumerator TrySpawnCor(Vector3 position, Unit unitType, bool spawn, bool payElixir)
+        private IEnumerator TrySpawnCor(Vector3 position, Type unitType, bool spawn, bool payElixir)
         {
             GameObject oldUnitCopy = unitCopy;
             unitCopy = null;
@@ -49,24 +50,31 @@ namespace Units{
                 yield break;
             }
 
+            UnitData data = UnitsList.Instance.Get()[(int)unitType].Data;
+
             if (payElixir)
             {
-                ElixirManager.Instance.ChangeValue(-unitType.Data.Cost);
-                panel.CreateFieldElixirAnimation(unitType.Data.Cost);
+                ElixirManager.Instance.ChangeValue(-data.Cost);
+                panel.CreateFieldElixirAnimation(data.Cost);
             }
 
             yield return new WaitForSeconds(delayBeforeSpawn);
 
-            ISpawnable spawnable = CreateUnit(position, unitType).GetComponent<ISpawnable>();
-            spawnable.SetTeamColor(teamColor);
-            StartSpawnAnimation(spawnable, () =>
-            {
-                spawnable.PerformActionForEachUnit(unit =>
+            // if (NetworkManager.Singleton.IsHost || !NetworkManager.Singleton.IsListening)
+            // {
+            
+                float baseOffset = UnitsList.Instance.Get()[(int)unitType].GetComponent<NavMeshAgent>().baseOffset;
+                ISpawnable spawnable = Factory.Instance.Create(position, spawnParticlesPrefab.YUpOffset + baseOffset, unitType).GetComponent<ISpawnable>();
+                spawnable.SetTeamColor(teamColor);
+                StartSpawnAnimation(spawnable, () =>
                 {
-                    targetAcquiring.AddUnit(unit);
+                        spawnable.PerformActionForEachUnit(unit =>
+                        {
+                            targetAcquiring.AddUnit(unit);
+                        });
+                        spawnable.Init(target, bulletFactory, team);
                 });
-                spawnable.Init(target, bulletFactory, team);
-            });
+            // }
             if(oldUnitCopy != null)
             {
                 ObjectPool.Instance.ReturnObject(oldUnitCopy);
@@ -82,28 +90,13 @@ namespace Units{
             }
         }
 
-        private void CreateUnitCopy(Vector3 position, Unit unitType)
+        private void CreateUnitCopy(Vector3 position, Type unitType)
         {
             if (unitCopy != null)
             {
                 return;
             }
-            unitCopy = CreateUnit(position, unitType, true);
-        }
-
-        private GameObject CreateUnit(Vector3 position, Unit unitType, bool isCopy = false)
-        {
-            GameObject prefab = unitType.Spawnable.GetGameObject();
-            GameObject go = ObjectPool.Instance.GetObject(prefab);
-            Transform parent = unitType is Giant ? giantsParent : normiesParent;
-            go.transform.SetParent(parent);
-            go.gameObject.SetActive(true);
-            position.y = 0;
-            go.transform.localPosition = position;
-            ISpawnable spawnable = go.GetComponent<ISpawnable>();
-            spawnable.SetCopyMode(isCopy);
-
-            return go;
+            unitCopy = Factory.Instance.Create(position, 0, unitType, true);
         }
 
         private void StartSpawnAnimation(ISpawnable spawnable, TweenCallback OnSpawnAnimationFinish = null)

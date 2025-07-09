@@ -12,13 +12,23 @@ namespace Units{
         [SerializeField]
         private GameObject swordInTheBack;
 
-        public override void SetAttackTarget(Unit target, bool overrideMandatoryFirstAttack = false) {
+        public event System.Action<bool> OnSetSwordActive;
+
+        public override void SetAttackTarget(Unit target, bool overrideMandatoryFirstAttack = false)
+        {
             bool hadTargetBefore = HasTarget;
             base.SetAttackTarget(target, overrideMandatoryFirstAttack);
             SheathWeapon(false, hadTargetBefore);
         }
+
+        public void SetSwordActive(bool active)
+        {
+            swordInHand.SetActive(active);
+            swordInTheBack.SetActive(!active);
+        }
         
-        protected override void ClearAttackTarget(Unit unit) {
+        protected override void ClearAttackTarget(Unit unit)
+        {
             SheathWeapon(true);
             base.ClearAttackTarget(unit);
         }
@@ -32,7 +42,7 @@ namespace Units{
                 StartAttacking();
                 return;
             }
-            
+
             SwitchWeaponContext context = new SwitchWeaponContext();
             float callbackDelay = active ? 0.6f : 0.1f;
             context.type = active ? "Sheath" : "Unsheath";
@@ -46,8 +56,8 @@ namespace Units{
             seq = DOTween.Sequence();
             seq.InsertCallback(callbackDelay, () =>
             {
-                swordInHand.SetActive(!active);
-                swordInTheBack.SetActive(active);
+                SetSwordActive(!active);
+                OnSetSwordActive?.Invoke(!active);
                 if (active)
                     animator.SetBool("Trigger", true);
             });

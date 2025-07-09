@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Units;
+using Unity.Netcode;
 
 public class ObjectPool : MonoBehaviour
 {
@@ -57,6 +58,11 @@ public class ObjectPool : MonoBehaviour
     // Return an object to the pool
     public void ReturnObject(GameObject obj)
     {
+        NetworkObject networkObject = obj.GetComponent<NetworkObject>();
+        if (obj.GetComponent<NetworkObject>() != null && NetworkManager.Singleton.IsHost)
+        {
+            networkObject.Despawn();
+        }
         obj.SetActive(false);
     }
 }

@@ -40,8 +40,8 @@ namespace Units {
         [SerializeField]
         float minCopyScale = 0.5f;
 
-        private UnityAction<Vector3, Unit, bool, bool> OnDragEndEvent;
-        private UnityAction<Vector3, Unit> OnEnteredUnitPlaceAreaEvent;
+        private UnityAction<Vector3, Type, bool, bool> OnDragEndEvent;
+        private UnityAction<Vector3, Type> OnEnteredUnitPlaceAreaEvent;
         private UnityAction<Vector3> OnDragEvent;
 
         private UnitButton[] buttons;
@@ -70,7 +70,7 @@ namespace Units {
             ElixirManager.Instance.AddOnValueChangedListener(UpdateButtonsStatus);
         }
 
-        public void SetOnDragEvents(UnityAction<Vector3, Unit> onEnteredUnitPlaceAreaEvent, UnityAction<Vector3, Unit, bool, bool> onDragEndEvent, UnityAction<Vector3> onDragEvent)
+        public void SetOnDragEvents(UnityAction<Vector3, Type> onEnteredUnitPlaceAreaEvent, UnityAction<Vector3, Type, bool, bool> onDragEndEvent, UnityAction<Vector3> onDragEvent)
         {
             OnEnteredUnitPlaceAreaEvent = onEnteredUnitPlaceAreaEvent;
             OnDragEvent = onDragEvent;
@@ -125,7 +125,13 @@ namespace Units {
             originalDistance = float.MaxValue;
             unitPlaceArea.SetVisible(false);
 
-            OnDragEndEvent?.Invoke(lastHitPosition, button.Unit, enteredUnitPlaceArea, true);
+            ControlScheme.Instance.PutUnitOnTheField(
+                lastHitPosition,
+                button.Unit.Type,
+                enteredUnitPlaceArea,
+                true,
+                OnDragEndEvent);
+            //OnDragEndEvent?.Invoke(lastHitPosition, button.Unit.Type, enteredUnitPlaceArea, true);
 
             enteredUnitPlaceArea = false;
             lastHitPosition = Vector3.zero;
@@ -142,7 +148,7 @@ namespace Units {
                 if (unitPlaceArea.IsMouseOver())
                 {
                     enteredUnitPlaceArea = true;
-                    OnEnteredUnitPlaceAreaEvent?.Invoke(hitPosition, copyButton.Unit);
+                    OnEnteredUnitPlaceAreaEvent?.Invoke(hitPosition, copyButton.Unit.Type);
                 }
                 else if (!unitPlaceArea.IsMousePositionAboveCenter(hitPosition))
                 {

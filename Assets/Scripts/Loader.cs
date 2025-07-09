@@ -1,8 +1,24 @@
+using System.Collections.Generic;
+using Units;
+using Unity.AI.Navigation;
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
+public enum Mode
+{
+    SinglePlayer,
+    Host,
+    Client
+}
+
 public class Loader : MonoBehaviour
 {
+    [SerializeField] Mode mode;
+    [SerializeField] List<NavMeshSurface> surfaces;
+    [SerializeField] List<UnitAutoSpawner> enemySpawners;
+    [SerializeField] TargetAcquiring targetAcquiring;
+
     private void Awake()
     {
         SceneManager.sceneLoaded += OnSceneLoad;
@@ -10,18 +26,36 @@ public class Loader : MonoBehaviour
 
     void OnSceneLoad(Scene scene, LoadSceneMode mode)
     {
-        Debug.Log( "Scene loaded: " + scene.name );
-        
-        var path = "Variants";
-        var collection = Resources.Load<ShaderVariantCollection>( path );
-        
-        if ( collection != null )
+        new SinglePlayerControlScheme();
+        switch (this.mode)
         {
-            Debug.Log( "Shaders/variants: " + collection.shaderCount + "/" + collection.variantCount );
-        
-            collection.WarmUp();
-        
-            Resources.UnloadAsset( collection );
+            case Mode.SinglePlayer:
+                StartSinglePlayer();
+                break;
+            case Mode.Host:
+                StartHost();
+                break;
+            case Mode.Client:
+                StartClient();
+                break;
         }
+    }
+
+    void StartSinglePlayer()
+    {
+        new SinglePlayerControlScheme();
+    }
+
+    void StartHost()
+    {
+        NetworkManager.Singleton.StartHost();
+    }
+
+    void StartClient()
+    {
+        surfaces.ForEach(surf => surf.enabled = false);
+        enemySpawners.ForEach(spawner => spawner.enabled = false);
+        targetAcquiring.enabled = false;
+        NetworkManager.Singleton.StartClient();
     }
 }

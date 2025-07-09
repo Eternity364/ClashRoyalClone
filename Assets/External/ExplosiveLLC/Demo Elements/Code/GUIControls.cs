@@ -413,8 +413,8 @@ namespace RPGCharacterAnims
 				}
             }
             // Debug.
-            if (GUI.Button(new Rect(600, 20, 120, 30), "Debug Controller")) { rpgCharacterController.ControllerDebug(); }
-            if (GUI.Button(new Rect(600, 50, 120, 30), "Debug Animator")) { rpgCharacterController.AnimatorDebug(); }
+            // if (GUI.Button(new Rect(600, 20, 120, 30), "Debug Controller")) { rpgCharacterController.ControllerDebug(); }
+            // if (GUI.Button(new Rect(600, 50, 120, 30), "Debug Animator")) { rpgCharacterController.AnimatorDebug(); }
         }
 
 

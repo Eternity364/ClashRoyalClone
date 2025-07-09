@@ -23,8 +23,17 @@ namespace Units{
         Small
     }
 
+    public enum Type
+    {
+        Swordsman,
+        Ranged,
+        MiniSceleton,
+        Giant
+    }
+
     public abstract class Unit : MonoBehaviour, ISpawnable
     {
+
         [SerializeField]
         protected UnitData data;
         [SerializeField]
@@ -41,6 +50,8 @@ namespace Units{
         protected Animator animator;
         [SerializeField]
         protected float checkForAttackTargetRate = 0.1f;
+        [SerializeField]
+        protected Type type;
 
         public virtual ISpawnable Spawnable => this;
         /// <summary>
@@ -56,6 +67,9 @@ namespace Units{
         public float Radius => navMeshAgent.radius;
         public UnitData Data => data;
         public UnityAction<Unit> OnDeath;
+        public event UnityAction<Color> OnTeamColorSet;
+        public event UnityAction<float> OnEmissionStrengthSet;
+        public Type Type => type;
 
         protected Transform destination;
         protected Unit attackTarget;
@@ -146,6 +160,7 @@ namespace Units{
             {
                 mat.SetColor("_TeamColor", color);
             });
+            OnTeamColorSet?.Invoke(color);
         }
 
         public void SetCopyMode(bool enabled)
@@ -159,12 +174,13 @@ namespace Units{
             }
         }
 
-        public void SetEmissionStrenght(float value)
+        public void SetEmissionStrength(float value)
         {
             DoActionForAllMaterials(mat =>
             {
                 mat.SetFloat("_EmissionStrength", value);
             });
+            OnEmissionStrengthSet?.Invoke(value);
         }
 
         protected virtual void OnEnable()

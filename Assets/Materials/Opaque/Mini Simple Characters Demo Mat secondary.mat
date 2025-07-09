@@ -123,7 +123,7 @@ Material:
     - _Color: {r: 1, g: 1, b: 1, a: 0.30588236}
     - _EmissionColor: {r: 2, g: 1.9921569, b: 0.4392157, a: 1}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
-    - _TeamColor: {r: 0.107547104, g: 1, b: 0.17228588, a: 1}
+    - _TeamColor: {r: 1, g: 1, b: 1, a: 1}
     - _TeamColorBase: {r: 0.3584906, g: 0.24147385, b: 0.24147385, a: 1}
   m_BuildTextureStacks: []
 --- !u!114 &4513453906356149125
