@@ -1,7 +1,5 @@
 using System.Collections;
-using System.Collections.Generic;
 using DG.Tweening;
-using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -28,15 +26,53 @@ namespace Units{
 
         private GameObject unitCopy;
         private const float delayBeforeSpawn = 1f;
+        
+        private static UnitSpawner _instance;
+
+        public static UnitSpawner Instance
+        {
+            get { return _instance; }
+            protected set { _instance = value; }
+        }
 
         void Start()
         {
             panel.SetOnDragEvents(CreateUnitCopy, TrySpawn, UpdateUnitCopyPosition);
+            if (this.GetType() != typeof(UnitSpawner))
+                return;
+            _instance = this;
         }
 
         public void TrySpawn(Vector3 position, Type unitType, bool spawn, bool payElixir)
         {
             StartCoroutine(TrySpawnCor(position, unitType, spawn, payElixir));
+        }
+        
+        public void StartSpawnAnimation(ISpawnable spawnable, bool onlyParticles = false, TweenCallback OnSpawnAnimationFinish = null)
+        {
+            Sequence seq = DOTween.Sequence();
+            float minRandom = 0.1f;
+            float maxRandom = 0.6f;
+            if (spawnable is Unit)
+            {
+                minRandom = 0;
+                maxRandom = 0;
+            }
+            else if (spawnable is SpawnGroup)
+            {
+                SpawnGroup group = spawnable as SpawnGroup;
+                group.SetParentForUnits(group.transform.parent);
+            }
+            spawnable.PerformActionForEachUnit(unit =>
+            {
+                unit.gameObject.SetActive(false || spawnable is not SpawnGroup);
+                seq.InsertCallback(Random.Range(minRandom, maxRandom), () =>
+                {
+                    unit.gameObject.SetActive(true);
+                    GameObject spawnParticles = ObjectPool.Instance.GetObject(this.spawnParticlesPrefab.gameObject);
+                    spawnParticles.GetComponent<SpawnParticles>().StartSpawnAnimation(unit, normiesParent, OnSpawnAnimationFinish, onlyParticles);
+                });
+            });
         }
 
         private IEnumerator TrySpawnCor(Vector3 position, Type unitType, bool spawn, bool payElixir)
@@ -62,20 +98,20 @@ namespace Units{
 
             // if (NetworkManager.Singleton.IsHost || !NetworkManager.Singleton.IsListening)
             // {
-            
-                float baseOffset = UnitsList.Instance.Get()[(int)unitType].GetComponent<NavMeshAgent>().baseOffset;
-                ISpawnable spawnable = Factory.Instance.Create(position, spawnParticlesPrefab.YUpOffset + baseOffset, unitType).GetComponent<ISpawnable>();
-                spawnable.SetTeamColor(teamColor);
-                StartSpawnAnimation(spawnable, () =>
-                {
-                        spawnable.PerformActionForEachUnit(unit =>
-                        {
-                            targetAcquiring.AddUnit(unit);
-                        });
-                        spawnable.Init(target, bulletFactory, team);
-                });
+
+            float baseOffset = UnitsList.Instance.Get()[(int)unitType].GetComponent<NavMeshAgent>().baseOffset;
+            ISpawnable spawnable = Factory.Instance.Create(position, spawnParticlesPrefab.YUpOffset + baseOffset, unitType).GetComponent<ISpawnable>();
+            spawnable.SetTeamColor(teamColor);
+            StartSpawnAnimation(spawnable, false, () =>
+            {
+                spawnable.PerformActionForEachUnit(unit =>
+                    {
+                        targetAcquiring.AddUnit(unit);
+                    });
+                spawnable.Init(target, bulletFactory, team);
+            });
             // }
-            if(oldUnitCopy != null)
+            if (oldUnitCopy != null)
             {
                 ObjectPool.Instance.ReturnObject(oldUnitCopy);
             }
@@ -97,33 +133,6 @@ namespace Units{
                 return;
             }
             unitCopy = Factory.Instance.Create(position, 0, unitType, true);
-        }
-
-        private void StartSpawnAnimation(ISpawnable spawnable, TweenCallback OnSpawnAnimationFinish = null)
-        {
-            Sequence seq = DOTween.Sequence();
-            float minRandom = 0.1f;
-            float maxRandom = 0.6f;
-            if (spawnable is Unit)
-            {
-                minRandom = 0;
-                maxRandom = 0;
-            }
-            else if (spawnable is SpawnGroup)
-            {
-                SpawnGroup group = spawnable as SpawnGroup;
-                group.SetParentForUnits(group.transform.parent);
-            }
-            spawnable.PerformActionForEachUnit(unit =>
-            {
-                unit.gameObject.SetActive(false || spawnable is not SpawnGroup);
-                seq.InsertCallback(Random.Range(minRandom, maxRandom), () =>
-                {
-                    unit.gameObject.SetActive(true);
-                    GameObject spawnParticles = ObjectPool.Instance.GetObject(this.spawnParticlesPrefab.gameObject);
-                    spawnParticles.GetComponent<SpawnParticles>().StartSpawnAnimation(unit, normiesParent, OnSpawnAnimationFinish);
-                });
-            });
         }
     }
 }

@@ -28,6 +28,7 @@ namespace Units
             }
             SetTeamColor(teamColor.Value, teamColor.Value);
             SetEmissionStrength(emissionStrength.Value, emissionStrength.Value);
+            UnitSpawner.Instance.StartSpawnAnimation(unit.Spawnable, true, null);
         }
 
         public override void OnNetworkDespawn()

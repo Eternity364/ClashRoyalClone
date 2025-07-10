@@ -49,27 +49,18 @@ namespace Units
             };
         } 
 
-        public void StartSpawnAnimation(Unit unit, Transform parent, TweenCallback OnSpawnAnimationFinish = null)
+        public void StartSpawnAnimation(Unit unit, Transform parent, TweenCallback OnSpawnAnimationFinish = null, bool onlyParticles = false)
         {
             Transform unitTransform = unit.transform;
             // float baseOffset = unit.gameObject.GetComponent<NavMeshAgent>().baseOffset;
             Vector3 startPosition = unitTransform.localPosition;// + new Vector3(0, baseOffset, 0);
             //startPosition = GetAvailablePositionOnNavMesh(startPosition, unit.gameObject, 5f);
             
-            Vector3 originalScale = unitTransform.localScale;
-            unitTransform.localPosition = new Vector3(startPosition.x, startPosition.y, startPosition.z);
-            Vector3 startScale = new Vector3(originalScale.x, originalScale.y * 1.7f, originalScale.z);
-            unitTransform.localScale = startScale;
-            unit.SetEmissionStrength(0.68f);
-
             float yPos = transform.localPosition.y;
             transform.SetParent(parent);
             transform.localPosition = new Vector3(startPosition.x, 0 + yPos, startPosition.z);
 
             Sequence spawnAnimation = DOTween.Sequence();
-            spawnAnimation.Append(unitTransform.DOLocalMoveY(0, 0.45f).SetEase(Ease.InQuad));
-            spawnAnimation.Insert(0f, unitTransform.DOScale(startScale - new Vector3(0, startScale.y * 0.7f, 0), 0.4f).SetEase(Ease.InQuad));
-            spawnAnimation.Insert(0.4f, unitTransform.DOScale(originalScale, 1f).SetEase(Ease.OutBounce));
             foreach (var part in Parts)
             {
                 if (sizeParts[part.Value].Contains(unit.Data.Size))
@@ -81,9 +72,6 @@ namespace Units
                     });
                 }
             }
-            spawnAnimation.Insert(0.6f,
-                DOTween.To(unit.SetEmissionStrength, 0.68f, 0f, 2f).SetEase(Ease.InQuad)
-            );
             spawnAnimation.InsertCallback(1.4f, () =>
                 {
                     OnSpawnAnimationFinish?.Invoke();
@@ -92,6 +80,24 @@ namespace Units
                 {
                     ObjectPool.Instance.ReturnObject(this.gameObject);
                 });
+
+            if (onlyParticles)
+                return;
+            
+            Vector3 originalScale = unitTransform.localScale;
+            unitTransform.localPosition = new Vector3(startPosition.x, startPosition.y, startPosition.z);
+            Vector3 startScale = new Vector3(originalScale.x, originalScale.y * 1.7f, originalScale.z);
+            unitTransform.localScale = startScale;
+            unit.SetEmissionStrength(0.68f);
+
+
+
+            spawnAnimation.Insert(0f, unitTransform.DOLocalMoveY(0, 0.45f).SetEase(Ease.InQuad));
+            spawnAnimation.Insert(0f, unitTransform.DOScale(startScale - new Vector3(0, startScale.y * 0.7f, 0), 0.4f).SetEase(Ease.InQuad));
+            spawnAnimation.Insert(0.4f, unitTransform.DOScale(originalScale, 1f).SetEase(Ease.OutBounce));
+            spawnAnimation.Insert(0.6f,
+                DOTween.To(unit.SetEmissionStrength, 0.68f, 0f, 2f).SetEase(Ease.InQuad)
+            );
         }
 
         Vector3 GetAvailablePositionOnNavMesh(Vector3 position, GameObject unitGameObject, float maxDistance = 5f)
