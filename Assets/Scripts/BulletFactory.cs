@@ -8,11 +8,25 @@ public class BulletFactory : MonoBehaviour
     [SerializeField]
     private Transform parent;
 
+    public static BulletFactory Instance { get; private set; }
+
     private GameObject[] bullets = new GameObject[100];
     private int currentBullet = -1;
+    
 
     void Awake()
     {
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+        else
+        {
+            Debug.LogWarning("Multiple BulletFactory instances detected. Destroying duplicate.");
+            Destroy(gameObject);
+            return;
+        }
+
         for (int i = 0; i < bullets.Length; i++)
         {
             bullets[i] = Instantiate(bulletPrefab, parent);

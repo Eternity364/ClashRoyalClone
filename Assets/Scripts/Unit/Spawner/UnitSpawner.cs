@@ -18,8 +18,6 @@ namespace Units{
         [SerializeField]
         Transform normiesParent;
         [SerializeField]
-        BulletFactory bulletFactory;
-        [SerializeField]
         Color teamColor;
         [SerializeField, Range(0, 1)]
         int team;
@@ -108,7 +106,7 @@ namespace Units{
                     {
                         targetAcquiring.AddUnit(unit);
                     });
-                spawnable.Init(target, bulletFactory, team);
+                spawnable.Init(target, team);
             });
             // }
             if (oldUnitCopy != null)

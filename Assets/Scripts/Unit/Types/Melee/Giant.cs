@@ -13,13 +13,13 @@ namespace Units{
         private bool clearTargetLock = false;
         private List<Transform> pushbackTargets = new List<Transform>();
 
-        public override void Init(Transform destination, BulletFactory bulletFactory, int team)
+        public override void Init(Transform destination, int team)
         {
             rPGCharacterController.EndAction("Relax");
             rPGCharacterController.StartAction("Relax", true);
             allowedTargets = AllowedTargets.Base;
             deathAnimationDepth = 5f;
-            StartCoroutine(BaseInit(destination, bulletFactory, team));
+            StartCoroutine(BaseInit(destination, team));
         }
 
         protected override void OnEnable()
@@ -153,10 +153,10 @@ namespace Units{
         }
 
         
-        IEnumerator BaseInit(Transform destination, BulletFactory bulletFactory, int team)
+        IEnumerator BaseInit(Transform destination, int team)
         {
             yield return new WaitForSeconds(0.1f);
-            base.Init(destination, bulletFactory, team);
+            base.Init(destination, team);
         }
     }
 }

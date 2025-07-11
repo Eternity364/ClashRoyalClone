@@ -1,18 +1,24 @@
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.AI;
 
 namespace Units
 {
-    public class NetworkSwordsman : NetworkedUnit
+    [RequireComponent(typeof(Swordsman))]
+    [RequireComponent(typeof(NavMeshAgent))]
+    [RequireComponent(typeof(NavMeshObstacle))]
+    public class NetworkSwordsman : NetworkUnit
     {
         private NetworkVariable<bool> swordActive = new();
+        private Swordsman swordsman;
 
         public override void OnNetworkSpawn()
         {
             base.OnNetworkSpawn();
-            if (NetworkManager.Singleton.IsHost)
-                gameObject.GetComponent<Swordsman>().OnSetSwordActive += SetSwordActiveNetworkVar;
-            else if (NetworkManager.Singleton.IsClient)
+            swordsman = GetComponent<Swordsman>();
+            if (IsOwner)
+                swordsman.OnSetSwordActive += SetSwordActiveNetworkVar;
+            else if (IsClient)
                 swordActive.OnValueChanged += SetSwordActive;
 
         }
@@ -20,9 +26,9 @@ namespace Units
         public override void OnNetworkDespawn()
         {
             base.OnNetworkDespawn();
-            if (NetworkManager.Singleton.IsHost)
-                gameObject.GetComponent<Swordsman>().OnSetSwordActive -= SetSwordActiveNetworkVar;
-            else if (NetworkManager.Singleton.IsClient)
+            if (IsOwner)
+                swordsman.OnSetSwordActive -= SetSwordActiveNetworkVar;
+            else if (IsClient)
                 swordActive.OnValueChanged -= SetSwordActive;
         }
 
@@ -33,7 +39,7 @@ namespace Units
 
         private void SetSwordActive(bool _, bool active)
         {
-            gameObject.GetComponent<Swordsman>().SetSwordActive(active);
+            swordsman.SetSwordActive(active);
         }
     }
 }

@@ -40,11 +40,11 @@ namespace Units
             units.Clear();
         }
 
-        public void Init(Transform destination, BulletFactory bulletFactory, int team)
+        public void Init(Transform destination, int team)
         {
             PerformActionForEachUnit((unit) =>
             {
-                unit.Init(destination, bulletFactory, team);
+                unit.Init(destination, team);
             });
             units.Clear();
         }

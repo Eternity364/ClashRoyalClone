@@ -4,7 +4,10 @@ using UnityEngine.AI;
 
 namespace Units
 {
-    public class NetworkedUnit : NetworkBehaviour
+    [RequireComponent(typeof(Unit))]
+    [RequireComponent(typeof(NavMeshAgent))]
+    [RequireComponent(typeof(NavMeshObstacle))]
+    public class NetworkUnit : NetworkBehaviour
     {
         private NetworkVariable<Color> teamColor = new();
         private NetworkVariable<float> emissionStrength = new();
@@ -13,12 +16,12 @@ namespace Units
         public override void OnNetworkSpawn()
         {
             unit = GetComponent<Unit>();
-            if (NetworkManager.Singleton.IsHost)
+            if (IsOwner)
             {
                 unit.OnTeamColorSet += SetTeamColorNetworkVar;
                 unit.OnEmissionStrengthSet += SetEmissionStrengthNetworkVar;
             }
-            else if (NetworkManager.Singleton.IsClient)
+            else if (IsClient)
             {
                 teamColor.OnValueChanged += SetTeamColor;
                 emissionStrength.OnValueChanged += SetEmissionStrength;
@@ -33,12 +36,12 @@ namespace Units
 
         public override void OnNetworkDespawn()
         {
-            if (NetworkManager.Singleton.IsHost)
+            if (IsOwner)
             {
                 unit.OnTeamColorSet -= SetTeamColorNetworkVar;
                 unit.OnEmissionStrengthSet -= SetEmissionStrengthNetworkVar;
             }
-            else if (NetworkManager.Singleton.IsClient)
+            else if (IsClient)
             {
                 teamColor.OnValueChanged -= SetTeamColor;
                 emissionStrength.OnValueChanged -= SetEmissionStrength;

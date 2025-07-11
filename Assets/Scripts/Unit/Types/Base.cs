@@ -10,7 +10,7 @@ namespace Units{
         
         protected Sequence seq;
 
-        public override void Init(Transform destination, BulletFactory bulletFactory, int team) { }
+        public override void Init(Transform destination, int team) { }
 
         protected override void Awake()
         {

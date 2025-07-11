@@ -96,10 +96,9 @@ namespace Units{
                 rPGCharacterController.enabled = true;
         }
 
-        public virtual void Init(Transform destination, BulletFactory bulletFactory, int team)
+        public virtual void Init(Transform destination, int team)
         {
             isDead = false;
-            this.bulletFactory = bulletFactory;
             this.destination = destination;
             this.team = team;
             health = data.MaxHealth;

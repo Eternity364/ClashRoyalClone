@@ -5,7 +5,7 @@ namespace Units
 {
     public interface ISpawnable
     {
-        void Init(Transform destination, BulletFactory bulletFactory, int team) { }
+        void Init(Transform destination, int team) { }
         void SetTeamColor(Color teamColor) { }
         void SetCopyMode(bool enabled) { }
         void PerformActionForEachUnit(Action<Unit> Action) { }

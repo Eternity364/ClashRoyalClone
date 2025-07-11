@@ -4323,6 +4323,9 @@ MonoBehaviour:
   - Prefab: {fileID: 7840963495349357989, guid: 391a642033c5e634dab2ab25434f1e57,
       type: 3}
     PrewarmCount: 0
+  - Prefab: {fileID: 3231107821499508076, guid: b5813654b784855468d9767bef561ac2,
+      type: 3}
+    PrewarmCount: 0
 --- !u!4 &702148368
 Transform:
   m_ObjectHideFlags: 0
