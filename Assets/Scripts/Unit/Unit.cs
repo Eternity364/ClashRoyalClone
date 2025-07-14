@@ -27,8 +27,8 @@ namespace Units{
     {
         Swordsman,
         Ranged,
-        MiniSceleton,
-        Giant
+        Giant,
+        MiniSkeleton
     }
 
     public abstract class Unit : MonoBehaviour, ISpawnable
@@ -180,6 +180,18 @@ namespace Units{
                 mat.SetFloat("_EmissionStrength", value);
             });
             OnEmissionStrengthSet?.Invoke(value);
+        }
+
+        public void Release(bool destroyChildren)
+        {   
+            if (destroyChildren)
+                ObjectPool.Instance.ReturnObject(gameObject);
+        }
+
+        public void SetParentForUnits(Transform parent)
+        {
+            if (parent != transform.parent)
+                transform.SetParent(parent);
         }
 
         protected virtual void OnEnable()

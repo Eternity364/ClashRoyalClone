@@ -45,21 +45,21 @@ namespace Units{
         {
             StartCoroutine(TrySpawnCor(position, unitType, spawn, payElixir));
         }
-        
+
         public void StartSpawnAnimation(ISpawnable spawnable, bool onlyParticles = false, TweenCallback OnSpawnAnimationFinish = null)
         {
             Sequence seq = DOTween.Sequence();
             float minRandom = 0.1f;
             float maxRandom = 0.6f;
-            if (spawnable is Unit)
+            SpawnGroup spawnGroup = spawnable as SpawnGroup;
+            if (spawnGroup == null)
             {
                 minRandom = 0;
                 maxRandom = 0;
             }
-            else if (spawnable is SpawnGroup)
+            else
             {
-                SpawnGroup group = spawnable as SpawnGroup;
-                group.SetParentForUnits(group.transform.parent);
+                spawnGroup.SetParentForUnits(spawnGroup.transform.parent);
             }
             spawnable.PerformActionForEachUnit(unit =>
             {
@@ -68,7 +68,15 @@ namespace Units{
                 {
                     unit.gameObject.SetActive(true);
                     GameObject spawnParticles = ObjectPool.Instance.GetObject(this.spawnParticlesPrefab.gameObject);
-                    spawnParticles.GetComponent<SpawnParticles>().StartSpawnAnimation(unit, normiesParent, OnSpawnAnimationFinish, onlyParticles);
+                    spawnParticles.GetComponent<SpawnParticles>().StartSpawnAnimation(
+                        unit,
+                        normiesParent,
+                        () =>
+                        {
+                            OnSpawnAnimationFinish?.Invoke();
+                            spawnable.Release(false);
+                        },
+                        onlyParticles);
                 });
             });
         }
@@ -80,7 +88,8 @@ namespace Units{
 
             if (!spawn && oldUnitCopy != null)
             {
-                ObjectPool.Instance.ReturnObject(oldUnitCopy);
+                oldUnitCopy.GetComponent<ISpawnable>().Release(true);
+                oldUnitCopy = null;
                 yield break;
             }
 
@@ -111,7 +120,7 @@ namespace Units{
             // }
             if (oldUnitCopy != null)
             {
-                ObjectPool.Instance.ReturnObject(oldUnitCopy);
+                oldUnitCopy.GetComponent<ISpawnable>().Release(true);
             }
         }
 
@@ -119,7 +128,7 @@ namespace Units{
         {
             if (unitCopy != null)
             {
-                position.y = unitCopy.GetComponent<ISpawnable>().baseOffset;
+                position.y = 0;
                 unitCopy.transform.localPosition = position;
             }
         }

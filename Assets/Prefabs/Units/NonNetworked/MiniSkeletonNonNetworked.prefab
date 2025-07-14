@@ -366,7 +366,7 @@ MonoBehaviour:
   - {fileID: 4465564946194641033}
   animator: {fileID: 1777095587526217}
   checkForAttackTargetRate: 0.1
-  type: 2
+  type: 3
   spawnable: {fileID: 6589486296622033536, guid: 564d3d8f1a898d1429202a926e852d0c,
     type: 3}
 --- !u!1001 &1114770748102429977

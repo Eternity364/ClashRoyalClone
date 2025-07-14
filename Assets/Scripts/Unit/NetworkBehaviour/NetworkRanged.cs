@@ -55,7 +55,6 @@ namespace Units
             if (IsOwner)
                 return;
             ranged.LaunchArrow(targetPosition, targetSize);
-            print("ranged.LaunchArrow");
         }
 
         private void SetArrowActiveNetworkVar(bool active)

@@ -18,40 +18,47 @@ namespace Units
         public GameObject Create(Vector3 position, float yUpOffset, Type unitType, bool isCopy = false)
         {
             Unit unit = UnitsList.Instance.Get(!isCopy)[(int)unitType];
-            Transform parent = unit is Giant ? giantsParent : normiesParent;
-            GameObject go = CreateInstance(unit, isCopy);
+            Transform parent = normiesParent;//unit is Giant ? giantsParent : normiesParent;
+            GameObject go = CreateInstance(unit);
             position.y = parent.position.y + yUpOffset;
             go.transform.position = position;
             ISpawnable spawnable = go.GetComponent<ISpawnable>();
-            CheckNetwork(spawnable, isCopy);
-            spawnable.SetCopyMode(isCopy);
-            go.transform.SetParent(parent);
-            go.gameObject.SetActive(true);
 
+            // In order for units, that are a part of a SpawnGroup, to spawn in correct positions on client side,
+            // we need to set their positions before calling Spawn method on them.
+            SpawnGroup spawnGroup = spawnable as SpawnGroup;
+            if (spawnGroup != null)
+                spawnGroup.SetPositionsForUnits();
+            if (!isCopy)
+                CheckNetwork(spawnable);
+            go.transform.SetParent(parent);
+            if (spawnGroup != null)
+                spawnGroup.SetParentForUnits(spawnGroup.transform);
+            // if (spawnGroup != null)
+            //     spawnGroup.SetPositionsForUnits();
+
+            spawnable.SetCopyMode(isCopy);
+            go.gameObject.SetActive(true);
 
             return go;
         }
 
-        private GameObject CreateInstance(Unit unitType, bool isCopy)
+        private GameObject CreateInstance(Unit unitType)
         {
             GameObject prefab = unitType.Spawnable.GetGameObject();
-            return ObjectPool.Instance.GetObject(prefab);
+            GameObject go = ObjectPool.Instance.GetObject(prefab);
+            go.transform.localPosition = Vector3.zero;
+            go.transform.localRotation = Quaternion.identity;
+            return go;
         }
 
-        private void CheckNetwork(ISpawnable spawnable, bool isCopy)
+        private void CheckNetwork(ISpawnable spawnable)
         {
-            if (NetworkManager.Singleton.IsListening && !isCopy)
+            if (NetworkManager.Singleton.IsListening && NetworkManager.Singleton.IsHost)
             {
-                if (NetworkManager.Singleton.IsHost)
-                {
-                    spawnable.PerformActionForEachUnit(unit => unit.gameObject.GetComponent<NetworkObject>().Spawn());
-                }
-                else if (NetworkManager.Singleton.IsClient)
-                {
-                    spawnable.PerformActionForEachUnit(unit => unit.gameObject.GetComponent<Unit>().enabled = false);
-                    spawnable.PerformActionForEachUnit(unit => unit.gameObject.GetComponent<NavMeshAgent>().enabled = false);
-                    spawnable.PerformActionForEachUnit(unit => unit.gameObject.GetComponent<NavMeshObstacle>().enabled = false);
-                }
+                if (spawnable is SpawnGroup spawnGroup)
+                    spawnGroup.GetComponent<NetworkObject>().Spawn();
+                spawnable.PerformActionForEachUnit(unit => unit.gameObject.GetComponent<NetworkObject>().Spawn());
             }
         }
         

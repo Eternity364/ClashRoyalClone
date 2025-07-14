@@ -52,8 +52,8 @@ namespace Units
         public void StartSpawnAnimation(Unit unit, Transform parent, TweenCallback OnSpawnAnimationFinish = null, bool onlyParticles = false)
         {
             Transform unitTransform = unit.transform;
-            // float baseOffset = unit.gameObject.GetComponent<NavMeshAgent>().baseOffset;
-            Vector3 startPosition = unitTransform.localPosition;// + new Vector3(0, baseOffset, 0);
+            float baseOffset = unit.gameObject.GetComponent<NavMeshAgent>().baseOffset;
+            Vector3 startPosition = unitTransform.localPosition + new Vector3(0, baseOffset, 0);
             //startPosition = GetAvailablePositionOnNavMesh(startPosition, unit.gameObject, 5f);
             
             float yPos = transform.localPosition.y;
@@ -84,6 +84,11 @@ namespace Units
             if (onlyParticles)
                 return;
             
+            TransformAnimation(unit, unitTransform, startPosition, spawnAnimation);
+        }
+
+        private void TransformAnimation(Unit unit, Transform unitTransform, Vector3 startPosition, Sequence spawnAnimation)
+        {
             Vector3 originalScale = unitTransform.localScale;
             unitTransform.localPosition = new Vector3(startPosition.x, startPosition.y, startPosition.z);
             Vector3 startScale = new Vector3(originalScale.x, originalScale.y * 1.7f, originalScale.z);

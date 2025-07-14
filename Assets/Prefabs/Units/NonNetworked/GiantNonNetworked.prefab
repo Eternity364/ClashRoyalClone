@@ -362,7 +362,7 @@ MonoBehaviour:
   - {fileID: 3772385459461453632}
   animator: {fileID: 7831052181578513884}
   checkForAttackTargetRate: 0.1
-  type: 3
+  type: 2
 --- !u!1001 &3584683006785470891
 PrefabInstance:
   m_ObjectHideFlags: 0

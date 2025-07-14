@@ -40,7 +40,6 @@ namespace Units{
             if (isDead || other.gameObject.tag != "Unit")
                 return;
             PushBack(other.gameObject.transform);
-            print("trigger enter: " + other.gameObject.name);
         }
 
         protected void OnTriggerExit(Collider other)
@@ -64,7 +63,7 @@ namespace Units{
 
         IEnumerator PushBackCoroutine(Transform encounter)
         {
-            int area = NavMesh.GetAreaFromName(this.gameObject.tag);
+            int area = NavMesh.GetAreaFromName("Walkable");
             int areaMask = 1 << area;
             NavMeshHit hit;
             Vector3 encounterPosition;
@@ -112,7 +111,9 @@ namespace Units{
                 while (direction != originalDirection);
 
                 hitPosition.y = encounter.position.y;
-                encounter.DOMove(hitPosition, pushbackDelay - 0.01f).SetEase(Ease.OutQuad);
+                //encounter.DOMove(hitPosition, pushbackDelay - 0.01f).SetEase(Ease.OutQuad);
+                print("pushDistance: " + Vector3.Distance(encounter.position, hitPosition));
+                encounter.DOBlendableMoveBy(hitPosition - encounter.position, pushbackDelay - 0.01f).SetEase(Ease.OutQuad);
 
                 yield return new WaitForSeconds(pushbackDelay);
             } while (IsTargetInPushbackArea(encounter) && !unit.IsDead);

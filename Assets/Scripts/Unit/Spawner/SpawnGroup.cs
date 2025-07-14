@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Netcode;
 using UnityEngine;
 
 namespace Units
@@ -15,30 +16,8 @@ namespace Units
         public UnitData Data => unitType.Data;
 
         private List<Unit> units = new List<Unit>();
-
-        void OnEnable()
-        {
-            foreach (Transform child in transform)
-            {
-                child.SetParent(null);
-            }
-            for (int i = 0; i < count; i++)
-            {
-                Unit unit = ObjectPool.Instance.GetObject(unitType.gameObject).GetComponent<Unit>();
-                units.Add(unit);
-                unit.transform.SetParent(transform);
-            }
-            SpreadOutUnits(7f, 7f);
-        }
-
-        void OnDisable()
-        {
-            foreach (Unit unit in units)
-            {
-                ObjectPool.Instance.ReturnObject(unit.gameObject);
-            }
-            units.Clear();
-        }
+        private float areaWidth = 7f;
+        private float areaLenth = 7f;
 
         public void Init(Transform destination, int team)
         {
@@ -48,12 +27,36 @@ namespace Units
             });
             units.Clear();
         }
+
+        public void SetPositionsForUnits()
+        {
+            SpreadOutUnits(areaWidth, areaLenth);
+        }
+
+        public void Release(bool destroyChildren)
+        {
+            if (destroyChildren) {
+                foreach (Unit unit in units)
+                {
+                    unit.gameObject.transform.SetParent(transform.parent);
+                    ObjectPool.Instance.ReturnObject(unit.gameObject);
+                }
+            }
+            units.Clear();
+            NetworkObject networkObject = GetComponent<NetworkObject>();
+            if (GetComponent<NetworkObject>() != null && NetworkManager.Singleton.IsHost)
+            {
+                networkObject.Despawn();
+            }
+            Destroy(gameObject);
+        }
         
         public void SetParentForUnits(Transform parent)
         {
             PerformActionForEachUnit((unit) =>
             {
-                unit.transform.SetParent(parent);
+                unit.transform.SetParent(parent, true);
+                //AdjustPositionsAfterParentingToThis(unit.transform, parent);
             });
         }
 
@@ -88,7 +91,35 @@ namespace Units
             return gameObject;
         }
 
-        public void SpreadOutUnits(float areaWidth, float areaLength, float randomOffset = 0.2f)
+        private void OnEnable()
+        {
+            foreach (Transform child in transform)
+            {
+                child.SetParent(null);
+            }
+            for (int i = 0; i < count; i++)
+            {
+                Unit unit = ObjectPool.Instance.GetObject(unitType.gameObject).GetComponent<Unit>();
+                units.Add(unit);
+            }
+        }
+
+        private void AdjustPositionsAfterParentingToThis(Transform unitTransform, Transform parent)
+        {
+                if (parent == this.transform &&
+                    (Mathf.Abs(unitTransform.localPosition.x) > areaWidth / 2f
+                    || Mathf.Abs(unitTransform.localPosition.z) > areaLenth / 2f))
+                {
+                    int sign = unitTransform.localPosition.z < 0 ? -1 : 1;
+                    unitTransform.localPosition =
+                        new Vector3(
+                            unitTransform.localPosition.x - sign * this.transform.localPosition.x,
+                            0,
+                            unitTransform.localPosition.z - sign * this.transform.localPosition.z);
+                }
+        }
+
+        private void SpreadOutUnits(float areaWidth, float areaLength, float randomOffset = 0.2f)
         {
             if (units == null || units.Count == 0) return;
 
@@ -113,7 +144,8 @@ namespace Units
                         float randX = UnityEngine.Random.Range(-cellWidth * randomOffset, cellWidth * randomOffset);
                         float randZ = UnityEngine.Random.Range(-cellLength * randomOffset, cellLength * randomOffset);
 
-                        units[placed].transform.localPosition = new Vector3(x + randX, 0, z + randZ);
+                        units[placed].transform.position = new Vector3(x + randX, 0, z + randZ);
+                        units[placed].transform.position += transform.position;
                         placed++;
                     }
                 }

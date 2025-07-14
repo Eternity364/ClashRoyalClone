@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Units;
 using Unity.Netcode;
+using UnityEngine.Assertions;
 
 public class ObjectPool : MonoBehaviour
 {
@@ -36,20 +37,17 @@ public class ObjectPool : MonoBehaviour
             pools[key] = new List<GameObject>();
         }
 
-        // Look for an inactive object in the pool
-        foreach (GameObject obj in pools[key])
+        if (pools[key].Count != 0)
         {
-            if (!obj.activeInHierarchy)
-            {
-                obj.SetActive(setActive);
-                return obj;
-            }
+            GameObject obj = pools[key][0];
+            obj.SetActive(setActive);
+            pools[key].Remove(obj);
+            return obj;
         }
 
         // If no inactive object is found, create a new one
         GameObject newObj = Instantiate(prefab);
         newObj.name = prefab.name; // Ensure the name matches the prefab
-        pools[key].Add(newObj);
         newObj.SetActive(setActive);
         
         return newObj;
@@ -59,10 +57,14 @@ public class ObjectPool : MonoBehaviour
     public void ReturnObject(GameObject obj)
     {
         NetworkObject networkObject = obj.GetComponent<NetworkObject>();
-        if (obj.GetComponent<NetworkObject>() != null && NetworkManager.Singleton.IsHost)
+        if (obj.GetComponent<NetworkObject>() != null && NetworkManager.Singleton.IsHost && networkObject.IsSpawned)
         {
             networkObject.Despawn();
         }
+        Assert.IsNotNull(obj, "Returned object is null");
+        string key = obj.name;
+        Assert.IsNotNull(pools[key], "No pool for object: " + key);
+        pools[key].Add(obj);
         obj.SetActive(false);
     }
 }
