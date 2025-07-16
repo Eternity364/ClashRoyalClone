@@ -7,6 +7,7 @@ public class NetworkClientPositionFlipper : MonoBehaviour
     
     public static NetworkClientPositionFlipper Instance { get; private set; }
     public Vector3 ScaleMiltiplier => isFlipped ? new Vector3(-1, 1, -1) : Vector3.one;
+    public Vector3 Angle => isFlipped ? new Vector3(0, 180, 0) : Quaternion.identity.eulerAngles;
 
     private void Awake()
     {

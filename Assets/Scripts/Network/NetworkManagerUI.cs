@@ -39,7 +39,8 @@ public class NetworkManagerUI : MonoBehaviour
     {
         surfaces.ForEach(surf => surf.enabled = false);
         NetworkManager.Singleton.StartClient();
-        mainParent.localScale = Vector3.Scale(mainParent.localScale, NetworkClientPositionFlipper.Instance.ScaleMiltiplier);
+        mainParent.Rotate(NetworkClientPositionFlipper.Instance.Angle);
+        //mainParent.localScale = Vector3.Scale(mainParent.localScale, NetworkClientPositionFlipper.Instance.ScaleMiltiplier);
         StartGame();
     }
 

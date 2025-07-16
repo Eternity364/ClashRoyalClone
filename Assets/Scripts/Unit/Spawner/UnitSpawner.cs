@@ -22,16 +22,17 @@ namespace Units{
         [SerializeField, Range(0, 1)]
         int team;
 
-        private GameObject unitCopy;
-        private const float delayBeforeSpawn = 1f;
-        
-        private static UnitSpawner _instance;
-
         public static UnitSpawner Instance
         {
             get { return _instance; }
             protected set { _instance = value; }
         }
+        public Transform UnitsParent => normiesParent;
+
+        private GameObject unitCopy;
+        private const float delayBeforeSpawn = 1f;
+        
+        private static UnitSpawner _instance;
 
         void Start()
         {

@@ -145,7 +145,7 @@ namespace Units
                         float randZ = UnityEngine.Random.Range(-cellLength * randomOffset, cellLength * randomOffset);
 
                         units[placed].transform.position = new Vector3(x + randX, 0, z + randZ);
-                        units[placed].transform.position += transform.position;
+                        //units[placed].transform.position += transform.position;
                         placed++;
                     }
                 }
