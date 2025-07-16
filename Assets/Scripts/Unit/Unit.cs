@@ -399,6 +399,8 @@ namespace Units{
 
         private void Update()
         {
+            // if (this is not Base)
+            //     print("Rotation = " + transform.localEulerAngles.y);
             if (isDead)
                 return;
 

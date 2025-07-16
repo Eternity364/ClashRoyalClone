@@ -20,8 +20,7 @@ namespace Units
             Unit unit = UnitsList.Instance.Get(!isCopy)[(int)unitType];
             Transform parent = normiesParent;//unit is Giant ? giantsParent : normiesParent;
             GameObject go = CreateInstance(unit);
-            position.y = parent.position.y + yUpOffset;
-            go.transform.position = position;
+            position.y = yUpOffset;
             ISpawnable spawnable = go.GetComponent<ISpawnable>();
 
             // In order for units, that are a part of a SpawnGroup, to spawn in correct positions on client side,
@@ -31,7 +30,8 @@ namespace Units
                 spawnGroup.SetPositionsForUnits();
             if (!isCopy)
                 CheckNetwork(spawnable);
-            go.transform.SetParent(parent);
+            go.transform.SetParent(parent, false);
+            go.transform.localPosition = position;
             if (spawnGroup != null)
                 spawnGroup.SetParentForUnits(spawnGroup.transform);
             // if (spawnGroup != null)

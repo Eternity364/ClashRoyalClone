@@ -18,6 +18,7 @@ public class NetworkManagerUI : MonoBehaviour
     [SerializeField] List<NavMeshSurface> surfaces;
     [SerializeField] List<UnitAutoSpawner> enemySpawners;
     [SerializeField] TargetAcquiring targetAcquiring;
+    [SerializeField] Transform mainParent;
 
     private void Awake()
     {
@@ -38,6 +39,7 @@ public class NetworkManagerUI : MonoBehaviour
     {
         surfaces.ForEach(surf => surf.enabled = false);
         NetworkManager.Singleton.StartClient();
+        mainParent.localScale = Vector3.Scale(mainParent.localScale, NetworkClientPositionFlipper.Instance.ScaleMiltiplier);
         StartGame();
     }
 
