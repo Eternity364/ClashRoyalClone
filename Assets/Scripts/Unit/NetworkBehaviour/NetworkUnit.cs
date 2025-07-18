@@ -55,8 +55,6 @@ namespace Units
 
         public void SetNetworkTransformEnabledNetworkVar(bool enabled)
         {
-            
-            print("networkTransformEnabled enabled: " + enabled);
             networkTransformEnabled.Value = enabled;
         }
 
@@ -83,7 +81,6 @@ namespace Units
         void SetNetworkTransformEnabled(bool _, bool enabled)
         {
             GetComponent<NetworkTransform>().enabled = enabled;
-            print("NetworkTransform enabled: " + enabled);
         }
     }
 }

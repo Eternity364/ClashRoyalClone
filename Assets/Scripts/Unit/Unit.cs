@@ -25,6 +25,7 @@ namespace Units{
 
     public enum Type
     {
+        Base,
         Swordsman,
         Ranged,
         Giant,
@@ -98,10 +99,14 @@ namespace Units{
 
         public virtual void Init(Transform destination, int team)
         {
-            isDead = false;
-            this.destination = destination;
             this.team = team;
             health = data.MaxHealth;
+
+            if (this.GetType() == typeof(Base))
+                return;
+
+            isDead = false;
+            this.destination = destination;
             timePassedSinceLastAttack = data.AttackRate;
             InitNavMesh();
             GetComponent<Collider>().enabled = true;
@@ -110,7 +115,6 @@ namespace Units{
             {
                 Debug.LogError("Attack notice range must be equal or greater than attack range.");
             }
-
         }
 
         public void PerformActionForEachUnit(Action<Unit> Action)
@@ -196,8 +200,9 @@ namespace Units{
 
         protected virtual void OnEnable()
         {
-
-            GetComponent<Collider>().enabled = false;
+            Collider collider = GetComponent<Collider>();
+            if (collider != null)
+                collider.enabled = false;
         }
 
         private void SetAlpha(float value)

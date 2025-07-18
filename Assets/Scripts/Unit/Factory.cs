@@ -14,13 +14,19 @@ namespace Units
         Transform normiesParent;
         [SerializeField]
         Transform giantsParent;
+        [SerializeField]
+        private Base basePrefab;
+        [SerializeField]
+        private Base playerBase;
+        [SerializeField]
+        private Base enemyBase;
 
         // Singleton instance
         public static Factory Instance { get; private set; }
 
         public GameObject Create(Vector3 position, float yUpOffset, Type unitType, bool isCopy = false)
         {
-            Unit unit = UnitsList.Instance.Get(!isCopy)[(int)unitType];
+            Unit unit = UnitsList.Instance.GetByType(unitType, !isCopy);
             Transform parent = normiesParent;//unit is Giant ? giantsParent : normiesParent;
             GameObject go = CreateInstance(unit);
             position.y = yUpOffset;
@@ -41,54 +47,37 @@ namespace Units
             if (spawnGroup != null)
                 spawnGroup.SetPositionsForUnits();
 
-            //StartCoroutine(SetNetworkTransformEnabledCoroutine(spawnable, true));
-
             spawnable.SetCopyMode(isCopy);
             go.gameObject.SetActive(true);
 
             return go;
         }
 
+        public GameObject CreateBase(bool isEnemy)
+        {
+            GameObject go = CreateInstance(basePrefab.GetComponent<Unit>());
+            Base baseComp = go.GetComponent<Base>();
+            CheckNetwork(go.GetComponent<ISpawnable>());
+            go.transform.SetParent(playerBase.transform.parent, false);
+            go.transform.localPosition = isEnemy ? enemyBase.transform.localPosition : playerBase.transform.localPosition;
+            go.transform.localRotation = isEnemy ? enemyBase.transform.localRotation : playerBase.transform.localRotation;
+            baseComp.SetTeamColor(isEnemy ? enemyBase.TeamColor : playerBase.TeamColor);
+            return go;
+        }
+
         private GameObject CreateInstance(Unit unitType)
         {
-            GameObject prefab = unitType.Spawnable.GetGameObject();
+            GameObject prefab = unitType.Spawnable.GetGameObject(); 
             GameObject go = ObjectPool.Instance.GetObject(prefab);
             go.transform.localPosition = Vector3.zero;
             go.transform.localRotation = Quaternion.identity;
             return go;
-        }
-
-        IEnumerator SetNetworkTransformEnabledCoroutine(ISpawnable spawnable, bool enabled)
-        {
-            List<NetworkUnit> networkUnits = new List<NetworkUnit>();
-            spawnable.PerformActionForEachUnit(unit => {
-                NetworkUnit networkUnit = unit.GetComponent<NetworkUnit>();
-                if (networkUnit != null)
-                    networkUnits.Add(unit.GetComponent<NetworkUnit>());
-            });
-
-            yield return new WaitForNextFrameUnit();
-
-            foreach (NetworkUnit netUnit in networkUnits)
-                netUnit.SetNetworkTransformEnabledNetworkVar(enabled);
-        }
-
-        private void SetNetworkTransformEnabled(ISpawnable spawnable, bool enabled)
-        {
-            spawnable.PerformActionForEachUnit(unit =>
-            {
-                NetworkUnit networkUnit = unit.GetComponent<NetworkUnit>();
-                if (networkUnit != null)
-                    unit.GetComponent<NetworkUnit>().SetNetworkTransformEnabledNetworkVar(enabled);
-            });
-        }
+        }        
 
         private void CheckNetwork(ISpawnable spawnable)
         {
             if (NetworkManager.Singleton.IsListening && NetworkManager.Singleton.IsHost)
             {
-                if (spawnable is SpawnGroup spawnGroup)
-                    spawnGroup.GetComponent<NetworkObject>().Spawn();
                 spawnable.PerformActionForEachUnit(unit => unit.gameObject.GetComponent<NetworkObject>().Spawn());
             }
         }

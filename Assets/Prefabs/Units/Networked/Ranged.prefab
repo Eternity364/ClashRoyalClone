@@ -327,7 +327,7 @@ NavMeshAgent:
   m_AutoRepath: 1
   m_Height: 2
   m_BaseOffset: 0
-  m_WalkableMask: 1
+  m_WalkableMask: 16
   m_ObstacleAvoidanceType: 2
 --- !u!208 &3107644234196968788
 NavMeshObstacle:
@@ -367,7 +367,7 @@ MonoBehaviour:
   - {fileID: 4893337981645129531}
   animator: {fileID: 4893337981640854681}
   checkForAttackTargetRate: 0.1
-  type: 1
+  type: 2
   arrow: {fileID: 8458770393523292580}
 --- !u!114 &8237657506366109943
 MonoBehaviour:

@@ -1,5 +1,7 @@
 using System.Collections;
+using System.Collections.Generic;
 using DG.Tweening;
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -14,8 +16,6 @@ namespace Units{
         [SerializeField]
         TargetAcquiring targetAcquiring;
         [SerializeField]
-        Transform target;
-        [SerializeField]
         Transform normiesParent;
         [SerializeField]
         Color teamColor;
@@ -28,18 +28,23 @@ namespace Units{
             protected set { _instance = value; }
         }
         public Transform UnitsParent => normiesParent;
+        public IReadOnlyList<Base> Bases => bases.AsReadOnly();
 
+        protected bool spawningAllowed = false;
+
+        private List<Base> bases = new();
         private GameObject unitCopy;
         private const float delayBeforeSpawn = 1f;
-        
         private static UnitSpawner _instance;
 
-        void Start()
+        protected virtual void Start()
         {
-            panel.SetOnDragEvents(CreateUnitCopy, TrySpawn, UpdateUnitCopyPosition);
+            NetworkManager.Singleton.OnServerStarted += StartSpawning;
             if (this.GetType() != typeof(UnitSpawner))
                 return;
             _instance = this;
+            NetworkManager.Singleton.OnServerStarted += SpawnBases;
+            panel.SetOnDragEvents(CreateUnitCopy, TrySpawn, UpdateUnitCopyPosition);
         }
 
         public void TrySpawn(Vector3 position, Type unitType, bool spawn, bool payElixir)
@@ -82,6 +87,16 @@ namespace Units{
             });
         }
 
+        public int GetEnemyTeam() {
+            return team == 0 ? 1 : 0;
+        }
+
+        protected virtual void StartSpawning()
+        {
+            spawningAllowed = true;
+            NetworkManager.Singleton.OnServerStarted -= StartSpawning;
+        }
+
         private IEnumerator TrySpawnCor(Vector3 position, Type unitType, bool spawn, bool payElixir)
         {
             GameObject oldUnitCopy = unitCopy;
@@ -94,7 +109,7 @@ namespace Units{
                 yield break;
             }
 
-            UnitData data = UnitsList.Instance.Get()[(int)unitType].Data;
+            UnitData data = UnitsList.Instance.GetByType(unitType).Data;
 
             if (payElixir)
             {
@@ -107,7 +122,7 @@ namespace Units{
             // if (NetworkManager.Singleton.IsHost || !NetworkManager.Singleton.IsListening)
             // {
 
-            float baseOffset = UnitsList.Instance.Get()[(int)unitType].GetComponent<NavMeshAgent>().baseOffset;
+            float baseOffset = UnitsList.Instance.GetByType(unitType).GetComponent<NavMeshAgent>().baseOffset;
             ISpawnable spawnable = Factory.Instance.Create(position, spawnParticlesPrefab.YUpOffset + baseOffset, unitType).GetComponent<ISpawnable>();
             spawnable.SetTeamColor(teamColor);
             StartSpawnAnimation(spawnable, false, () =>
@@ -116,7 +131,7 @@ namespace Units{
                     {
                         targetAcquiring.AddUnit(unit);
                     });
-                spawnable.Init(target, team);
+                spawnable.Init(UnitSpawner.Instance.Bases[GetEnemyTeam()].transform, team);
             });
             // }
             if (oldUnitCopy != null)
@@ -141,6 +156,20 @@ namespace Units{
                 return;
             }
             unitCopy = Factory.Instance.Create(position, 0, unitType, true);
+        }
+
+        private void SpawnBases()
+        {
+            NetworkManager.Singleton.OnServerStarted -= SpawnBases;
+            bases.Insert(team, Factory.Instance.CreateBase(false).GetComponent<Base>());
+            bases[team].Init(null, team);
+            bases[team].gameObject.SetActive(true);
+
+            bases.Insert(GetEnemyTeam(), Factory.Instance.CreateBase(true).GetComponent<Base>());
+            bases[GetEnemyTeam()].Init(null, GetEnemyTeam());
+            bases[GetEnemyTeam()].gameObject.SetActive(true);
+
+            targetAcquiring.gameObject.SetActive(true);
         }
     }
 }

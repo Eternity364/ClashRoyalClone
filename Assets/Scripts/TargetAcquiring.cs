@@ -8,9 +8,6 @@ public class TargetAcquiring : MonoBehaviour
     [SerializeField]
     private List<Unit> agents;
     [SerializeField]
-    [Tooltip("Set the enemy bases in the same order as the teams. So for team 0 enemy base should be team 1 and otherwise")]
-    private List<Unit> enemyBases;
-    [SerializeField]
     private float frequency = 0.2f;
     [SerializeField]
     [Tooltip("If a new possible target is closer than this value, it will be set as a target.")]
@@ -46,7 +43,7 @@ public class TargetAcquiring : MonoBehaviour
             Unit closestEnemy = null;
             float closestDistance = float.MaxValue;
             float currentEnemyDistance = float.MaxValue;
-            if (agent.HasTarget && agent.Target != enemyBases[agent.Team]) {
+            if (agent.HasTarget && agent.Target != UnitSpawner.Instance.Bases[agent.Team]) {
                 currentEnemyDistance = (agent.transform.position - agent.Target.transform.position).magnitude;
             }
             int team = agent.Team;
@@ -74,9 +71,9 @@ public class TargetAcquiring : MonoBehaviour
             }
             
             if (!agent.HasTarget)
-                {
-                    CheckAndSetTarget(agent, enemyBases[agent.Team], (agent.transform.position - enemyBases[agent.Team].transform.position).magnitude);
-                }
+            {
+                CheckAndSetTarget(agent, UnitSpawner.Instance.Bases[agent.Team], (agent.transform.position - UnitSpawner.Instance.Bases[agent.Team].transform.position).magnitude);
+            }
         }
         // Units shouldn't be removed while we are iterating through them.
         removeLock = false;

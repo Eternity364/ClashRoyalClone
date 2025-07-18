@@ -17,7 +17,6 @@ public class NetworkManagerUI : MonoBehaviour
     private GameObject panel;
     [SerializeField] List<NavMeshSurface> surfaces;
     [SerializeField] List<UnitAutoSpawner> enemySpawners;
-    [SerializeField] TargetAcquiring targetAcquiring;
     [SerializeField] Transform mainParent;
 
     private void Awake()
@@ -31,7 +30,6 @@ public class NetworkManagerUI : MonoBehaviour
     private void StartHost()
     {
         NetworkManager.Singleton.StartHost();
-        targetAcquiring.gameObject.SetActive(true);
         StartGame();
     }
 

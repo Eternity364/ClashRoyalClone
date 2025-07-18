@@ -8,9 +8,9 @@ namespace Units{
         [SerializeField]
         private Color teamColor;
         
+        public Color TeamColor => teamColor;
+        
         protected Sequence seq;
-
-        public override void Init(Transform destination, int team) { }
 
         protected override void Awake()
         {

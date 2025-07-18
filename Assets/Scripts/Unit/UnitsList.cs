@@ -15,12 +15,17 @@ namespace Units{
         // Singleton instance
         public static UnitsList Instance { get; private set; }
 
-        public List<Unit> Get(bool networked = false)
+        public Unit GetByType(Type type, bool networked = false)
         {
-            if (networked)
-                return new List<Unit>(networkPrefabs);
-            else
-                return new List<Unit>(nonNetworkPrefabs);
+            List<Unit> prefabs = networked ? networkPrefabs : nonNetworkPrefabs;
+            foreach (var unit in prefabs)
+            {
+                if (unit.Type == type)
+                {
+                    return unit;
+                }
+            }
+            return null;
         }
 
         private void Awake()

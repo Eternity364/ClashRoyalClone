@@ -10,16 +10,22 @@ namespace Units{
         private GameObject unitPrefab;
 
         private float timePassed = 0;
-        
-        void Start() {
+
+        protected override void StartSpawning()
+        {
+            base.StartSpawning();
             timePassed = spawnRate;
         }
         
         void Update() {
-            timePassed += Time.deltaTime;
-            if (timePassed > spawnRate) {
-                TrySpawn(transform.position, unitPrefab.GetComponent<Unit>().Type, true, false);
-                timePassed = 0;
+            if (spawningAllowed)
+            {
+                timePassed += Time.deltaTime;
+                if (timePassed > spawnRate)
+                {
+                    TrySpawn(transform.position, unitPrefab.GetComponent<Unit>().Type, true, false);
+                    timePassed = 0;
+                }
             }
         }
     }
