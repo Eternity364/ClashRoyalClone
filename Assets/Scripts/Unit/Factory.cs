@@ -1,9 +1,5 @@
-using System.Collections;
-using System.Collections.Generic;
 using Unity.Netcode;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.AI;
 
 namespace Units
 {
@@ -56,12 +52,11 @@ namespace Units
         public GameObject CreateBase(bool isEnemy)
         {
             GameObject go = CreateInstance(basePrefab.GetComponent<Unit>());
-            Base baseComp = go.GetComponent<Base>();
-            CheckNetwork(go.GetComponent<ISpawnable>());
-            go.transform.SetParent(playerBase.transform.parent, false);
+            go.name = isEnemy ? "EnemyBase" : "PlayerBase";
             go.transform.localPosition = isEnemy ? enemyBase.transform.localPosition : playerBase.transform.localPosition;
             go.transform.localRotation = isEnemy ? enemyBase.transform.localRotation : playerBase.transform.localRotation;
-            baseComp.SetTeamColor(isEnemy ? enemyBase.TeamColor : playerBase.TeamColor);
+            CheckNetwork(go.GetComponent<ISpawnable>());
+            go.transform.SetParent(playerBase.transform.parent, false);
             return go;
         }
 

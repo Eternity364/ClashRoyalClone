@@ -11,14 +11,13 @@ namespace Units{
 
         private float timePassed = 0;
 
-        protected override void StartSpawning()
+        private void Awake()
         {
-            base.StartSpawning();
             timePassed = spawnRate;
         }
         
         void Update() {
-            if (spawningAllowed)
+            if (UnitSpawner.Instance.SpawningAllowed)
             {
                 timePassed += Time.deltaTime;
                 if (timePassed > spawnRate)

@@ -358,7 +358,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   data: {fileID: 11400000, guid: be5e5f4837241b741a6d40d7c7aef473, type: 2}
-  damageColor: {r: 1, g: 0, b: 0, a: 0}
   bulletFactory: {fileID: 0}
   navMeshAgent: {fileID: 6251182854389003900}
   navMeshObstacle: {fileID: 2898496116241167909}
@@ -369,8 +368,8 @@ MonoBehaviour:
   - {fileID: 983359498206565199}
   - {fileID: 4465564946194641033}
   animator: {fileID: 1777095587526217}
-  checkForAttackTargetRate: 0.1
   type: 4
+  commonUnitData: {fileID: 11400000, guid: 7aaee75492567754fa689bc74206aac0, type: 2}
   spawnable: {fileID: 6589486296622033536, guid: 7e83132d82c29f947922d6264c5ee701,
     type: 3}
 --- !u!114 &5579097739715632122
@@ -400,7 +399,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1475403950515795645}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e96cb6065543e43c4a752faaa1468eb1, type: 3}
   m_Name: 

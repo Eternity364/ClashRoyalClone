@@ -4693,7 +4693,7 @@ NavMeshAgent:
   m_AutoBraking: 0
   m_AutoRepath: 1
   m_Height: 2
-  m_BaseOffset: 0
+  m_BaseOffset: -0.6
   m_WalkableMask: 16
   m_ObstacleAvoidanceType: 2
 --- !u!208 &7290862605227990102
@@ -4725,7 +4725,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   data: {fileID: 11400000, guid: a1ae83cffdade014295a2a932542ae44, type: 2}
-  damageColor: {r: 1, g: 0, b: 0, a: 0}
   bulletFactory: {fileID: 0}
   navMeshAgent: {fileID: 4222657424285839976}
   navMeshObstacle: {fileID: 7290862605227990102}
@@ -4738,8 +4737,8 @@ MonoBehaviour:
   - {fileID: 7413368972472895655}
   - {fileID: 7413368972472570171}
   animator: {fileID: 7413368972480049925}
-  checkForAttackTargetRate: 0.1
   type: 1
+  commonUnitData: {fileID: 11400000, guid: 7aaee75492567754fa689bc74206aac0, type: 2}
   swordInHand: {fileID: 3926819761456522989}
   swordInTheBack: {fileID: 7413368972470626003}
 --- !u!114 &7798779959216085822

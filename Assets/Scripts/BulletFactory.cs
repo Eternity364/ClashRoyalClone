@@ -29,9 +29,10 @@ public class BulletFactory : MonoBehaviour
 
         for (int i = 0; i < bullets.Length; i++)
         {
-            bullets[i] = Instantiate(bulletPrefab, parent);
+            bullets[i] = Instantiate(bulletPrefab);
             bullets[i].transform.position = Vector3.zero;
             bullets[i].transform.rotation = Quaternion.identity;
+            bullets[i].transform.SetParent(parent, false);
             bullets[i].SetActive(false);
         }
     }

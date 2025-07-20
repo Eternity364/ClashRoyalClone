@@ -10,15 +10,20 @@ namespace Units
     [RequireComponent(typeof(NavMeshObstacle))]
     public class NetworkUnit : NetworkBehaviour
     {
+        [SerializeField]
+        bool spawnAnimation = true;
+        [SerializeField]
+        Unit unit;
+
         private NetworkVariable<Color> teamColor = new();
         private NetworkVariable<float> emissionStrength = new();
         private NetworkVariable<bool> networkTransformEnabled = new();
-        private Unit unit;
 
         public override void OnNetworkSpawn()
         {
-            unit = GetComponent<Unit>();
-            networkTransformEnabled.OnValueChanged += SetNetworkTransformEnabled;
+            if (unit == null)
+                unit = GetComponent<Unit>();
+            //networkTransformEnabled.OnValueChanged += SetNetworkTransformEnabled;
             if (IsOwner)
             {
                 unit.OnTeamColorSet += SetTeamColorNetworkVar;
@@ -34,13 +39,14 @@ namespace Units
                 GetComponent<NavMeshObstacle>().enabled = false;
                 SetTeamColor(teamColor.Value, teamColor.Value);
                 SetEmissionStrength(emissionStrength.Value, emissionStrength.Value);
-                UnitSpawner.Instance.StartSpawnAnimation(unit.Spawnable, true, null);
+                if (spawnAnimation)
+                    UnitSpawner.Instance.StartSpawnAnimation(unit.Spawnable, true, null);
             }
         }
 
         public override void OnNetworkDespawn()
         {
-            networkTransformEnabled.OnValueChanged -= SetNetworkTransformEnabled;
+            //networkTransformEnabled.OnValueChanged -= SetNetworkTransformEnabled;
             if (IsOwner)
             {
                 unit.OnTeamColorSet -= SetTeamColorNetworkVar;

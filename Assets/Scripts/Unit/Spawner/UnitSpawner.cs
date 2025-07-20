@@ -18,7 +18,9 @@ namespace Units{
         [SerializeField]
         Transform normiesParent;
         [SerializeField]
-        Color teamColor;
+        Color playerTeamColor;
+        [SerializeField]
+        Color enemyTeamColor;
         [SerializeField, Range(0, 1)]
         int team;
 
@@ -29,6 +31,7 @@ namespace Units{
         }
         public Transform UnitsParent => normiesParent;
         public IReadOnlyList<Base> Bases => bases.AsReadOnly();
+        public bool SpawningAllowed => spawningAllowed;
 
         protected bool spawningAllowed = false;
 
@@ -91,7 +94,7 @@ namespace Units{
             return team == 0 ? 1 : 0;
         }
 
-        protected virtual void StartSpawning()
+        private void StartSpawning()
         {
             spawningAllowed = true;
             NetworkManager.Singleton.OnServerStarted -= StartSpawning;
@@ -124,14 +127,14 @@ namespace Units{
 
             float baseOffset = UnitsList.Instance.GetByType(unitType).GetComponent<NavMeshAgent>().baseOffset;
             ISpawnable spawnable = Factory.Instance.Create(position, spawnParticlesPrefab.YUpOffset + baseOffset, unitType).GetComponent<ISpawnable>();
-            spawnable.SetTeamColor(teamColor);
+            spawnable.SetTeamColor(playerTeamColor);
             StartSpawnAnimation(spawnable, false, () =>
             {
                 spawnable.PerformActionForEachUnit(unit =>
                     {
                         targetAcquiring.AddUnit(unit);
                     });
-                spawnable.Init(UnitSpawner.Instance.Bases[GetEnemyTeam()].transform, team);
+                spawnable.Init(UnitSpawner.Instance.Bases[team].transform, team);
             });
             // }
             if (oldUnitCopy != null)
@@ -161,12 +164,15 @@ namespace Units{
         private void SpawnBases()
         {
             NetworkManager.Singleton.OnServerStarted -= SpawnBases;
-            bases.Insert(team, Factory.Instance.CreateBase(false).GetComponent<Base>());
-            bases[team].Init(null, team);
+            
+            bases.Insert(team, Factory.Instance.CreateBase(true).GetComponent<Base>());
+            bases[team].Init(null, GetEnemyTeam());
+            bases[team].SetTeamColor(enemyTeamColor);
             bases[team].gameObject.SetActive(true);
 
-            bases.Insert(GetEnemyTeam(), Factory.Instance.CreateBase(true).GetComponent<Base>());
-            bases[GetEnemyTeam()].Init(null, GetEnemyTeam());
+            bases.Insert(GetEnemyTeam(), Factory.Instance.CreateBase(false).GetComponent<Base>());
+            bases[GetEnemyTeam()].Init(null, team);
+            bases[GetEnemyTeam()].SetTeamColor(playerTeamColor);
             bases[GetEnemyTeam()].gameObject.SetActive(true);
 
             targetAcquiring.gameObject.SetActive(true);

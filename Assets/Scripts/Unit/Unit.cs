@@ -38,8 +38,6 @@ namespace Units{
         [SerializeField]
         protected UnitData data;
         [SerializeField]
-        protected Color damageColor;
-        [SerializeField]
         protected BulletFactory bulletFactory;
         [SerializeField]
         protected NavMeshAgent navMeshAgent;
@@ -50,9 +48,9 @@ namespace Units{
         [SerializeField]
         protected Animator animator;
         [SerializeField]
-        protected float checkForAttackTargetRate = 0.1f;
-        [SerializeField]
         protected Type type;
+        [SerializeField]
+        protected CommonUnitData commonUnitData;
 
         public virtual ISpawnable Spawnable => this;
         /// <summary>
@@ -391,8 +389,8 @@ namespace Units{
             damageAnimation = DOTween.Sequence();
             DoActionForAllMaterials(mat =>
             {
-                damageAnimation.Append(mat.DOColor(damageColor, 0.1f).SetEase(Ease.InSine));
-                damageAnimation.Append(mat.DOColor(originalColor, 0.1f).SetEase(Ease.OutSine));
+                damageAnimation.Append(mat.DOColor(commonUnitData.DamageColor, commonUnitData.DamageColorAnimationDuration).SetEase(Ease.InCubic));
+                damageAnimation.Append(mat.DOColor(originalColor, commonUnitData.DamageColorAnimationDuration).SetEase(Ease.OutCubic));
             });
         }
 
@@ -413,9 +411,9 @@ namespace Units{
             if (attackTarget != null && attackTargetFound)
             {
                 timePassedSinceLastAttackTargetCheck += Time.deltaTime;
-                if (timePassedSinceLastAttackTargetCheck >= checkForAttackTargetRate && !mandatoryFirstAttack)
+                if (timePassedSinceLastAttackTargetCheck >= commonUnitData.CheckForAttackTargetRate && !mandatoryFirstAttack)
                 {
-                    timePassedSinceLastAttackTargetCheck %= checkForAttackTargetRate;
+                    timePassedSinceLastAttackTargetCheck %= commonUnitData.CheckForAttackTargetRate;
                     CheckIfAttackTargetReachable();
                 }
                 if (attackAllowed)

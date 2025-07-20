@@ -15,7 +15,7 @@ namespace Units{
         protected override void Awake()
         {
             base.Awake();
-            SetTeamColor(teamColor);
+            //SetTeamColor(teamColor);
         }
 
         public override void SetAttackTarget(Unit target, bool overrideMandatoryFirstAttack = false) { }

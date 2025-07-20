@@ -79,10 +79,9 @@ namespace Units{
             {
                 GameObject bullet = BulletFactory.Instance.Get();
                 bullet.transform.localScale = arrow.transform.lossyScale;
-                ArrowFlight arrowFlight = bullet.GetComponent<ArrowFlight>();
                 NavMeshAgent attackTargetNavMesh = attackTarget.GetComponent<NavMeshAgent>();
                 float attackTargetSize = attackTarget.Radius;
-                Vector3 targetPosition = attackTarget.transform.position;
+                Vector3 targetPosition = attackTarget.transform.localPosition;
 
                 TriggerBowAnimation(() =>
                     {

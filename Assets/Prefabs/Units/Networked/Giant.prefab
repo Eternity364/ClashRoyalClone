@@ -358,15 +358,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   data: {fileID: 11400000, guid: 1f9a0e660e644c141b33e99179fa8fd2, type: 2}
-  damageColor: {r: 1, g: 0, b: 0, a: 0}
   bulletFactory: {fileID: 0}
   navMeshAgent: {fileID: 209304345265520143}
   navMeshObstacle: {fileID: 4608970349504169898}
   renderers:
   - {fileID: 3772385459461453632}
   animator: {fileID: 7831052181578513884}
-  checkForAttackTargetRate: 0.1
   type: 3
+  commonUnitData: {fileID: 11400000, guid: 7aaee75492567754fa689bc74206aac0, type: 2}
 --- !u!114 &4819641843213741820
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -394,7 +393,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4392560655695614523}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e96cb6065543e43c4a752faaa1468eb1, type: 3}
   m_Name: 
@@ -441,6 +440,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bb9f96e5e14a47949b6722682ac8ffae, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  spawnAnimation: 1
+  unit: {fileID: 0}
 --- !u!1001 &3584683006785470891
 PrefabInstance:
   m_ObjectHideFlags: 0
