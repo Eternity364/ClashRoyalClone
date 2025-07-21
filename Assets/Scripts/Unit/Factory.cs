@@ -5,11 +5,6 @@ namespace Units
 {
     public class Factory : MonoBehaviour
     {
-
-        [SerializeField]
-        Transform normiesParent;
-        [SerializeField]
-        Transform giantsParent;
         [SerializeField]
         private Base basePrefab;
         [SerializeField]
@@ -23,7 +18,6 @@ namespace Units
         public GameObject Create(Vector3 position, float yUpOffset, Type unitType, bool isCopy = false)
         {
             Unit unit = UnitsList.Instance.GetByType(unitType, !isCopy);
-            Transform parent = normiesParent;//unit is Giant ? giantsParent : normiesParent;
             GameObject go = CreateInstance(unit);
             position.y = yUpOffset;
             ISpawnable spawnable = go.GetComponent<ISpawnable>();
@@ -37,7 +31,7 @@ namespace Units
             //     spawnGroup.SetPositionsForUnits();
             if (!isCopy)
                 CheckNetwork(spawnable);
-            go.transform.SetParent(parent, false);
+            go.transform.SetParent(UnitSpawner.Instance.UnitsParent, false);
             if (spawnGroup != null)
                 spawnGroup.SetParentForUnits(spawnGroup.transform);
             if (spawnGroup != null)
@@ -73,6 +67,9 @@ namespace Units
         {
             if (NetworkManager.Singleton.IsListening && NetworkManager.Singleton.IsHost)
             {
+                SpawnGroup spawnGroup = spawnable as SpawnGroup;
+                if (spawnGroup != null)
+                    spawnable.GetGameObject().GetComponent<NetworkObject>().Spawn();
                 spawnable.PerformActionForEachUnit(unit => unit.gameObject.GetComponent<NetworkObject>().Spawn());
             }
         }

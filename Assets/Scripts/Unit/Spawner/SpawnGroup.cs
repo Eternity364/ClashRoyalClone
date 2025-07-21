@@ -56,7 +56,7 @@ namespace Units
             PerformActionForEachUnit((unit) =>
             {
                 unit.transform.SetParent(parent, false);
-                //AdjustPositionsAfterParentingToThis(unit.transform, parent);
+                AdjustPositionsAfterParentingToOther(unit.transform, parent);
             });
         }
 
@@ -104,19 +104,12 @@ namespace Units
             }
         }
 
-        private void AdjustPositionsAfterParentingToThis(Transform unitTransform, Transform parent)
+        private void AdjustPositionsAfterParentingToOther(Transform unitTransform, Transform parent)
         {
-                if (parent == this.transform &&
-                    (Mathf.Abs(unitTransform.localPosition.x) > areaWidth / 2f
-                    || Mathf.Abs(unitTransform.localPosition.z) > areaLenth / 2f))
-                {
-                    int sign = unitTransform.localPosition.z < 0 ? -1 : 1;
-                    unitTransform.localPosition =
-                        new Vector3(
-                            unitTransform.localPosition.x - sign * this.transform.localPosition.x,
-                            0,
-                            unitTransform.localPosition.z - sign * this.transform.localPosition.z);
-                }
+            if (parent != this.transform)
+            {
+                unitTransform.localPosition += transform.localPosition;
+            }
         }
 
         private void SpreadOutUnits(float areaWidth, float areaLength, float randomOffset = 0.2f)
@@ -144,7 +137,7 @@ namespace Units
                         float randX = UnityEngine.Random.Range(-cellWidth * randomOffset, cellWidth * randomOffset);
                         float randZ = UnityEngine.Random.Range(-cellLength * randomOffset, cellLength * randomOffset);
 
-                        units[placed].transform.position = new Vector3(x + randX, 0, z + randZ);
+                        units[placed].transform.localPosition = new Vector3(x + randX, 0, z + randZ);
                         //units[placed].transform.position += transform.position;
                         placed++;
                     }
