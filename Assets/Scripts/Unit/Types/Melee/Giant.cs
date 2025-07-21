@@ -97,7 +97,7 @@ namespace Units{
                 do
                 {
                     positionToCheck = encounterPosition + direction * pushbackForce;
-                    if (NavMesh.SamplePosition(positionToCheck, out hit, 2f, areaMask))
+                    if (NavMesh.SamplePosition(positionToCheck, out hit, 5f, areaMask))
                     {
                         float newDistance = Vector3.Distance(transform.position, hit.position);
                         if (newDistance > distance && CheckOtherPushbackTargetsDistances(encounter))

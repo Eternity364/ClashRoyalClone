@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using DG.Tweening;
 using Unity.Netcode;
+using Unity.Netcode.Components;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -16,11 +17,11 @@ namespace Units{
         [SerializeField]
         TargetAcquiring targetAcquiring;
         [SerializeField]
-        Transform normiesParent;
+        Transform unitsParent;
         [SerializeField]
-        Color playerTeamColor;
+        private Color playerTeamColor;
         [SerializeField]
-        Color enemyTeamColor;
+        private Color enemyTeamColor;
         [SerializeField, Range(0, 1)]
         int team;
 
@@ -29,9 +30,10 @@ namespace Units{
             get { return _instance; }
             protected set { _instance = value; }
         }
-        public Transform UnitsParent => normiesParent;
+        public Transform UnitsParent => unitsParent;
         public IReadOnlyList<Base> Bases => bases.AsReadOnly();
         public bool SpawningAllowed => spawningAllowed;
+        public List<Color> TeamColors => new List<Color> { playerTeamColor, enemyTeamColor };
 
         protected bool spawningAllowed = false;
 
@@ -75,17 +77,21 @@ namespace Units{
                 unit.gameObject.SetActive(false || spawnable is not SpawnGroup);
                 seq.InsertCallback(Random.Range(minRandom, maxRandom), () =>
                 {
+                    
+                    unit.GetComponent<NetworkTransform>().Interpolate = false;
                     unit.gameObject.SetActive(true);
                     GameObject spawnParticles = ObjectPool.Instance.GetObject(this.spawnParticlesPrefab.gameObject);
                     spawnParticles.GetComponent<SpawnParticles>().StartSpawnAnimation(
                         unit,
-                        normiesParent,
+                        UnitSpawner.Instance.UnitsParent,
                         () =>
                         {
                             OnSpawnAnimationFinish?.Invoke();
                             spawnable.Release(false);
+                            unit.GetComponent<NetworkTransform>().Interpolate = true;
                         },
                         onlyParticles);
+                    //unit.GetComponent<NetworkUnit>().StartSpawnAnimation();
                 });
             });
         }
@@ -122,12 +128,9 @@ namespace Units{
 
             yield return new WaitForSeconds(delayBeforeSpawn);
 
-            // if (NetworkManager.Singleton.IsHost || !NetworkManager.Singleton.IsListening)
-            // {
-
             float baseOffset = UnitsList.Instance.GetByType(unitType).GetComponent<NavMeshAgent>().baseOffset;
             ISpawnable spawnable = Factory.Instance.Create(position, spawnParticlesPrefab.YUpOffset + baseOffset, unitType).GetComponent<ISpawnable>();
-            spawnable.SetTeamColor(playerTeamColor);
+            spawnable.SetTeamColor(UnitSpawner.Instance.TeamColors[team]);
             StartSpawnAnimation(spawnable, false, () =>
             {
                 spawnable.PerformActionForEachUnit(unit =>
@@ -136,7 +139,7 @@ namespace Units{
                     });
                 spawnable.Init(UnitSpawner.Instance.Bases[team].transform, team);
             });
-            // }
+
             if (oldUnitCopy != null)
             {
                 oldUnitCopy.GetComponent<ISpawnable>().Release(true);

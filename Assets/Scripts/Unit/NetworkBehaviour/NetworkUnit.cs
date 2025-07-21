@@ -31,6 +31,7 @@ namespace Units
             }
             else if (IsClient)
             {
+                GetComponent<NetworkTransform>().Interpolate = false;
                 transform.SetParent(UnitSpawner.Instance.UnitsParent, false);
                 teamColor.OnValueChanged += SetTeamColor;
                 emissionStrength.OnValueChanged += SetEmissionStrength;
@@ -40,7 +41,13 @@ namespace Units
                 SetTeamColor(teamColor.Value, teamColor.Value);
                 SetEmissionStrength(emissionStrength.Value, emissionStrength.Value);
                 if (spawnAnimation)
-                    UnitSpawner.Instance.StartSpawnAnimation(unit.Spawnable, true, null);
+                {  
+                    UnitSpawner.Instance.StartSpawnAnimation(unit.Spawnable, true, () =>
+                    {
+                        GetComponent<NetworkTransform>().Interpolate = true;
+                        //SetNetworkTransformEnabled(false, true);
+                    });
+                }
             }
         }
 
@@ -57,6 +64,24 @@ namespace Units
                 teamColor.OnValueChanged -= SetTeamColor;
                 emissionStrength.OnValueChanged -= SetEmissionStrength;
             }
+        }
+
+        public void StartSpawnAnimation()
+        {
+            StartSpawnAnimationClientRpc(transform.localPosition);
+        }
+
+        [ClientRpc]
+        private void StartSpawnAnimationClientRpc(Vector3 position)
+        {
+            if (IsOwner)
+                return;
+
+            transform.localPosition = position;
+            UnitSpawner.Instance.StartSpawnAnimation(unit.Spawnable, false, () =>
+            {
+                SetNetworkTransformEnabled(false, true);
+            });
         }
 
         public void SetNetworkTransformEnabledNetworkVar(bool enabled)

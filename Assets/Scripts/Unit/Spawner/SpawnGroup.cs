@@ -55,7 +55,7 @@ namespace Units
         {
             PerformActionForEachUnit((unit) =>
             {
-                unit.transform.SetParent(parent, true);
+                unit.transform.SetParent(parent, false);
                 //AdjustPositionsAfterParentingToThis(unit.transform, parent);
             });
         }
