@@ -14558,7 +14558,7 @@ MonoBehaviour:
   spawnParticlesPrefab: {fileID: 8340827945163747982, guid: 2e010514d57eaa049b7bb73efb0a3393,
     type: 3}
   targetAcquiring: {fileID: 1082284949}
-  normiesParent: {fileID: 866699091}
+  unitsParent: {fileID: 0}
   playerTeamColor: {r: 0, g: 0, b: 0, a: 0}
   enemyTeamColor: {r: 0, g: 0, b: 0, a: 0}
   team: 1
@@ -20238,7 +20238,7 @@ MonoBehaviour:
   spawnParticlesPrefab: {fileID: 8340827945163747982, guid: 2e010514d57eaa049b7bb73efb0a3393,
     type: 3}
   targetAcquiring: {fileID: 1082284949}
-  normiesParent: {fileID: 866699091}
+  unitsParent: {fileID: 0}
   playerTeamColor: {r: 0, g: 0, b: 0, a: 0}
   enemyTeamColor: {r: 0, g: 0, b: 0, a: 0}
   team: 1
@@ -35087,6 +35087,11 @@ PrefabInstance:
       propertyPath: teamColor.r
       value: 0.20978993
       objectReference: {fileID: 0}
+    - target: {fileID: 5027094789416323413, guid: 30745e8b7734bca4f946c324ba20a54b,
+        type: 3}
+      propertyPath: unitsParent
+      value: 
+      objectReference: {fileID: 866699091}
     - target: {fileID: 5027094789416323413, guid: 30745e8b7734bca4f946c324ba20a54b,
         type: 3}
       propertyPath: giantsParent

@@ -57,7 +57,7 @@ namespace Units
             //startPosition = GetAvailablePositionOnNavMesh(startPosition, unit.gameObject, 5f);
             
             float yPos = transform.localPosition.y;
-            transform.SetParent(parent);
+            transform.SetParent(parent, false);
             transform.localPosition = new Vector3(startPosition.x, 0 + yPos, startPosition.z);
 
             Sequence spawnAnimation = DOTween.Sequence();

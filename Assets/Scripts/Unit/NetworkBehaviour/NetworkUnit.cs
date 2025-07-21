@@ -40,14 +40,6 @@ namespace Units
                 GetComponent<NavMeshObstacle>().enabled = false;
                 SetTeamColor(teamColor.Value, teamColor.Value);
                 SetEmissionStrength(emissionStrength.Value, emissionStrength.Value);
-                if (spawnAnimation)
-                {  
-                    UnitSpawner.Instance.StartSpawnAnimation(unit.Spawnable, true, () =>
-                    {
-                        GetComponent<NetworkTransform>().Interpolate = true;
-                        //SetNetworkTransformEnabled(false, true);
-                    });
-                }
             }
         }
 
@@ -76,12 +68,15 @@ namespace Units
         {
             if (IsOwner)
                 return;
-
-            transform.localPosition = position;
-            UnitSpawner.Instance.StartSpawnAnimation(unit.Spawnable, false, () =>
-            {
-                SetNetworkTransformEnabled(false, true);
-            });
+            
+            if (spawnAnimation)
+            {  
+                UnitSpawner.Instance.StartSpawnAnimation(unit.Spawnable, true, () =>
+                {
+                    GetComponent<NetworkTransform>().Interpolate = true;
+                    //SetNetworkTransformEnabled(false, true);
+                });
+            }
         }
 
         public void SetNetworkTransformEnabledNetworkVar(bool enabled)

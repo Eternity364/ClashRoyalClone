@@ -91,7 +91,7 @@ namespace Units{
                             unit.GetComponent<NetworkTransform>().Interpolate = true;
                         },
                         onlyParticles);
-                    //unit.GetComponent<NetworkUnit>().StartSpawnAnimation();
+                    unit.GetComponent<NetworkUnit>().StartSpawnAnimation();
                 });
             });
         }
