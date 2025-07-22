@@ -167,8 +167,8 @@ NavMeshObstacle:
   m_GameObject: {fileID: 27303871}
   m_Enabled: 1
   serializedVersion: 3
-  m_Shape: 1
-  m_Extents: {x: 0.725, y: 0.5, z: 0.725}
+  m_Shape: 0
+  m_Extents: {x: 0.77, y: 0.5, z: 0.77}
   m_MoveThreshold: 0.1
   m_Carve: 1
   m_CarveOnlyStationary: 1
@@ -578,8 +578,8 @@ NavMeshObstacle:
   m_GameObject: {fileID: 85981659}
   m_Enabled: 1
   serializedVersion: 3
-  m_Shape: 1
-  m_Extents: {x: 0.725, y: 0.5, z: 0.725}
+  m_Shape: 0
+  m_Extents: {x: 0.77, y: 0.5, z: 0.77}
   m_MoveThreshold: 0.1
   m_Carve: 1
   m_CarveOnlyStationary: 1
@@ -16309,8 +16309,8 @@ NavMeshObstacle:
   m_GameObject: {fileID: 1312257205}
   m_Enabled: 1
   serializedVersion: 3
-  m_Shape: 1
-  m_Extents: {x: 0.725, y: 0.5, z: 0.725}
+  m_Shape: 0
+  m_Extents: {x: 0.77, y: 0.5, z: 0.77}
   m_MoveThreshold: 0.1
   m_Carve: 1
   m_CarveOnlyStationary: 1
@@ -20243,7 +20243,7 @@ MonoBehaviour:
   enemyTeamColor: {r: 0, g: 0, b: 0, a: 0}
   team: 1
   spawnRate: 12
-  unitPrefab: {fileID: 7840963495349357989, guid: 391a642033c5e634dab2ab25434f1e57,
+  unitPrefab: {fileID: 4392560655695614523, guid: d447a58d7798b414ca462105208c9072,
     type: 3}
 --- !u!1 &1533069171
 GameObject:
@@ -24773,8 +24773,8 @@ NavMeshObstacle:
   m_GameObject: {fileID: 1700426243}
   m_Enabled: 1
   serializedVersion: 3
-  m_Shape: 1
-  m_Extents: {x: 0.725, y: 0.5, z: 0.725}
+  m_Shape: 0
+  m_Extents: {x: 0.77, y: 0.5, z: 0.77}
   m_MoveThreshold: 0.1
   m_Carve: 1
   m_CarveOnlyStationary: 1
@@ -29640,8 +29640,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b347f14aa6ab80c498bfe2e05af66c30, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  normiesParent: {fileID: 866699091}
-  giantsParent: {fileID: 0}
   basePrefab: {fileID: 4586765377206635768, guid: 045ebb18616370b4aba8d9245df17b66,
     type: 3}
   playerBase: {fileID: 606134744}
