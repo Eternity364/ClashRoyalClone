@@ -15,6 +15,8 @@ namespace Units
         [SerializeField]
         Unit unit;
 
+        public NetworkVariable<int> index = new();
+
         private NetworkVariable<Color> teamColor = new();
         private NetworkVariable<float> emissionStrength = new();
         private NetworkVariable<bool> networkTransformEnabled = new();
@@ -32,9 +34,9 @@ namespace Units
             else if (IsClient)
             {
                 GetComponent<NetworkTransform>().Interpolate = false;
-                transform.SetParent(UnitSpawner.Instance.UnitsParent, false);
                 teamColor.OnValueChanged += SetTeamColor;
                 emissionStrength.OnValueChanged += SetEmissionStrength;
+                index.OnValueChanged += RemoveClientCopy;
                 unit.enabled = false;
                 GetComponent<NavMeshAgent>().enabled = false;
                 GetComponent<NavMeshObstacle>().enabled = false;
@@ -55,6 +57,7 @@ namespace Units
             {
                 teamColor.OnValueChanged -= SetTeamColor;
                 emissionStrength.OnValueChanged -= SetEmissionStrength;
+                index.OnValueChanged -= RemoveClientCopy;
             }
         }
 
@@ -92,6 +95,11 @@ namespace Units
         void SetTeamColor(Color _, Color color)
         {
             unit.SetTeamColor(color);
+        }
+
+        void RemoveClientCopy(int _, int index)
+        {
+            UnitSpawner.Instance.RemoveClientCopy(index);
         }
 
         void SetEmissionStrengthNetworkVar(float value)

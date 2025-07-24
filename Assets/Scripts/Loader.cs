@@ -26,7 +26,6 @@ public class Loader : MonoBehaviour
 
     void OnSceneLoad(Scene scene, LoadSceneMode mode)
     {
-        new SinglePlayerControlScheme();
         switch (this.mode)
         {
             case Mode.SinglePlayer:
@@ -43,7 +42,6 @@ public class Loader : MonoBehaviour
 
     void StartSinglePlayer()
     {
-        new SinglePlayerControlScheme();
     }
 
     void StartHost()

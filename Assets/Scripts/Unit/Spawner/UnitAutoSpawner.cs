@@ -17,12 +17,18 @@ namespace Units{
         }
         
         void Update() {
-            if (UnitSpawner.Instance.SpawningAllowed)
+            if (Instance.SpawningAllowed)
             {
                 timePassed += Time.deltaTime;
                 if (timePassed > spawnRate)
                 {
-                    TrySpawn(transform.position, unitPrefab.GetComponent<Unit>().Type, true, false);
+                    SpawnParams spawnParams = new SpawnParams(
+                        transform.position,
+                        unitPrefab.GetComponent<Unit>().Type,
+                        true,
+                        false,
+                        team);
+                    Instance.SendSpawnRequest(spawnParams);
                     timePassed = 0;
                 }
             }

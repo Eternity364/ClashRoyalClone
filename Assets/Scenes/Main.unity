@@ -9957,6 +9957,37 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 749875145}
   m_CullTransparentMesh: 1
+--- !u!1 &761777994
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 761777995}
+  m_Layer: 0
+  m_Name: ParentForUnitCopies
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &761777995
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 761777994}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1363093105}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &780429668
 GameObject:
   m_ObjectHideFlags: 0
@@ -14559,6 +14590,7 @@ MonoBehaviour:
     type: 3}
   targetAcquiring: {fileID: 1082284949}
   unitsParent: {fileID: 0}
+  unitCopiesParent: {fileID: 0}
   playerTeamColor: {r: 0, g: 0, b: 0, a: 0}
   enemyTeamColor: {r: 0, g: 0, b: 0, a: 0}
   team: 1
@@ -16827,14 +16859,15 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1363093104}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0.44999695}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2079601238}
   - {fileID: 1105211807}
-  m_Father: {fileID: 1848439859}
+  - {fileID: 761777995}
+  m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &1370715126 stripped
 Transform:
@@ -20239,6 +20272,7 @@ MonoBehaviour:
     type: 3}
   targetAcquiring: {fileID: 1082284949}
   unitsParent: {fileID: 0}
+  unitCopiesParent: {fileID: 0}
   playerTeamColor: {r: 0, g: 0, b: 0, a: 0}
   enemyTeamColor: {r: 0, g: 0, b: 0, a: 0}
   team: 1
@@ -24919,7 +24953,6 @@ Transform:
   - {fileID: 1308596911}
   - {fileID: 1917262822}
   - {fileID: 808549282}
-  - {fileID: 1363093105}
   m_Father: {fileID: 1834756683}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1868308374
@@ -35142,6 +35175,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5027094789416323413, guid: 30745e8b7734bca4f946c324ba20a54b,
         type: 3}
+      propertyPath: unitCopiesParent
+      value: 
+      objectReference: {fileID: 761777995}
+    - target: {fileID: 5027094789416323413, guid: 30745e8b7734bca4f946c324ba20a54b,
+        type: 3}
       propertyPath: playerTeamColor.b
       value: 0.026628638
       objectReference: {fileID: 0}
@@ -35429,5 +35467,6 @@ SceneRoots:
   - {fileID: 1309653784}
   - {fileID: 2053133374}
   - {fileID: 1868308375}
+  - {fileID: 1363093105}
   - {fileID: 613339684}
   - {fileID: 702148368}

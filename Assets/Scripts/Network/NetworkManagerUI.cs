@@ -21,7 +21,6 @@ public class NetworkManagerUI : MonoBehaviour
 
     private void Awake()
     {
-        new SinglePlayerControlScheme();
         hostButton.onClick.AddListener(() => StartHost());
         clientButton.onClick.AddListener(() => StartClient());
         singlePlayerButton.onClick.AddListener(() => StartSinglePlayer());
@@ -38,7 +37,6 @@ public class NetworkManagerUI : MonoBehaviour
         surfaces.ForEach(surf => surf.enabled = false);
         NetworkManager.Singleton.StartClient();
         mainParent.Rotate(NetworkClientPositionFlipper.Instance.Angle);
-        //mainParent.localScale = Vector3.Scale(mainParent.localScale, NetworkClientPositionFlipper.Instance.ScaleMiltiplier);
         StartGame();
     }
 

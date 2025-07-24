@@ -111,8 +111,6 @@ namespace Units{
                 while (direction != originalDirection);
 
                 hitPosition.y = encounter.position.y;
-                //encounter.DOMove(hitPosition, pushbackDelay - 0.01f).SetEase(Ease.OutQuad);
-                print("pushDistance: " + Vector3.Distance(encounter.position, hitPosition));
                 encounter.DOBlendableMoveBy(hitPosition - encounter.position, pushbackDelay - 0.01f).SetEase(Ease.OutQuad);
 
                 yield return new WaitForSeconds(pushbackDelay);

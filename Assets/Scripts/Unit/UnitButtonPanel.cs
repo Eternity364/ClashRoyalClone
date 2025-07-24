@@ -40,7 +40,7 @@ namespace Units {
         [SerializeField]
         float minCopyScale = 0.5f;
 
-        private UnityAction<Vector3, Type, bool, bool> OnDragEndEvent;
+        private UnityAction<UnitSpawner.SpawnParams> OnDragEndEvent;
         private UnityAction<Vector3, Type> OnEnteredUnitPlaceAreaEvent;
         private UnityAction<Vector3> OnDragEvent;
 
@@ -70,7 +70,7 @@ namespace Units {
             ElixirManager.Instance.AddOnValueChangedListener(UpdateButtonsStatus);
         }
 
-        public void SetOnDragEvents(UnityAction<Vector3, Type> onEnteredUnitPlaceAreaEvent, UnityAction<Vector3, Type, bool, bool> onDragEndEvent, UnityAction<Vector3> onDragEvent)
+        public void SetOnDragEvents(UnityAction<Vector3, Type> onEnteredUnitPlaceAreaEvent, UnityAction<UnitSpawner.SpawnParams> onDragEndEvent, UnityAction<Vector3> onDragEvent)
         {
             OnEnteredUnitPlaceAreaEvent = onEnteredUnitPlaceAreaEvent;
             OnDragEvent = onDragEvent;
@@ -125,13 +125,13 @@ namespace Units {
             originalDistance = float.MaxValue;
             unitPlaceArea.SetVisible(false);
 
-            ControlScheme.Instance.PutUnitOnTheField(
+            UnitSpawner.SpawnParams spawnParams = new UnitSpawner.SpawnParams(
                 lastHitPosition,
                 button.Unit.Type,
                 enteredUnitPlaceArea,
                 true,
-                OnDragEndEvent);
-            //OnDragEndEvent?.Invoke(lastHitPosition, button.Unit.Type, enteredUnitPlaceArea, true);
+                0);
+            OnDragEndEvent?.Invoke(spawnParams);
 
             enteredUnitPlaceArea = false;
             lastHitPosition = Vector3.zero;
