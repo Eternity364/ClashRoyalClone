@@ -92,7 +92,6 @@ namespace Units {
             {
                 float progress = elixirValue / units[i].Data.Cost;
                 bool active = IsButtonActive(side);
-                print("Interractable: " + (active && elixirValue > units[i].Data.Cost));
                 buttons[i].GetComponentInChildren<Button>().interactable = active && elixirValue > units[i].Data.Cost;
                 if (!active)
                     progress = 0f;

@@ -47,23 +47,17 @@ namespace Units
                 { debrisPart, new List<Size> { Size.Big } },
                 { smokePart, new List<Size> { Size.Big } }
             };
-        } 
+        }
 
-        public void StartSpawnAnimation(Unit unit, Transform parent, TweenCallback OnSpawnAnimationFinish = null, bool onlyParticles = false)
+        public void StartParticlesAnimation(Vector3 startPosition, Transform parent, Size size, Sequence spawnAnimation, TweenCallback OnSpawnAnimationFinish = null)
         {
-            Transform unitTransform = unit.transform;
-            float baseOffset = unit.gameObject.GetComponent<NavMeshAgent>().baseOffset;
-            Vector3 startPosition = unitTransform.localPosition + new Vector3(0, baseOffset, 0);
-            //startPosition = GetAvailablePositionOnNavMesh(startPosition, unit.gameObject, 5f);
-            
             float yPos = transform.localPosition.y;
             transform.SetParent(parent, false);
             transform.localPosition = new Vector3(startPosition.x, 0 + yPos, startPosition.z);
 
-            Sequence spawnAnimation = DOTween.Sequence();
             foreach (var part in Parts)
             {
-                if (sizeParts[part.Value].Contains(unit.Data.Size))
+                if (sizeParts[part.Value].Contains(size))
                 {
                     spawnAnimation.InsertCallback(part.Key, () =>
                     {
@@ -80,10 +74,20 @@ namespace Units
                 {
                     ObjectPool.Instance.ReturnObject(this.gameObject);
                 });
+        }
+
+        public void StartSpawnAnimation(Unit unit, Transform parent, TweenCallback OnSpawnAnimationFinish = null, bool onlyParticles = false)
+        {
+            Transform unitTransform = unit.transform;
+            float baseOffset = unit.gameObject.GetComponent<NavMeshAgent>().baseOffset;
+            Vector3 startPosition = unitTransform.localPosition + new Vector3(0, baseOffset, 0);
+
+            Sequence spawnAnimation = DOTween.Sequence();
+            StartParticlesAnimation(startPosition, parent, unit.Data.Size, spawnAnimation, OnSpawnAnimationFinish);
 
             if (onlyParticles)
                 return;
-            
+
             TransformAnimation(unit, unitTransform, startPosition, spawnAnimation);
         }
 

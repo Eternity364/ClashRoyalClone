@@ -114,6 +114,18 @@ namespace Units{
             }
         }
 
+        public void StartParticlesOnlySpawnAnimation(Vector3 startPosition, Transform parent, Size size, TweenCallback OnSpawnAnimationFinish = null)
+        {
+            Sequence spawnAnimation = DOTween.Sequence();
+            GameObject spawnParticles = ObjectPool.Instance.GetObject(this.spawnParticlesPrefab.gameObject);
+            spawnParticles.GetComponent<SpawnParticles>().StartParticlesAnimation(
+                startPosition,
+                parent,
+                size,
+                spawnAnimation,
+                OnSpawnAnimationFinish);
+        }
+
         public void StartSpawnAnimation(ISpawnable spawnable, bool onlyParticles = false, TweenCallback OnSpawnAnimationFinish = null)
         {
             Sequence seq = DOTween.Sequence();
@@ -255,6 +267,12 @@ namespace Units{
                 return;
             }
             unitCopy = Factory.Instance.Create(position, 0, unitType, true);
+            Sides side = NetworkManager.Singleton.IsHost ? Sides.Player : Sides.Enemy;
+            unitCopy.GetComponent<ISpawnable>().PerformActionForEachUnit((unit) =>
+            {
+                if (side == Sides.Enemy) 
+                    unit.transform.localEulerAngles = new Vector3(0, 180, 0);
+            });
             unitCopy.transform.SetParent(unitCopiesParent);
         }
 

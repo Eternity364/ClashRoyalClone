@@ -74,10 +74,9 @@ namespace Units
             
             if (spawnAnimation)
             {  
-                UnitSpawner.Instance.StartSpawnAnimation(unit.Spawnable, true, () =>
+                UnitSpawner.Instance.StartParticlesOnlySpawnAnimation(position, transform.parent, unit.Data.Size, () =>
                 {
                     GetComponent<NetworkTransform>().Interpolate = true;
-                    //SetNetworkTransformEnabled(false, true);
                 });
             }
         }
