@@ -21,6 +21,8 @@ public class NetworkManagerUI : MonoBehaviour
 
     private void Awake()
     {
+        //PreStartGame();
+        
         hostButton.onClick.AddListener(() => StartHost());
         clientButton.onClick.AddListener(() => StartClient());
         singlePlayerButton.onClick.AddListener(() => StartSinglePlayer());
@@ -28,27 +30,55 @@ public class NetworkManagerUI : MonoBehaviour
 
     private void StartHost()
     {
+        NetworkManager.Singleton.OnServerStarted += () =>
+        {
+            Factory.Instance.CreateElixirManager();
+            StartGame();
+        };
+        
         NetworkManager.Singleton.StartHost();
-        StartGame();
+        TurnOffButtons();
     }
 
     private void StartClient()
     {
         surfaces.ForEach(surf => surf.enabled = false);
-        NetworkManager.Singleton.StartClient();
         mainParent.Rotate(NetworkClientPositionFlipper.Instance.Angle);
-        StartGame();
+
+        NetworkManager.Singleton.OnClientConnectedCallback += (clientId) =>
+        {
+            StartGame();
+        };
+
+        TurnOffButtons();
+        NetworkManager.Singleton.StartClient();
     }
 
     private void StartSinglePlayer()
     {
-        enemySpawners.ForEach(spawner => spawner.gameObject.SetActive(true));
+        
+        NetworkManager.Singleton.OnServerStarted += () =>
+        {
+            enemySpawners.ForEach(spawner => spawner.gameObject.SetActive(true));
+        };
         StartHost();
     }
+
+    // private void PreStartGame()
+    // {
+    //     panel.GetComponent<UnitButtonPanel>().Initialize();
+    // }
 
     private void StartGame()
     {
         panel.SetActive(true);
         gameObject.SetActive(false);
+    }
+
+    private void TurnOffButtons()
+    {
+        hostButton.interactable = false;
+        clientButton.interactable = false;
+        singlePlayerButton.interactable = false;
     }
 }

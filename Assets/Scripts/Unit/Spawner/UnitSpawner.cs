@@ -105,6 +105,7 @@ namespace Units{
                 TrySpawnUnitServerRpc(spawnParams);
                 unitCopies.Add(clientCopyIndex, unitCopy);
                 unitCopy = null;
+                ElixirManager.Instance.UpdateSpawnLock(1);
                 clientCopyIndex++;
             }
             else
@@ -194,20 +195,20 @@ namespace Units{
 
         private IEnumerator TrySpawnCor(SpawnParams spawnParams)
         {
-            GameObject oldUnitCopy = unitCopy;
-            unitCopy = null;
-
             if (!spawnParams.Spawn)
             {
                 RemoveCopy();
                 yield break;
             }
 
+            GameObject oldUnitCopy = unitCopy;
+            unitCopy = null;
+
             UnitData data = UnitsList.Instance.GetByType(spawnParams.UnitType).Data;
 
             if (spawnParams.PayElixir)
             {
-                ElixirManager.Instance.ChangeValue(-data.Cost);
+                ElixirManager.Instance.ChangeValue(-data.Cost, (Sides)spawnParams.Team);
                 panel.CreateFieldElixirAnimation(data.Cost);
             }
 

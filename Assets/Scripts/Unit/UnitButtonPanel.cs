@@ -1,5 +1,7 @@
 using DG.Tweening;
+using Mono.CSharp;
 using TMPro;
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
@@ -7,7 +9,7 @@ using UnityEngine.UI;
 namespace Units {
     public class UnitButtonPanel : MonoBehaviour
     {
-        
+
         [SerializeField]
         Unit[] units = new Unit[4];
         [SerializeField]
@@ -52,8 +54,7 @@ namespace Units {
         private bool enteredUnitPlaceArea = false;
 
 
-
-        void Start()
+        void Awake()
         {
             buttons = GetComponentsInChildren<UnitButton>();
             for (int i = 0; i < buttons.Length; i++)
@@ -67,7 +68,6 @@ namespace Units {
                     buttons[i].SetOnDrag(UpdateButtonCopyPosition);
                 }
             }
-            ElixirManager.Instance.AddOnValueChangedListener(UpdateButtonsStatus);
         }
 
         public void SetOnDragEvents(UnityAction<Vector3, Type> onEnteredUnitPlaceAreaEvent, UnityAction<UnitSpawner.SpawnParams> onDragEndEvent, UnityAction<Vector3> onDragEvent)
@@ -82,16 +82,27 @@ namespace Units {
             AnimationHelpers.CreateFieldElixirAnimation(iconPrefab.gameObject, parentForCopy, panelArea.GetMouseHitPosition(), value);
         }
 
-        private void UpdateButtonsStatus(float elixirValue)
+        public void UpdateButtonsStatus(float elixirValue, Sides side)
         {
+            Sides playerSide = NetworkManager.Singleton.IsHost ? Sides.Player : Sides.Enemy;
+            if (playerSide != side)
+                return;
+
             for (int i = 0; i < buttons.Length; i++)
             {
-                buttons[i].SetCostProgress(elixirValue / units[i].Data.Cost);
-                if (i < units.Length)
-                {
-                    buttons[i].GetComponentInChildren<Button>().interactable = units[i].Data.Cost <= elixirValue;
-                }
+                float progress = elixirValue / units[i].Data.Cost;
+                bool active = IsButtonActive(side);
+                print("Interractable: " + (active && elixirValue > units[i].Data.Cost));
+                buttons[i].GetComponentInChildren<Button>().interactable = active && elixirValue > units[i].Data.Cost;
+                if (!active)
+                    progress = 0f;
+                buttons[i].SetCostProgress(progress);
             }
+        }
+
+        private bool IsButtonActive(Sides side)
+        {
+            return side == Sides.Player || !ElixirManager.Instance.SpawnLock;
         }
 
         private void OnBeginDrag(UnitButton button)
@@ -138,7 +149,8 @@ namespace Units {
             progressBar.ShowCostHighlight(false);
         }
 
-        private void UpdateButtonCopyPosition() {
+        private void UpdateButtonCopyPosition()
+        {
             if (copyButton != null)
             {
                 Vector3 hitPosition = overallArea.GetMouseHitPosition();
@@ -159,7 +171,7 @@ namespace Units {
                 OnDragEvent?.Invoke(lastHitPosition);
             }
         }
-        
+
         private Vector3 AdjustHitPosition(Vector3 hitPosition)
         {
             if (playerBaseArea.GetMouseHitPosition() != Vector3.zero)
@@ -174,7 +186,7 @@ namespace Units {
 
             return hitPosition;
         }
-        
+
         private void SetCopyParametersDependingOnDistance(Vector3 hitPosition)
         {
             if (copyButton != null)

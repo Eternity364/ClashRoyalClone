@@ -1,3 +1,4 @@
+using TMPro;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -10,7 +11,17 @@ namespace Units
         [SerializeField]
         private Base playerBase;
         [SerializeField]
-        private Base enemyBase;
+        private Base enemyBase;    
+        [SerializeField] private UnitButtonPanel unitButtonPanel;
+        [SerializeField] private ElixirManager elixirManagerPrefab;
+        [Header("Elixir Manager values")]
+        [SerializeField]
+        private ProgressBar progressBar;
+        [SerializeField]
+        private TextMeshProUGUI currentValueText;
+        [SerializeField]
+        private TextMeshProUGUI maxValueText;
+        
 
         // Singleton instance
         public static Factory Instance { get; private set; }
@@ -41,6 +52,18 @@ namespace Units
             go.gameObject.SetActive(true);
 
             return go;
+        }
+
+        public GameObject CreateElixirManager()
+        {
+            ElixirManager elixirManager = Instantiate(elixirManagerPrefab);
+            elixirManager.GetComponent<NetworkObject>().Spawn();
+            return elixirManager.gameObject;
+        }
+
+        public void InitializeElixirManager()
+        {
+            ElixirManager.Instance.Initialize(progressBar, currentValueText, maxValueText, unitButtonPanel.UpdateButtonsStatus);
         }
 
         public GameObject CreateBase(bool isEnemy)
