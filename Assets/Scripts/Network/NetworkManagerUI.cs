@@ -14,15 +14,28 @@ public class NetworkManagerUI : MonoBehaviour
     [SerializeField]
     private Button clientButton;
     [SerializeField]
+    private Button relayButton;
+    [SerializeField]
+    private Button relayBackButton;
+    [SerializeField]
     private GameObject panel;
     [SerializeField] List<NavMeshSurface> surfaces;
     [SerializeField] List<UnitAutoSpawner> enemySpawners;
     [SerializeField] Transform mainParent;
+    [SerializeField] GameObject relayMenu;
 
     private void Awake()
     {
         //PreStartGame();
         
+        relayButton.onClick.AddListener(() =>
+        {
+            SetRelayMenuActive(true);
+        });
+        relayBackButton.onClick.AddListener(() =>
+        {
+            SetRelayMenuActive(false);
+        });
         hostButton.onClick.AddListener(() => StartHost());
         clientButton.onClick.AddListener(() => StartClient());
         singlePlayerButton.onClick.AddListener(() => StartSinglePlayer());
@@ -37,7 +50,7 @@ public class NetworkManagerUI : MonoBehaviour
         };
         
         NetworkManager.Singleton.StartHost();
-        TurnOffButtons();
+        SetButtonsInteractable(false);
     }
 
     private void StartClient()
@@ -50,7 +63,7 @@ public class NetworkManagerUI : MonoBehaviour
             StartGame();
         };
 
-        TurnOffButtons();
+        SetButtonsInteractable(false);
         NetworkManager.Singleton.StartClient();
     }
 
@@ -64,10 +77,11 @@ public class NetworkManagerUI : MonoBehaviour
         StartHost();
     }
 
-    // private void PreStartGame()
-    // {
-    //     panel.GetComponent<UnitButtonPanel>().Initialize();
-    // }
+    private void SetRelayMenuActive(bool active)
+    {
+        SetButtonsInteractable(!active);
+        relayMenu.SetActive(active);
+    }
 
     private void StartGame()
     {
@@ -75,10 +89,11 @@ public class NetworkManagerUI : MonoBehaviour
         gameObject.SetActive(false);
     }
 
-    private void TurnOffButtons()
+    private void SetButtonsInteractable(bool interactable)
     {
-        hostButton.interactable = false;
-        clientButton.interactable = false;
-        singlePlayerButton.interactable = false;
+        relayButton.interactable = interactable;
+        hostButton.interactable = interactable;
+        clientButton.interactable = interactable;
+        singlePlayerButton.interactable = interactable;
     }
 }
