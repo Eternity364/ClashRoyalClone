@@ -9,6 +9,8 @@ using UnityEngine.UI;
 public class NetworkManagerUI : MonoBehaviour
 {
     [SerializeField]
+    private UnityTransport unityTransport;
+    [SerializeField]
     private Button singlePlayerButton;
     [SerializeField]
     private Button hostButton;
@@ -26,12 +28,8 @@ public class NetworkManagerUI : MonoBehaviour
     [SerializeField] GameObject relayMenu;
     [SerializeField] GameObject waitingText;
 
-    private UnityTransport unityTransport;
-
     private void Awake()
     {
-        unityTransport = NetworkManager.Singleton.GetComponent<UnityTransport>();
-
         relayButton.onClick.AddListener(() =>
         {
             SetRelayMenuActive(true);
@@ -43,11 +41,13 @@ public class NetworkManagerUI : MonoBehaviour
         hostButton.onClick.AddListener(() =>
         {
             SwitchUnityTransport();
+            SetWaitingMode(true);
             StartHost();
         });
         clientButton.onClick.AddListener(() =>
         {
             SwitchUnityTransport();
+            SetWaitingMode(true);
             StartClient();
         });
         singlePlayerButton.onClick.AddListener(() =>
@@ -59,10 +59,13 @@ public class NetworkManagerUI : MonoBehaviour
 
     public void StartHost()
     {
-        NetworkManager.Singleton.OnServerStarted += () =>
+        NetworkManager.Singleton.OnClientConnectedCallback += (clientId) =>
         {
-            Factory.Instance.CreateElixirManager();
-            StartGame();
+            if (clientId != NetworkManager.Singleton.LocalClientId)
+            {
+                Factory.Instance.CreateElixirManager();
+                StartGame();
+            }
         };
 
         NetworkManager.Singleton.StartHost();
@@ -71,7 +74,6 @@ public class NetworkManagerUI : MonoBehaviour
 
     public void StartClient()
     {
-        SwitchUnityTransport();
         surfaces.ForEach(surf => surf.enabled = false);
         mainParent.Rotate(NetworkClientPositionFlipper.Instance.Angle);
 
@@ -121,10 +123,11 @@ public class NetworkManagerUI : MonoBehaviour
         if (waiting)
             relayMenu.SetActive(false);
     }
-    
+
     private void SwitchUnityTransport()
     {
-        NetworkManager.Singleton.GetComponent<UnityTransport>().enabled = false;
-        NetworkManager.Singleton.NetworkConfig.NetworkTransport = unityTransport;
+        // NetworkManager.Singleton.GetComponent<UnityTransport>().enabled = false;
+        // NetworkManager.Singleton.NetworkConfig.NetworkTransport = unityTransport;
+        // NetworkManager.Singleton.GetComponent<UnityTransport>().enabled = true;
     }
 }

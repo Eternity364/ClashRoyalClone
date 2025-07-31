@@ -21,7 +21,7 @@ public class RelayManager : MonoBehaviour
     void Awake()
     {
         Instance = this;
-        unityTransport = GetComponent<UnityTransport>();
+        unityTransport = GetComponentInChildren<UnityTransport>();
     }
 
     [Command]
@@ -70,5 +70,6 @@ public class RelayManager : MonoBehaviour
     {
         NetworkManager.Singleton.GetComponent<UnityTransport>().enabled = false;
         NetworkManager.Singleton.NetworkConfig.NetworkTransport = unityTransport;
+        NetworkManager.Singleton.GetComponent<UnityTransport>().enabled = true;
     }
 }
