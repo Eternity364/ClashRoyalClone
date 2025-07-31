@@ -15,7 +15,9 @@ public class AuthenticateUI : MonoBehaviour {
             LobbyManager.Instance.Authenticate(EditPlayerName.Instance.GetPlayerName(), () =>
             {
                 Hide();
+                EditPlayerName.Instance.gameObject.SetActive(true);
             });
+            EditPlayerName.Instance.gameObject.SetActive(false);
             authenticateButton.gameObject.SetActive(false);
             waitingText.SetActive(true);
         });

@@ -16,30 +16,37 @@ public class LobbyCreateUI : MonoBehaviour {
     [SerializeField] private GameObject waitingText;
 
     private string lobbyName;
-    
 
-    private void Start() {
+
+    private void Start()
+    {
         Instance = this;
 
         LobbyManager.Instance.OnJoinedLobby += OnJoinedLobby;
 
-        createButton.onClick.AddListener(() => {
+        createButton.onClick.AddListener(() =>
+        {
             SetWaitingState(true);
             LobbyManager.Instance.CreateLobby(
                 lobbyName
             );
         });
 
-        lobbyNameButton.onClick.AddListener(() => {
+        lobbyNameButton.onClick.AddListener(() =>
+        {
             UI_InputWindow.Show_Static("Lobby Name", lobbyName, "abcdefghijklmnopqrstuvxywzABCDEFGHIJKLMNOPQRSTUVXYWZ .,-", 20,
-            () => {
+            () =>
+            {
                 // Cancel
             },
-            (string lobbyName) => {
+            (string lobbyName) =>
+            {
                 this.lobbyName = lobbyName;
                 UpdateText();
             });
         });
+
+        gameObject.SetActive(false);
     }
 
     private void OnJoinedLobby(object sender, LobbyManager.LobbyEventArgs e)
@@ -50,6 +57,7 @@ public class LobbyCreateUI : MonoBehaviour {
     private void SetWaitingState(bool isWaiting)
     {
         createButton.gameObject.SetActive(!isWaiting);
+        lobbyNameButton.gameObject.SetActive(!isWaiting);
         waitingText.SetActive(isWaiting);
     }
 
