@@ -28,6 +28,8 @@ public class NetworkManagerUI : MonoBehaviour
     [SerializeField] GameObject relayMenu;
     [SerializeField] GameObject waitingText;
 
+    bool isSinglePlayer = false;
+
     private void Awake()
     {
         relayButton.onClick.AddListener(() =>
@@ -61,7 +63,7 @@ public class NetworkManagerUI : MonoBehaviour
     {
         NetworkManager.Singleton.OnClientConnectedCallback += (clientId) =>
         {
-            if (clientId != NetworkManager.Singleton.LocalClientId)
+            if (isSinglePlayer || clientId != NetworkManager.Singleton.LocalClientId)
             {
                 Factory.Instance.CreateElixirManager();
                 StartGame();
@@ -88,7 +90,7 @@ public class NetworkManagerUI : MonoBehaviour
 
     private void StartSinglePlayer()
     {
-
+        isSinglePlayer = true;
         NetworkManager.Singleton.OnServerStarted += () =>
         {
             enemySpawners.ForEach(spawner => spawner.gameObject.SetActive(true));
