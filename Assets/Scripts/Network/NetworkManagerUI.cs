@@ -11,6 +11,8 @@ public class NetworkManagerUI : MonoBehaviour
     [SerializeField]
     private UnityTransport unityTransport;
     [SerializeField]
+    private TargetAcquiring targetAcquiring;
+    [SerializeField]
     private Button singlePlayerButton;
     [SerializeField]
     private Button hostButton;
@@ -27,6 +29,7 @@ public class NetworkManagerUI : MonoBehaviour
     [SerializeField] Transform mainParent;
     [SerializeField] GameObject relayMenu;
     [SerializeField] GameObject waitingText;
+    [SerializeField] WinConditionWindow winConditionWindow;
 
     bool isSinglePlayer = false;
 
@@ -108,6 +111,7 @@ public class NetworkManagerUI : MonoBehaviour
     {
         panel.SetActive(true);
         gameObject.SetActive(false);
+        WinConditionChecker.Instance.OnWinConditionMet += OnMatchEnded;
     }
 
     private void SetButtonsInteractable(bool interactable)
@@ -124,6 +128,18 @@ public class NetworkManagerUI : MonoBehaviour
         SetButtonsInteractable(!waiting);
         if (waiting)
             relayMenu.SetActive(false);
+    }
+
+    private void OnMatchEnded(Sides losingTeam)
+    {
+        Debug.Log("Team " + losingTeam + " has lost the match!");
+        targetAcquiring.gameObject.SetActive(false);
+        winConditionWindow.gameObject.SetActive(true);
+        bool isWinner =
+            (NetworkManager.Singleton.IsHost && losingTeam != Sides.Player) ||
+            (!NetworkManager.Singleton.IsHost && losingTeam != Sides.Enemy);
+        winConditionWindow.SetWinner(isWinner);
+        panel.GetComponent<UnitButtonPanel>().SetActive(false);
     }
 
     private void SwitchUnityTransport()

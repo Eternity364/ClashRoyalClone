@@ -291,6 +291,8 @@ namespace Units{
             bases[GetEnemyTeam()].gameObject.SetActive(true);
 
             targetAcquiring.gameObject.SetActive(true);
+
+            WinConditionChecker.Instance.Init();
         }
     }
 }

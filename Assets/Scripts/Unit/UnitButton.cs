@@ -85,7 +85,6 @@ namespace Units{
             entry.callback.AddListener((eventData) =>
             {
                 OnBeginDrag();
-                button.interactable = false;
             });
             eventTrigger.triggers.Add(entry);
         }
@@ -95,7 +94,6 @@ namespace Units{
             entry.eventID = EventTriggerType.EndDrag;
             entry.callback.AddListener( (eventData) => {
                 OnEndDrag();
-                button.interactable = true;
             } );
             eventTrigger.triggers.Add(entry);
         }

@@ -99,11 +99,11 @@ namespace Units{
         {
             this.team = team;
             health = data.MaxHealth;
+            isDead = false;
 
             if (this.GetType() == typeof(Base))
                 return;
 
-            isDead = false;
             this.destination = destination;
             timePassedSinceLastAttack = data.AttackRate;
             InitNavMesh();
@@ -347,6 +347,11 @@ namespace Units{
 
         protected virtual void PerformDeath()
         {
+            if (this is Base)
+            {
+                print("Base is dead");
+            }
+
             if (isDead)
                 return;
 
@@ -367,8 +372,10 @@ namespace Units{
             transform.localRotation = Quaternion.identity;
             GetComponent<Collider>().enabled = false;
 
-            rPGCharacterController.EndAction("Death");
-            rPGCharacterController.StartAction("Death");
+            if (rPGCharacterController != null) {
+                rPGCharacterController.EndAction("Death");
+                rPGCharacterController.StartAction("Death");
+            }
 
             DG.Tweening.Sequence deathSeq = DOTween.Sequence();
             deathSeq.Insert(1f, transform.DOBlendableMoveBy(new Vector3(0, -deathAnimationDepth, 0), 2f));

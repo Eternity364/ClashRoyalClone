@@ -52,6 +52,7 @@ namespace Units {
         private Vector3 originalScale;
         private Vector3 lastHitPosition;
         private bool enteredUnitPlaceArea = false;
+        private bool active = true;
 
 
         void Awake()
@@ -77,6 +78,20 @@ namespace Units {
             OnDragEndEvent = onDragEndEvent;
         }
 
+        public void SetActive(bool active)
+        {
+            this.active = active;
+            if (!active)
+            {
+                for (int i = 0; i < buttons.Length; i++)
+                {
+                    buttons[i].GetComponentInChildren<Button>().interactable = false;
+                    buttons[i].SetCostProgress(0);
+                }
+            }
+        }
+
+
         public void CreateFieldElixirAnimation(float value)
         {
             AnimationHelpers.CreateFieldElixirAnimation(iconPrefab.gameObject, parentForCopy, panelArea.GetMouseHitPosition(), value);
@@ -101,7 +116,7 @@ namespace Units {
 
         private bool IsButtonActive(Sides side)
         {
-            return side == Sides.Player || !ElixirManager.Instance.SpawnLock;
+            return active && (side == Sides.Player || !ElixirManager.Instance.SpawnLock);
         }
 
         private void OnBeginDrag(UnitButton button)
