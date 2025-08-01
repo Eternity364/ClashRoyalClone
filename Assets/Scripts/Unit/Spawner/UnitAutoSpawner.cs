@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Units{
@@ -7,7 +8,7 @@ namespace Units{
         [SerializeField]
         private float spawnRate;
         [SerializeField]
-        private GameObject unitPrefab;
+        private List<Unit> unitPrefabs;
 
         private float timePassed = 0;
 
@@ -24,7 +25,7 @@ namespace Units{
                 {
                     SpawnParams spawnParams = new SpawnParams(
                         transform.position,
-                        unitPrefab.GetComponent<Unit>().Type,
+                        unitPrefabs[Random.Range(0, unitPrefabs.Count)].Type,
                         true,
                         false,
                         team);

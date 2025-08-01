@@ -13,9 +13,9 @@ MonoBehaviour:
   m_Name: Giant
   m_EditorClassIdentifier: 
   maxHealth: 600
-  attack: 100
+  attack: 60
   cost: 5
   attackRange: 5
   attackNoticeRange: 20
   attackRate: 2
-  isBig: 1
+  size: 0

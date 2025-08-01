@@ -72,7 +72,7 @@ public class TargetAcquiring : MonoBehaviour
             
             if (!agent.HasTarget)
             {
-                CheckAndSetTarget(agent, UnitSpawner.Instance.Bases[agent.Team], (agent.transform.position - UnitSpawner.Instance.Bases[agent.Team].transform.position).magnitude);
+                CheckAndSetTarget(agent, UnitSpawner.Instance.Bases[agent.Team], 0);
             }
         }
         // Units shouldn't be removed while we are iterating through them.

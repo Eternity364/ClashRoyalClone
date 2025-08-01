@@ -19,6 +19,7 @@ namespace Units
 
         private NetworkVariable<Color> teamColor = new();
         private NetworkVariable<float> emissionStrength = new();
+        private NetworkVariable<Color> damageColor = new();
         private NetworkVariable<bool> networkTransformEnabled = new();
 
         public override void OnNetworkSpawn()
@@ -30,12 +31,14 @@ namespace Units
             {
                 unit.OnTeamColorSet += SetTeamColorNetworkVar;
                 unit.OnEmissionStrengthSet += SetEmissionStrengthNetworkVar;
+                unit.OnDamageColorSet += SetDamageColorNetworkVar;
             }
             else if (IsClient)
             {
                 GetComponent<NetworkTransform>().Interpolate = false;
                 teamColor.OnValueChanged += SetTeamColor;
                 emissionStrength.OnValueChanged += SetEmissionStrength;
+                damageColor.OnValueChanged += SetDamageColor;
                 index.OnValueChanged += RemoveClientCopy;
                 unit.enabled = false;
                 GetComponent<NavMeshAgent>().enabled = false;
@@ -52,12 +55,14 @@ namespace Units
             {
                 unit.OnTeamColorSet -= SetTeamColorNetworkVar;
                 unit.OnEmissionStrengthSet -= SetEmissionStrengthNetworkVar;
+                unit.OnDamageColorSet -= SetDamageColorNetworkVar;
             }
             else if (IsClient)
             {
                 teamColor.OnValueChanged -= SetTeamColor;
                 emissionStrength.OnValueChanged -= SetEmissionStrength;
                 index.OnValueChanged -= RemoveClientCopy;
+                damageColor.OnValueChanged -= SetDamageColor;
             }
         }
 
@@ -109,6 +114,16 @@ namespace Units
         void SetEmissionStrength(float _, float value)
         {
             unit.SetEmissionStrength(value);
+        }
+
+        void SetDamageColorNetworkVar(Color color)
+        {
+            damageColor.Value = color;
+        }
+
+        void SetDamageColor(Color _, Color color)
+        {
+            unit.SetDamageColor(color);
         }
 
         void SetNetworkTransformEnabled(bool _, bool enabled)

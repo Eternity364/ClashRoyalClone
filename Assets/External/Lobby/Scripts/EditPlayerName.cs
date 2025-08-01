@@ -17,11 +17,13 @@ public class EditPlayerName : MonoBehaviour {
     [SerializeField] private TextMeshProUGUI playerNameText;
 
 
-    private string playerName = "Default";
+    private string playerName;
 
 
     private void Awake() {
         Instance = this;
+        
+        playerName = "Player" + UnityEngine.Random.Range(1000, 9999).ToString();
 
         GetComponent<Button>().onClick.AddListener(() => {
             UI_InputWindow.Show_Static("Player Name", playerName, "abcdefghijklmnopqrstuvxywzABCDEFGHIJKLMNOPQRSTUVXYWZ .,-", 20,

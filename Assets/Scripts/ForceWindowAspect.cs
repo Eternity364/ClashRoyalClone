@@ -25,8 +25,12 @@ public class ForceWindowAspect : MonoBehaviour
 
     float targetAspect = 9f / 16f; // Portrait (change as needed)
     private int lastWidth = 0;
-    private int lastHeight = 0;
     private bool isAdjusting = false;
+
+    void Awake () {
+        int width = Screen.width;
+        lastWidth = width;
+    }
 
     void Update()
     {
@@ -55,7 +59,6 @@ public class ForceWindowAspect : MonoBehaviour
 
             MoveWindow(handle, x, y, width, newHeight, true);
             lastWidth = width;
-            lastHeight = newHeight;
             isAdjusting = true;
         }
     }

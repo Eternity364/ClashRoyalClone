@@ -67,6 +67,7 @@ namespace Units{
         public UnitData Data => data;
         public UnityAction<Unit> OnDeath;
         public event UnityAction<Color> OnTeamColorSet;
+        public event UnityAction<Color> OnDamageColorSet;
         public event UnityAction<float> OnEmissionStrengthSet;
         public Type Type => type;
 
@@ -387,6 +388,14 @@ namespace Units{
             isDead = true;
         }
 
+        public void SetDamageColor(Color color)
+        {
+            DoActionForAllMaterials(mat =>
+            {
+                mat.color = color;
+            });
+        }
+
         private void StartDamageAnimation()
         {
             if (damageAnimation != null)
@@ -396,8 +405,30 @@ namespace Units{
             damageAnimation = DOTween.Sequence();
             DoActionForAllMaterials(mat =>
             {
-                damageAnimation.Append(mat.DOColor(commonUnitData.DamageColor, commonUnitData.DamageColorAnimationDuration).SetEase(Ease.InCubic));
-                damageAnimation.Append(mat.DOColor(originalColor, commonUnitData.DamageColorAnimationDuration).SetEase(Ease.OutCubic));
+                damageAnimation.Append(
+                    DOTween.To(
+                        () => mat.color,
+                        color =>
+                        {
+                            mat.color = color;
+                            OnDamageColorSet?.Invoke(color); // Notify client side of color change
+                        },
+                        commonUnitData.DamageColor,
+                        commonUnitData.DamageColorAnimationDuration
+                    ).SetEase(Ease.InCubic)
+                );
+                damageAnimation.Append(
+                    DOTween.To(
+                        () => mat.color,
+                        color =>
+                        {
+                            mat.color = color;
+                            OnDamageColorSet?.Invoke(color); // Notify client side of color change
+                        },
+                        originalColor,
+                        commonUnitData.DamageColorAnimationDuration
+                    ).SetEase(Ease.OutCubic)
+                );
             });
         }
 
