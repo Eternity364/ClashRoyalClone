@@ -9,6 +9,8 @@ using UnityEngine.UI;
 public class NetworkManagerUI : MonoBehaviour
 {
     [SerializeField]
+    private bool spawnEnemiesInSinglePlayer = true;
+    [SerializeField]
     private UnityTransport unityTransport;
     [SerializeField]
     private TargetAcquiring targetAcquiring;
@@ -94,10 +96,13 @@ public class NetworkManagerUI : MonoBehaviour
     private void StartSinglePlayer()
     {
         isSinglePlayer = true;
-        NetworkManager.Singleton.OnServerStarted += () =>
+        if (spawnEnemiesInSinglePlayer)
         {
-            enemySpawners.ForEach(spawner => spawner.gameObject.SetActive(true));
-        };
+            NetworkManager.Singleton.OnServerStarted += () =>
+            {
+                enemySpawners.ForEach(spawner => spawner.gameObject.SetActive(true));
+            };
+        }
         StartHost();
     }
 

@@ -95,19 +95,24 @@ public class ClickableArea : MonoBehaviour
         return newPosition;
     }
 
-    public Vector3 GetMouseHitPosition()
+    public Vector3 GetHitPosition(Ray screenPosRay)
     {
-        ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         if (coll == null)
         {
             Debug.LogError("Collider is not set.");
             return Vector3.zero;
         }
-        if (coll.Raycast(ray, out hit, 100f))
+        if (coll.Raycast(screenPosRay, out hit, 100f))
         {
             return hit.point;
         }
         return Vector3.zero;
+    }
+
+    public Vector3 GetMouseHitPosition()
+    {
+        ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        return GetHitPosition(ray);
     }
 
     void Update()

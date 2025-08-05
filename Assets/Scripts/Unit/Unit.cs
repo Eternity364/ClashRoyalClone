@@ -348,11 +348,6 @@ namespace Units{
 
         protected virtual void PerformDeath()
         {
-            if (this is Base)
-            {
-                print("Base is dead");
-            }
-
             if (isDead)
                 return;
 

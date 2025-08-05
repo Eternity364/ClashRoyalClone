@@ -46,12 +46,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   panel: {fileID: 0}
+  progressBarManager: {fileID: 0}
   spawnParticlesPrefab: {fileID: 0}
   targetAcquiring: {fileID: 0}
-  target: {fileID: 0}
-  normiesParent: {fileID: 0}
-  bulletFactory: {fileID: 0}
-  teamColor: {r: 0, g: 0, b: 0, a: 0}
+  unitsParent: {fileID: 0}
+  unitCopiesParent: {fileID: 0}
+  playerTeamColor: {r: 0, g: 0, b: 0, a: 0}
+  enemyTeamColor: {r: 0, g: 0, b: 0, a: 0}
   team: 0
 --- !u!114 &-274804003483859723
 MonoBehaviour:

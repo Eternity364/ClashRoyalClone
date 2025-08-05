@@ -20,6 +20,8 @@ namespace Units{
         [SerializeField]
         UnitButtonPanel panel;
         [SerializeField]
+        ProgressBarManager progressBarManager;
+        [SerializeField]
         SpawnParticles spawnParticlesPrefab;
         [SerializeField]
         TargetAcquiring targetAcquiring;
@@ -228,11 +230,23 @@ namespace Units{
 
             float baseOffset = UnitsList.Instance.GetByType(spawnParams.UnitType).GetComponent<NavMeshAgent>().baseOffset;
             ISpawnable spawnable = Factory.Instance.Create(spawnParams.Position, spawnParticlesPrefab.YUpOffset + baseOffset, spawnParams.UnitType).GetComponent<ISpawnable>();
+            InitializeSpawnable(spawnable, spawnParams);
+
+            if (oldUnitCopy != null)
+            {
+                oldUnitCopy.GetComponent<ISpawnable>().Release(true);
+            }
+        }
+
+        private void InitializeSpawnable(ISpawnable spawnable, SpawnParams spawnParams)
+        {
             spawnable.PerformActionForEachUnit((unit) =>
             {
                 unit.GetComponent<NetworkUnit>().index.Value = spawnParams.UnitIndex;
-                if (spawnParams.Team == (int)Sides.Enemy) 
+                if (spawnParams.Team == (int)Sides.Enemy)
                     unit.transform.localEulerAngles = new Vector3(0, 180, 0);
+                progressBarManager.CreateProgressBar(unit);
+                unit.OnDeath += _unit => progressBarManager.RemoveProgressBar(_unit);
             });
             spawnable.SetTeamColor(UnitSpawner.Instance.TeamColors[spawnParams.Team]);
             StartSpawnAnimation(spawnable, false, () =>
@@ -243,12 +257,6 @@ namespace Units{
                     });
                 spawnable.Init(UnitSpawner.Instance.Bases[spawnParams.Team].transform, spawnParams.Team);
             });
-
-            if (oldUnitCopy != null)
-            {
-                oldUnitCopy.GetComponent<ISpawnable>().Release(true);
-                oldUnitCopy = null;
-            }
         }
 
         private void UpdateUnitCopyPosition(Vector3 position)
