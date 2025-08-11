@@ -114,7 +114,7 @@ namespace Units
         }
 
         
-        private float GetProgressBarPosAdjustmentStrenght(Unit unit)
+        private float GetProgressBarPosAdjustmentStrength(Unit unit)
         {
             if (unit.Data.Size == Size.Medium)
             {
@@ -134,7 +134,7 @@ namespace Units
 
             Vector2 screenCenter = new Vector2(Screen.width / 2f, Screen.height / 2f);
             Vector2 screenOffsetFromCenter = (Vector2)screenPos - screenCenter;
-            screenPos += (Vector3)screenOffsetFromCenter * GetProgressBarPosAdjustmentStrenght(unit);
+            screenPos += (Vector3)screenOffsetFromCenter * GetProgressBarPosAdjustmentStrength(unit);
 
             return screenPos + GetProgressBarOffset(unit) * Screen.height / referenceYResolution * Vector3.up;
         }

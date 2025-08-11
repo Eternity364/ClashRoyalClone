@@ -51,5 +51,13 @@
         "temp/": true,
         "Temp/": true
     },
-    "dotnet.defaultSolution": "ClashRoyalClone.sln"
+    "dotnet.defaultSolution": "ClashRoyalClone.sln",
+    "cSpell.words": [
+        "Anims",
+        "Blendable",
+        "Despawn",
+        "Interactable",
+        "Mathf",
+        "Spawnable"
+    ]
 }

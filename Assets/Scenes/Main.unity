@@ -15889,7 +15889,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1231815000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -29616,6 +29616,7 @@ MonoBehaviour:
   relayMenu: {fileID: 1733826812}
   waitingText: {fileID: 1903401635}
   winConditionWindow: {fileID: 497000651}
+  progressBarCanvas: {fileID: 1231814999}
 --- !u!1 &2039882349
 GameObject:
   m_ObjectHideFlags: 0

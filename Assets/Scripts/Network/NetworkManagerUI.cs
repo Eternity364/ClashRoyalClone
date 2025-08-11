@@ -32,6 +32,7 @@ public class NetworkManagerUI : MonoBehaviour
     [SerializeField] GameObject relayMenu;
     [SerializeField] GameObject waitingText;
     [SerializeField] WinConditionWindow winConditionWindow;
+    [SerializeField] GameObject progressBarCanvas;
 
     bool isSinglePlayer = false;
 
@@ -117,6 +118,7 @@ public class NetworkManagerUI : MonoBehaviour
         panel.SetActive(true);
         gameObject.SetActive(false);
         WinConditionChecker.Instance.OnWinConditionMet += OnMatchEnded;
+        progressBarCanvas.SetActive(true);
     }
 
     private void SetButtonsInteractable(bool interactable)
@@ -137,7 +139,6 @@ public class NetworkManagerUI : MonoBehaviour
 
     private void OnMatchEnded(Sides losingTeam)
     {
-        Debug.Log("Team " + losingTeam + " has lost the match!");
         targetAcquiring.gameObject.SetActive(false);
         winConditionWindow.gameObject.SetActive(true);
         bool isWinner =
