@@ -19,28 +19,34 @@ namespace Units
 
         private NetworkVariable<Color> teamColor = new();
         private NetworkVariable<float> emissionStrength = new();
+        private NetworkVariable<int> hp = new();
         private NetworkVariable<Color> damageColor = new();
-        private NetworkVariable<bool> networkTransformEnabled = new();
+        private NetworkVariable<int> team = new();
+
+        private ProgressBar progressBar;
 
         public override void OnNetworkSpawn()
         {
             if (unit == null)
                 unit = GetComponent<Unit>();
-            //networkTransformEnabled.OnValueChanged += SetNetworkTransformEnabled;
+
             if (IsOwner)
             {
                 unit.OnTeamColorSet += SetTeamColorNetworkVar;
                 unit.OnEmissionStrengthSet += SetEmissionStrengthNetworkVar;
                 unit.OnDamageColorSet += SetDamageColorNetworkVar;
+                unit.OnHealthChanged += SetHPNetworkVar;
             }
             else if (IsClient)
             {
-                GetComponent<NetworkTransform>().Interpolate = false;
                 teamColor.OnValueChanged += SetTeamColor;
                 emissionStrength.OnValueChanged += SetEmissionStrength;
                 damageColor.OnValueChanged += SetDamageColor;
                 index.OnValueChanged += RemoveClientCopy;
+                hp.OnValueChanged += SetProgressBarValue;
+
                 unit.enabled = false;
+                GetComponent<NetworkTransform>().Interpolate = false;
                 GetComponent<NavMeshAgent>().enabled = false;
                 GetComponent<NavMeshObstacle>().enabled = false;
                 SetTeamColor(teamColor.Value, teamColor.Value);
@@ -50,12 +56,12 @@ namespace Units
 
         public override void OnNetworkDespawn()
         {
-            //networkTransformEnabled.OnValueChanged -= SetNetworkTransformEnabled;
             if (IsOwner)
             {
                 unit.OnTeamColorSet -= SetTeamColorNetworkVar;
                 unit.OnEmissionStrengthSet -= SetEmissionStrengthNetworkVar;
                 unit.OnDamageColorSet -= SetDamageColorNetworkVar;
+                unit.OnHealthChanged -= SetHPNetworkVar;
             }
             else if (IsClient)
             {
@@ -63,6 +69,7 @@ namespace Units
                 emissionStrength.OnValueChanged -= SetEmissionStrength;
                 index.OnValueChanged -= RemoveClientCopy;
                 damageColor.OnValueChanged -= SetDamageColor;
+                hp.OnValueChanged -= SetProgressBarValue;
             }
         }
 
@@ -76,29 +83,21 @@ namespace Units
         {
             if (IsOwner)
                 return;
-            
+
             if (spawnAnimation)
-            {  
+            {
                 UnitSpawner.Instance.StartParticlesOnlySpawnAnimation(position, transform.parent, unit.Data.Size, () =>
                 {
                     GetComponent<NetworkTransform>().Interpolate = true;
+                    progressBar.gameObject.SetActive(true);
                 });
             }
-        }
-
-        public void SetNetworkTransformEnabledNetworkVar(bool enabled)
-        {
-            networkTransformEnabled.Value = enabled;
-        }
-
-        void SetTeamColorNetworkVar(Color color)
-        {
-            teamColor.Value = color;
         }
 
         void SetTeamColor(Color _, Color color)
         {
             unit.SetTeamColor(color);
+            progressBar?.ChangeColors(progressBar.backgroundColor, color);
         }
 
         void RemoveClientCopy(int _, int index)
@@ -126,9 +125,31 @@ namespace Units
             unit.SetDamageColor(color);
         }
 
-        void SetNetworkTransformEnabled(bool _, bool enabled)
+        void SetProgressBarValue(int _, int hp)
         {
-            GetComponent<NetworkTransform>().enabled = enabled;
+            float fillAmount = (float)hp / (float)unit.Data.MaxHealth * 100f;
+            progressBar?.SetFillAmount(fillAmount);
+            if (hp <= 0)
+            {
+                ProgressBarManager.Instance.RemoveProgressBar(unit);
+            }
+        }
+
+        void SetHPNetworkVar(Unit unit)
+        {
+            this.hp.Value = unit.Health;
+        }
+
+        void SetTeamNetworkVar(int team)
+        {
+            this.team.Value = team;
+        }
+
+        void CreateProgressBar(int _, int team)
+        {
+            unit.Team = team; 
+            progressBar = ProgressBarManager.Instance.CreateProgressBar(unit);
+            progressBar.gameObject.SetActive(unit is Base);
         }
     }
 }

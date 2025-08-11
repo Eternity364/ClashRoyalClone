@@ -74,6 +74,10 @@ namespace Units
             go.transform.localRotation = isEnemy ? enemyBase.transform.localRotation : playerBase.transform.localRotation;
             CheckNetwork(go.GetComponent<ISpawnable>());
             go.transform.SetParent(playerBase.transform.parent, false);
+
+            ProgressBar progressBar = ProgressBarManager.Instance.CreateProgressBar(go.GetComponent<Unit>());
+            progressBar.ChangeColors(progressBar.backgroundColor, UnitSpawner.Instance.TeamColors[isEnemy ? 1 : 0]);
+
             return go;
         }
 

@@ -245,7 +245,6 @@ namespace Units{
                 unit.GetComponent<NetworkUnit>().index.Value = spawnParams.UnitIndex;
                 if (spawnParams.Team == (int)Sides.Enemy)
                     unit.transform.localEulerAngles = new Vector3(0, 180, 0);
-                progressBarManager.CreateProgressBar(unit);
                 unit.OnDeath += _unit => progressBarManager.RemoveProgressBar(_unit);
             });
             spawnable.SetTeamColor(UnitSpawner.Instance.TeamColors[spawnParams.Team]);
@@ -254,6 +253,9 @@ namespace Units{
                 spawnable.PerformActionForEachUnit(unit =>
                     {
                         targetAcquiring.AddUnit(unit);
+                        ProgressBar progressBar = progressBarManager.CreateProgressBar(unit);
+                        if (progressBar != null)
+                            progressBar.ChangeColors(progressBar.backgroundColor, UnitSpawner.Instance.TeamColors[spawnParams.Team]);
                     });
                 spawnable.Init(UnitSpawner.Instance.Bases[spawnParams.Team].transform, spawnParams.Team);
             });

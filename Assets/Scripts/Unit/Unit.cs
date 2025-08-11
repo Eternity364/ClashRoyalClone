@@ -8,6 +8,7 @@ using Unity.VisualScripting;
 using System.Collections;
 using System;
 using System.Collections.Generic;
+using UnityEngine.Assertions;
 
 namespace Units{
     public enum AllowedTargets
@@ -56,8 +57,17 @@ namespace Units{
         /// <summary>
         /// Range, on which unit spots an enemy and starts walking to it. Must be equal or greater than attack range.
         /// </summary>
-        public float AttackNoticeRange => data.AttackNoticeRange;
-        public int Team => team;
+    public float AttackNoticeRange => data.AttackNoticeRange;
+        public int Team
+        {
+            get => team;
+            set
+            {
+                Assert.IsTrue(value == (int)Sides.Player || value == (int)Sides.Enemy, "Team must be either Player or Enemy.");
+                team = value;
+                OnTeamSet?.Invoke(team);
+            }
+        }
         public bool IsDead => isDead;
         public bool HasTarget => attackTarget != null;
         public Unit Target => attackTarget;
@@ -65,11 +75,15 @@ namespace Units{
         public AllowedTargets AllowedTargets => allowedTargets;
         public float Radius => navMeshAgent.radius;
         public UnitData Data => data;
+        public int Health => health;
+        public Type Type => type;
+
         public UnityAction<Unit> OnDeath;
-        public event UnityAction<Color> OnTeamColorSet;
+        public UnityAction<Unit> OnHealthChanged;
+        public event UnityAction<int> OnTeamSet;
         public event UnityAction<Color> OnDamageColorSet;
         public event UnityAction<float> OnEmissionStrengthSet;
-        public Type Type => type;
+        
 
         protected Transform destination;
         protected Unit attackTarget;
@@ -98,8 +112,8 @@ namespace Units{
 
         public virtual void Init(Transform destination, int team)
         {
-            this.team = team;
-            health = data.MaxHealth;
+            Team = team;
+            SetHealth(data.MaxHealth);
             isDead = false;
 
             if (this.GetType() == typeof(Base))
@@ -150,7 +164,7 @@ namespace Units{
 
         public void ReceiveAttack(int damage)
         {
-            health -= damage;
+            SetHealth(health - damage);
             StartDamageAnimation();
             if (health <= 0)
                 PerformDeath();
@@ -162,7 +176,6 @@ namespace Units{
             {
                 mat.SetColor("_TeamColor", color);
             });
-            OnTeamColorSet?.Invoke(color);
         }
 
         public void SetCopyMode(bool enabled)
@@ -202,6 +215,12 @@ namespace Units{
             Collider collider = GetComponent<Collider>();
             if (collider != null)
                 collider.enabled = false;
+        }
+
+        private void SetHealth(int value)
+        {
+            health = value;
+            OnHealthChanged?.Invoke(this);
         }
 
         private void SetAlpha(float value)

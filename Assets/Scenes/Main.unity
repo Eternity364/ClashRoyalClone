@@ -14929,7 +14929,7 @@ MonoBehaviour:
   playerTeamColor: {r: 0, g: 0, b: 0, a: 0}
   enemyTeamColor: {r: 0, g: 0, b: 0, a: 0}
   team: 1
-  spawnRate: 12
+  spawnRate: 15
   unitPrefabs:
   - {fileID: 880772275919571930, guid: 6cda68b015ef5824eb3b0e439cdf476c, type: 3}
   - {fileID: 345719639570813046, guid: d447a58d7798b414ca462105208c9072, type: 3}
@@ -15648,11 +15648,15 @@ MonoBehaviour:
     type: 3}
   parent: {fileID: 1231815003}
   clickableArea: {fileID: 1533069172}
-  progressBarYOffset: 0.001
-  progressBarScaleMedium: {x: 0.1, y: 0.5}
-  progressBarOffsetMedium: 17
-  progressBarScaleBig: {x: 0.2, y: 2}
-  progressBarOffsetBig: 17.4
+  backgroundColor: {r: 0.21698111, g: 0.20701909, b: 0.18709503, a: 1}
+  fillColor: {r: 0.93333334, g: 0.22352941, b: 0.95686275, a: 1}
+  progressBarScaleMedium: {x: 0.1, y: 0.34}
+  progressBarOffsetMedium: 70.8
+  positionAdjustmentStrengthMedium: 0.03
+  progressBarScaleBig: {x: 0.2, y: 0.34}
+  progressBarOffsetBig: 80.8
+  positionAdjustmentStrengthBig: 0.13
+  progressBarOffsetPlayerBase: 167.37
 --- !u!1 &1160234425
 GameObject:
   m_ObjectHideFlags: 0
@@ -15915,12 +15919,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0cd44c1031e13a943bb63640046fad76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_UiScaleMode: 0
+  m_UiScaleMode: 1
   m_ReferencePixelsPerUnit: 100
   m_ScaleFactor: 1
-  m_ReferenceResolution: {x: 800, y: 600}
+  m_ReferenceResolution: {x: 1080, y: 1920}
   m_ScreenMatchMode: 0
-  m_MatchWidthOrHeight: 0
+  m_MatchWidthOrHeight: 1
   m_PhysicalUnit: 3
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
@@ -16456,6 +16460,8 @@ Transform:
   - {fileID: 903571438}
   - {fileID: 2056957890}
   - {fileID: 1152341502}
+  - {fileID: 1309653784}
+  - {fileID: 1893900027}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &1308596911 stripped
@@ -16506,12 +16512,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1309653782}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: -4.822143, y: 172.66583, z: 38.995052}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 1306307789}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1312257205
 GameObject:
@@ -20718,7 +20724,7 @@ MonoBehaviour:
   playerTeamColor: {r: 0, g: 0, b: 0, a: 0}
   enemyTeamColor: {r: 0, g: 0, b: 0, a: 0}
   team: 1
-  spawnRate: 12
+  spawnRate: 15
   unitPrefabs:
   - {fileID: 880772275919571930, guid: 6cda68b015ef5824eb3b0e439cdf476c, type: 3}
   - {fileID: 345719639570813046, guid: d447a58d7798b414ca462105208c9072, type: 3}
@@ -25614,7 +25620,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1868308374}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -25759,12 +25765,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1893900024}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 1306307789}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &1897885754 stripped
 Transform:
@@ -35944,6 +35950,11 @@ PrefabInstance:
       objectReference: {fileID: 1082284949}
     - target: {fileID: 5027094789416323413, guid: 30745e8b7734bca4f946c324ba20a54b,
         type: 3}
+      propertyPath: enemyTeamColor.a
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5027094789416323413, guid: 30745e8b7734bca4f946c324ba20a54b,
+        type: 3}
       propertyPath: enemyTeamColor.b
       value: 0.22075468
       objectReference: {fileID: 0}
@@ -35962,6 +35973,11 @@ PrefabInstance:
       propertyPath: unitCopiesParent
       value: 
       objectReference: {fileID: 761777995}
+    - target: {fileID: 5027094789416323413, guid: 30745e8b7734bca4f946c324ba20a54b,
+        type: 3}
+      propertyPath: playerTeamColor.a
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5027094789416323413, guid: 30745e8b7734bca4f946c324ba20a54b,
         type: 3}
       propertyPath: playerTeamColor.b
@@ -36371,11 +36387,9 @@ SceneRoots:
   - {fileID: 1306307789}
   - {fileID: 1231815003}
   - {fileID: 332651951}
-  - {fileID: 1893900027}
-  - {fileID: 1309653784}
   - {fileID: 2053133374}
-  - {fileID: 1868308375}
   - {fileID: 1363093105}
   - {fileID: 613339684}
   - {fileID: 702148368}
+  - {fileID: 1868308375}
   - {fileID: 250976920}

@@ -14,7 +14,13 @@ public class ProgressBar : MonoBehaviour
     [SerializeField]
     private Transform costHighlight;
     [SerializeField]
+    private Image backgroundImage;
+    [SerializeField]
+    public Color backgroundColor;
+    [SerializeField]
     private Image fillImage;
+    [SerializeField]
+    public Color fillColor;
     [SerializeField]
     private GameObject segmentPrefab;
     [SerializeField]
@@ -39,10 +45,21 @@ public class ProgressBar : MonoBehaviour
     public void Init(int segmentsCount)
     {
         this.segmentsCount = segmentsCount;
+        if (segmentsCount == 0)
+            costHighlight.gameObject.SetActive(false);
         originalCostHighlightPosition = costHighlight.localPosition;
         imageWidth = fillImage.rectTransform.sizeDelta.x;
+        ChangeColors(backgroundColor, fillColor);
         CreateSegments();
         SetFillAmount(fillAmount);
+    }
+
+    public void ChangeColors(Color backgroundColor, Color fillColor)
+    {
+            this.backgroundColor = backgroundColor;
+            backgroundImage.color = backgroundColor;
+            this.fillColor = fillColor;
+            fillImage.color = fillColor;
     }
 
     public void SetFillAmount(float value)
@@ -50,6 +67,7 @@ public class ProgressBar : MonoBehaviour
         value = Mathf.Clamp(value, 0, 100);
         fillAmount = value;
         fillTransform.localPosition = new Vector3(-(imageWidth * (100 - fillAmount)) / 100f, fillTransform.localPosition.y, fillTransform.localPosition.z);
+
         UpdateSegments();
     }
 

@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Netcode;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -14,49 +15,51 @@ namespace Units
         [SerializeField]
         ClickableArea clickableArea;
         [SerializeField]
-        float progressBarYOffset = 20f;
+        private Color backgroundColor;
+        [SerializeField]
+        private Color fillColor;
         [SerializeField]
         Vector2 progressBarScaleMedium = new Vector2(0.1f, 2f);
         [SerializeField]
         float progressBarOffsetMedium;
         [SerializeField]
+        float positionAdjustmentStrengthMedium = 0.03f;
+        [SerializeField]
         Vector2 progressBarScaleBig = new Vector2(0.2f, 2f);
         [SerializeField]
         float progressBarOffsetBig;
         [SerializeField]
-        float positionAdjustmentStrength = 0.1f;
+        float positionAdjustmentStrengthBig = 0.03f;
+        [SerializeField]
+        float progressBarOffsetPlayerBase;
 
         private Dictionary<Unit, ProgressBar> activeProgressBars = new();
+        private const float referenceYResolution = 1920f;
+
+        public static ProgressBarManager Instance { get; private set; }
+
+        void Awake()
+        {
+            Instance = this;
+        }
 
 
-        public void CreateProgressBar(Unit unit)
+        public ProgressBar CreateProgressBar(Unit unit)
         {
             if (unit.Data.Size == Size.Small)
-                return;
+                return null;
 
             ProgressBar progressBar = ObjectPool.Instance.GetObject(progressBarPrefab.gameObject).GetComponent<ProgressBar>();
             progressBar.transform.SetParent(parent);
             progressBar.transform.localScale = GetProgressBarScale(unit);
             progressBar.transform.localRotation = Quaternion.identity;
             activeProgressBars.Add(unit, progressBar);
-        }
+            progressBar.Init(0);
+            progressBar.ChangeColors(backgroundColor, fillColor);
+            unit.OnHealthChanged += OnHealthChanged;
 
-        // public void UpdateProgressBar(GameObject progressBar, float progress)
-        // {
-        //     if (activeProgressBars.Contains(progressBar))
-        //     {
-        //         // Assuming the progress bar has a method to update its fill amount
-        //         ProgressBar barComponent = progressBar.GetComponent<ProgressBar>();
-        //         if (barComponent != null)
-        //         {
-        //             barComponent.SetFillAmount(progress);
-        //         }
-        //     }
-        //     else
-        //     {
-        //         Debug.LogWarning("Attempted to update a progress bar that is not managed by this manager.");
-        //     }
-        // }
+            return progressBar;
+        }
         
 
         public void RemoveProgressBar(Unit unit)
@@ -64,12 +67,19 @@ namespace Units
             if (activeProgressBars.TryGetValue(unit, out ProgressBar progressBar))
             {
                 ObjectPool.Instance.ReturnObject(progressBar.gameObject);
+                unit.OnHealthChanged -= OnHealthChanged;
                 activeProgressBars.Remove(unit);
             }
             else
             {
                 Debug.LogWarning("Attempted to remove a progress bar that does not exist for the unit.");
             }
+        }
+
+        private void OnHealthChanged(Unit unit)
+        {
+            float fillAmount = (float)unit.Health / (float)unit.Data.MaxHealth * 100f;
+            activeProgressBars[unit].SetFillAmount(fillAmount);
         }
 
         private Vector3 GetProgressBarScale(Unit unit)
@@ -87,13 +97,32 @@ namespace Units
 
         private float GetProgressBarOffset(Unit unit)
         {
-            if (unit.Data.Size == Size.Medium)
+            Sides side = NetworkManager.Singleton.IsHost ? Sides.Player : Sides.Enemy;
+            if (unit is Base && unit.Team == (int)side)
+            {
+                return progressBarOffsetPlayerBase;
+            }
+            else if (unit.Data.Size == Size.Medium)
             {
                 return progressBarOffsetMedium;
             }
             else if (unit.Data.Size == Size.Big)
             {
                 return progressBarOffsetBig;
+            }
+            return 0f;
+        }
+
+        
+        private float GetProgressBarPosAdjustmentStrenght(Unit unit)
+        {
+            if (unit.Data.Size == Size.Medium)
+            {
+                return positionAdjustmentStrengthMedium;
+            }
+            else if (unit.Data.Size == Size.Big)
+            {
+                return positionAdjustmentStrengthBig;
             }
             return 0f;
         }
@@ -105,19 +134,9 @@ namespace Units
 
             Vector2 screenCenter = new Vector2(Screen.width / 2f, Screen.height / 2f);
             Vector2 screenOffsetFromCenter = (Vector2)screenPos - screenCenter;
-            screenPos += (Vector3)screenOffsetFromCenter * positionAdjustmentStrength;
+            screenPos += (Vector3)screenOffsetFromCenter * GetProgressBarPosAdjustmentStrenght(unit);
 
-            return screenPos + GetProgressBarOffset(unit) * Vector3.up;
-
-            // if (RectTransformUtility.ScreenPointToLocalPointInRectangle(
-            //         (RectTransform)parent, screenPos, Camera.main, out Vector2 localPos))
-            // {
-            //     return localPos += GetProgressBarOffset(unit) * Vector2.up;
-            // }
-            // else
-            // {
-            //     return unit.transform.position + Vector3.up * 2f;
-            // }
+            return screenPos + GetProgressBarOffset(unit) * Screen.height / referenceYResolution * Vector3.up;
         }
 
         private void UpdatePositions()
