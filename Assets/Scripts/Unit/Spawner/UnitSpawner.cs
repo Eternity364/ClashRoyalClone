@@ -92,10 +92,7 @@ namespace Units{
             UnitData data = UnitsList.Instance.GetByType(spawnParams.UnitType).Data;
 
             if (IsHost)
-            {
-                if (spawnParams.PayElixir)
-                    ElixirManager.Instance.ChangeValue(-data.Cost, (Sides)spawnParams.Team);
-                    
+            {                    
                 UnitSpawner.Instance.TrySpawn(spawnParams);
             }
             else
@@ -120,7 +117,7 @@ namespace Units{
                 clientCopyIndex++;
             }
           
-            if (spawnParams.PayElixir)
+            if (spawnParams.PayElixir && spawnParams.Spawn)
                 panel.CreateFieldElixirAnimationInMousePosition(data.Cost);
         }
 
@@ -191,6 +188,9 @@ namespace Units{
 
         private void TrySpawn(SpawnParams spawnParams)
         {
+            UnitData data = UnitsList.Instance.GetByType(spawnParams.UnitType).Data;
+            if (spawnParams.PayElixir)
+                ElixirManager.Instance.ChangeValue(-data.Cost, (Sides)spawnParams.Team);
             StartCoroutine(TrySpawnCor(spawnParams));
         }
 

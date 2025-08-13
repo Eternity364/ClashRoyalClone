@@ -83,11 +83,6 @@ public class ElixirManager : NetworkBehaviour
         return value;
     }
 
-    public void RemoveOnValueChangedListener(UnityAction<float, Sides> listener)
-    {
-        onValueChanged -= listener;
-    }
-
     public void ChangeValue(int change, Sides side)
     {
         UpdateValue(values[(int)side] + change, side);
@@ -104,6 +99,7 @@ public class ElixirManager : NetworkBehaviour
             return;
 
         spawnLock += change;
+        print("Spawn lock updated: " + spawnLock);
         Assert.IsTrue(spawnLock >= 0, "Spawn lock cannot be negative.");
         UpdateAllValues();
     }
