@@ -79,7 +79,9 @@ namespace Units{
         public Type Type => type;
 
         public UnityAction<Unit> OnDeath;
+        public UnityAction<Unit> OnDeathAnimationFinish;
         public UnityAction<Unit> OnHealthChanged;
+        public UnityAction<bool> OnOpponentInNoticeRange;
         public event UnityAction<int> OnTeamSet;
         public event UnityAction<Color> OnDamageColorSet;
         public event UnityAction<float> OnEmissionStrengthSet;
@@ -282,17 +284,17 @@ namespace Units{
             if (navMeshObstacle.isActiveAndEnabled || navMeshAgent.isOnNavMesh)
             {
                 float distance = (transform.position - attackTarget.transform.position).magnitude - attackTarget.Radius;
-                if (distance > data.AttackNoticeRange)
+                if (attackTarget is not Base && distance > data.AttackNoticeRange)
                 {
                     attackTargetFound = false;
                     attackTarget.OnDeath -= ClearAttackTarget;
                     ClearAttackTarget(attackTarget);
                 }
-                else if (distance <= data.AttackNoticeRange)
+                else
                 {
-                    if (distance <= data.AttackRange)
+                    bool isInAttackRange = distance <= data.AttackRange;
+                    if (isInAttackRange)
                     {
-                        //attackTargetFound = false;
                         if (navMeshAgent.enabled)
                         {
                             StartMovement(false, Vector3.zero);
@@ -306,6 +308,8 @@ namespace Units{
                         attackAllowed = false;
                         StartMovement(true, attackTarget.transform.position);
                     }
+                    if (distance <= data.AttackNoticeRange)
+                        OnOpponentInNoticeRange?.Invoke(isInAttackRange);
                 }
             }
         }
@@ -397,6 +401,7 @@ namespace Units{
             deathSeq.InsertCallback(3f, () =>
             {
                 ObjectPool.Instance.ReturnObject(gameObject);
+                OnDeathAnimationFinish?.Invoke(this);
             });
 
             isDead = true;
@@ -425,7 +430,7 @@ namespace Units{
                         color =>
                         {
                             mat.color = color;
-                            OnDamageColorSet?.Invoke(color); // Notify client side of color change
+                            OnDamageColorSet?.Invoke(color);
                         },
                         commonUnitData.DamageColor,
                         commonUnitData.DamageColorAnimationDuration
@@ -437,7 +442,7 @@ namespace Units{
                         color =>
                         {
                             mat.color = color;
-                            OnDamageColorSet?.Invoke(color); // Notify client side of color change
+                            OnDamageColorSet?.Invoke(color);
                         },
                         originalColor,
                         commonUnitData.DamageColorAnimationDuration
@@ -454,8 +459,6 @@ namespace Units{
 
         private void Update()
         {
-            // if (this is not Base)
-            //     print("Rotation = " + transform.localEulerAngles.y);
             if (isDead)
                 return;
 

@@ -14,11 +14,26 @@ namespace Units{
 
         public event System.Action<bool> OnSetSwordActive;
 
+        private bool hadTargetBefore = false;
+        private bool isSwordSheathed = true;
+
+        protected override void Awake()
+        {
+            OnOpponentInNoticeRange += isInAttackRange =>
+            {
+                SheathWeapon(false, isInAttackRange);
+            };
+            OnDeathAnimationFinish += unit =>
+            {
+                SheathWeapon(true, true);
+            };
+            base.Awake();
+        }
+
         public override void SetAttackTarget(Unit target, bool overrideMandatoryFirstAttack = false)
         {
-            bool hadTargetBefore = HasTarget;
+            hadTargetBefore = HasTarget && attackTarget is not Base;
             base.SetAttackTarget(target, overrideMandatoryFirstAttack);
-            SheathWeapon(false, hadTargetBefore);
         }
 
         public void SetSwordActive(bool active)
@@ -29,23 +44,28 @@ namespace Units{
         
         protected override void ClearAttackTarget(Unit unit)
         {
-            SheathWeapon(true);
+            hadTargetBefore = false;
+            SheathWeapon(true, false);
             base.ClearAttackTarget(unit);
         }
-        
-        private void SheathWeapon(bool active, bool forceStartAttacking = false)
+
+        private void SheathWeapon(bool active, bool instant)
         {
-            if (isDead)
+            if (isDead && !instant)
                 return;
-            if (HasTarget != active && forceStartAttacking)
-            {
-                StartAttacking();
+
+            if (isSwordSheathed == active)
                 return;
-            }
+            
+            isSwordSheathed = active;
 
             SwitchWeaponContext context = new SwitchWeaponContext();
             float callbackDelay = active ? 0.6f : 0.1f;
             context.type = active ? "Sheath" : "Unsheath";
+            if (instant)
+            {
+                context.type = "Instant";
+            }
             context.side = active ? "None" : "Right";
             context.sheathLocation = "Back";
             context.leftWeapon = (int)Weapon.Relax;
@@ -54,18 +74,21 @@ namespace Units{
 
             seq?.Kill();
             seq = DOTween.Sequence();
-            seq.InsertCallback(callbackDelay, () =>
+            if (instant)
+                OnSwordAnimationComplete(active);
+            else
+                seq.InsertCallback(callbackDelay, () => OnSwordAnimationComplete(active));
+
+            void OnSwordAnimationComplete(bool isActive)
             {
-                SetSwordActive(!active);
-                OnSetSwordActive?.Invoke(!active);
-                if (active)
-                    animator.SetBool("Trigger", true);
-            });
-            seq.InsertCallback(1, () =>
-            {
-                if (!active)
-                    StartAttacking();
-            });
+                if (isSwordSheathed == isActive)
+                {
+                    SetSwordActive(!isActive);
+                    OnSetSwordActive?.Invoke(!isActive);
+                    if (isActive)
+                        animator.SetBool("Trigger", true);
+                }
+            }
         }
     }
 }

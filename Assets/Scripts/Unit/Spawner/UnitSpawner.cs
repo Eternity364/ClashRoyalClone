@@ -89,7 +89,16 @@ namespace Units{
 
         public void SendSpawnRequest(SpawnParams spawnParams)
         {
-            if (!IsHost)
+            UnitData data = UnitsList.Instance.GetByType(spawnParams.UnitType).Data;
+
+            if (IsHost)
+            {
+                if (spawnParams.PayElixir)
+                    ElixirManager.Instance.ChangeValue(-data.Cost, (Sides)spawnParams.Team);
+                    
+                UnitSpawner.Instance.TrySpawn(spawnParams);
+            }
+            else
             {
                 if (!spawnParams.Spawn)
                 {
@@ -110,10 +119,9 @@ namespace Units{
                 ElixirManager.Instance.UpdateSpawnLock(1);
                 clientCopyIndex++;
             }
-            else
-            {
-                UnitSpawner.Instance.TrySpawn(spawnParams);
-            }
+          
+            if (spawnParams.PayElixir)
+                panel.CreateFieldElixirAnimationInMousePosition(data.Cost);
         }
 
         public void StartParticlesOnlySpawnAnimation(Vector3 startPosition, Transform parent, Size size, TweenCallback OnSpawnAnimationFinish = null)
@@ -217,14 +225,6 @@ namespace Units{
 
             GameObject oldUnitCopy = unitCopy;
             unitCopy = null;
-
-            UnitData data = UnitsList.Instance.GetByType(spawnParams.UnitType).Data;
-
-            if (spawnParams.PayElixir)
-            {
-                ElixirManager.Instance.ChangeValue(-data.Cost, (Sides)spawnParams.Team);
-                panel.CreateFieldElixirAnimation(data.Cost);
-            }
 
             yield return new WaitForSeconds(delayBeforeSpawn);
 

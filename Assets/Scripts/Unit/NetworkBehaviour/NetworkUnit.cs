@@ -143,6 +143,7 @@ namespace Units
 
         void SetTeamColor(int _, int team)
         {
+            unit.Team = team;
             unit.SetTeamColor(UnitSpawner.Instance.TeamColors[team]);
             progressBar.ChangeColors(progressBar.backgroundColor, UnitSpawner.Instance.TeamColors[team]);
             progressBar?.SetFillAmount(100f);

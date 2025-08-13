@@ -57,7 +57,10 @@
         "Blendable",
         "Despawn",
         "Interactable",
+        "Lerp",
         "Mathf",
-        "Spawnable"
+        "Spawnable",
+        "UGUI",
+        "Unsheath"
     ]
 }

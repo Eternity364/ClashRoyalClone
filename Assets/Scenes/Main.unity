@@ -14932,9 +14932,6 @@ MonoBehaviour:
   spawnRate: 15
   unitPrefabs:
   - {fileID: 880772275919571930, guid: 6cda68b015ef5824eb3b0e439cdf476c, type: 3}
-  - {fileID: 345719639570813046, guid: d447a58d7798b414ca462105208c9072, type: 3}
-  - {fileID: 6302694674362624318, guid: b5813654b784855468d9767bef561ac2, type: 3}
-  - {fileID: -3097958103367793821, guid: 391a642033c5e634dab2ab25434f1e57, type: 3}
 --- !u!4 &1044829383
 Transform:
   m_ObjectHideFlags: 0
@@ -16654,6 +16651,7 @@ GameObject:
   - component: {fileID: 1325028720}
   - component: {fileID: 1325028722}
   - component: {fileID: 1325028723}
+  - component: {fileID: 1325028724}
   m_Layer: 5
   m_Name: Panel
   m_TagString: Untagged
@@ -16773,6 +16771,26 @@ MonoBehaviour:
   panelArea: {fileID: 1533069172}
   iconPrefab: {fileID: 967596707}
   minCopyScale: 0.5
+--- !u!114 &1325028724
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1325028718}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  GlobalObjectIdHash: 1102544909
+  AlwaysReplicateAsRoot: 0
+  SynchronizeTransform: 0
+  ActiveSceneSynchronization: 0
+  SceneMigrationSynchronization: 1
+  SpawnWithObservers: 1
+  DontDestroyWithOwner: 0
+  AutoObjectParentSync: 1
 --- !u!1 &1326969171
 GameObject:
   m_ObjectHideFlags: 0
@@ -20727,9 +20745,6 @@ MonoBehaviour:
   spawnRate: 15
   unitPrefabs:
   - {fileID: 880772275919571930, guid: 6cda68b015ef5824eb3b0e439cdf476c, type: 3}
-  - {fileID: 345719639570813046, guid: d447a58d7798b414ca462105208c9072, type: 3}
-  - {fileID: 6302694674362624318, guid: b5813654b784855468d9767bef561ac2, type: 3}
-  - {fileID: -3097958103367793821, guid: 391a642033c5e634dab2ab25434f1e57, type: 3}
 --- !u!1 &1533069171
 GameObject:
   m_ObjectHideFlags: 0
@@ -29597,7 +29612,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 105a2af410ca8694f8e8c36ac96d874b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  spawnEnemiesInSinglePlayer: 0
+  spawnEnemiesInSinglePlayer: 1
   unityTransport: {fileID: 1868308376}
   targetAcquiring: {fileID: 1082284949}
   singlePlayerButton: {fileID: 1255552317}

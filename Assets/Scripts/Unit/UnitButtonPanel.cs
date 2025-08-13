@@ -7,7 +7,7 @@ using UnityEngine.Events;
 using UnityEngine.UI;
 
 namespace Units {
-    public class UnitButtonPanel : MonoBehaviour
+    public class UnitButtonPanel : NetworkBehaviour
     {
 
         [SerializeField]
@@ -42,6 +42,8 @@ namespace Units {
         [SerializeField]
         float minCopyScale = 0.5f;
 
+        public static UnitButtonPanel Instance;
+
         private UnityAction<UnitSpawner.SpawnParams> OnDragEndEvent;
         private UnityAction<Vector3, Type> OnEnteredUnitPlaceAreaEvent;
         private UnityAction<Vector3> OnDragEvent;
@@ -57,6 +59,8 @@ namespace Units {
 
         void Awake()
         {
+            Instance = this;
+
             buttons = GetComponentsInChildren<UnitButton>();
             for (int i = 0; i < buttons.Length; i++)
             {
@@ -91,11 +95,17 @@ namespace Units {
             }
         }
 
-
-        public void CreateFieldElixirAnimation(float value)
+        public void CreateFieldElixirAnimationInMousePosition(float value)
         {
-            AnimationHelpers.CreateFieldElixirAnimation(iconPrefab.gameObject, parentForCopy, panelArea.GetMouseHitPosition(), value);
+            CreateFieldElixirAnimation(value, panelArea.GetMouseHitPosition());
         }
+
+
+        public void CreateFieldElixirAnimation(float value, Vector3 position)
+        {
+            AnimationHelpers.CreateFieldElixirAnimation(iconPrefab.gameObject, parentForCopy, position, value);
+        }
+        
 
         public void UpdateButtonsStatus(float elixirValue, Sides side)
         {

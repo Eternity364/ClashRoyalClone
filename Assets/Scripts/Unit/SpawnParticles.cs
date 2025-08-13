@@ -14,11 +14,11 @@ namespace Units
         [SerializeField]
         GameObject debrisPart;
         [SerializeField]
-        float debristStartTime = 0.9f;
+        float debrisStartTime = 0.9f;
         [SerializeField]
         GameObject smokePart;
         [SerializeField]
-        float smoketStartTime = 0.15f;
+        float smokeStartTime = 0.15f;
         [SerializeField]
         float yUpOffset = 10f;
 
@@ -31,8 +31,8 @@ namespace Units
                 return new Dictionary<float, GameObject>
                 {
                     { lightStartTime, lightPart },
-                    { debristStartTime, debrisPart },
-                    { smoketStartTime, smokePart }
+                    { debrisStartTime, debrisPart },
+                    { smokeStartTime, smokePart }
                 };
             }
         }
