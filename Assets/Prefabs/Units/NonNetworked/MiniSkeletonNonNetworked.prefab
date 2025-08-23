@@ -335,7 +335,7 @@ NavMeshObstacle:
   m_Enabled: 0
   serializedVersion: 3
   m_Shape: 0
-  m_Extents: {x: 0.7, y: 0.00001, z: 0.7}
+  m_Extents: {x: 0.9, y: 0.00001, z: 0.9}
   m_MoveThreshold: 0.1
   m_Carve: 1
   m_CarveOnlyStationary: 1
@@ -354,7 +354,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   data: {fileID: 11400000, guid: be5e5f4837241b741a6d40d7c7aef473, type: 2}
-  damageColor: {r: 1, g: 0, b: 0, a: 0}
   bulletFactory: {fileID: 0}
   navMeshAgent: {fileID: 6251182854389003900}
   navMeshObstacle: {fileID: 2898496116241167909}
@@ -365,8 +364,10 @@ MonoBehaviour:
   - {fileID: 983359498206565199}
   - {fileID: 4465564946194641033}
   animator: {fileID: 1777095587526217}
-  checkForAttackTargetRate: 0.1
   type: 4
+  commonUnitData: {fileID: 0}
+  indexTest: 0
+  indexTestStop: -1
   spawnable: {fileID: 6589486296622033536, guid: 564d3d8f1a898d1429202a926e852d0c,
     type: 3}
 --- !u!1001 &1114770748102429977

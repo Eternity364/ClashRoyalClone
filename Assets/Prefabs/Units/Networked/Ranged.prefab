@@ -328,7 +328,7 @@ NavMeshAgent:
   m_Height: 2
   m_BaseOffset: 0
   m_WalkableMask: 16
-  m_ObstacleAvoidanceType: 2
+  m_ObstacleAvoidanceType: 4
 --- !u!208 &3107644234196968788
 NavMeshObstacle:
   m_ObjectHideFlags: 0
@@ -340,11 +340,11 @@ NavMeshObstacle:
   serializedVersion: 3
   m_Shape: 0
   m_Extents: {x: 1, y: 2.72, z: 1}
-  m_MoveThreshold: 0.1
+  m_MoveThreshold: 0
   m_Carve: 1
   m_CarveOnlyStationary: 1
   m_Center: {x: 0, y: 2.51, z: 0}
-  m_TimeToStationary: 0.1
+  m_TimeToStationary: 0
 --- !u!114 &6302694674362624318
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -367,6 +367,9 @@ MonoBehaviour:
   animator: {fileID: 4893337981640854681}
   type: 2
   commonUnitData: {fileID: 11400000, guid: 7aaee75492567754fa689bc74206aac0, type: 2}
+  forwardObstacle: {fileID: 0}
+  indexTest: 0
+  indexTestStop: -1
   arrow: {fileID: 8458770393523292580}
 --- !u!114 &8237657506366109943
 MonoBehaviour:
@@ -442,6 +445,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 927b97dccf1e3be4dafbdabd7eb2a9c0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  spawnAnimation: 1
+  unit: {fileID: 0}
+  index:
+    m_InternalValue: 0
 --- !u!1001 &998534310545247219
 PrefabInstance:
   m_ObjectHideFlags: 0

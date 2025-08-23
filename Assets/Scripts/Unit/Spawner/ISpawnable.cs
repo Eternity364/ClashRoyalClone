@@ -6,7 +6,7 @@ namespace Units
     public interface ISpawnable
     {
         void Init(Transform destination, int team) { }
-        void SetTeamColor(Color teamColor) { }
+        void SetTeam(Sides team) { }
         void SetCopyMode(bool enabled) { }
         void PerformActionForEachUnit(Action<Unit> Action) { }
         void SetParentForUnits(Transform parent) { }

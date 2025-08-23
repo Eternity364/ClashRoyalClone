@@ -74,6 +74,7 @@ namespace Units{
         private const float delayBeforeSpawn = 1f;
         private static UnitSpawner _instance;
         private int clientCopyIndex = 1;
+        private int testIndex = 0;
         private Dictionary<int, GameObject> unitCopies = new();
 
         protected virtual void Start()
@@ -243,11 +244,13 @@ namespace Units{
             spawnable.PerformActionForEachUnit((unit) =>
             {
                 unit.GetComponent<NetworkUnit>().index.Value = spawnParams.UnitIndex;
+                unit.indexTest = testIndex;
+                testIndex++;
                 if (spawnParams.Team == (int)Sides.Enemy)
                     unit.transform.localEulerAngles = new Vector3(0, 180, 0);
                 unit.OnDeath += _unit => progressBarManager.RemoveProgressBar(_unit);
             });
-            spawnable.SetTeamColor(UnitSpawner.Instance.TeamColors[spawnParams.Team]);
+            spawnable.SetTeam((Sides)spawnParams.Team);
             StartSpawnAnimation(spawnable, false, () =>
             {
                 spawnable.PerformActionForEachUnit(unit =>

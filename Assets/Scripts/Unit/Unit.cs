@@ -9,6 +9,7 @@ using System.Collections;
 using System;
 using System.Collections.Generic;
 using UnityEngine.Assertions;
+using RPGCharacterAnims.Actions;
 
 namespace Units{
     public enum AllowedTargets
@@ -52,12 +53,13 @@ namespace Units{
         protected Type type;
         [SerializeField]
         protected CommonUnitData commonUnitData;
+        [SerializeField]
+        protected GameObject forwardObstacle;
 
         public virtual ISpawnable Spawnable => this;
         /// <summary>
         /// Range, on which unit spots an enemy and starts walking to it. Must be equal or greater than attack range.
         /// </summary>
-    public float AttackNoticeRange => data.AttackNoticeRange;
         public int Team
         {
             get => team;
@@ -65,11 +67,13 @@ namespace Units{
             {
                 Assert.IsTrue(value == (int)Sides.Player || value == (int)Sides.Enemy, "Team must be either Player or Enemy.");
                 team = value;
+                SetTeamColor(UnitSpawner.Instance.TeamColors[team]);
                 OnTeamSet?.Invoke(team);
             }
         }
         public bool IsDead => isDead;
         public bool HasTarget => attackTarget != null;
+        public bool HasPathToTarget => navMeshAgent.hasPath;
         public Unit Target => attackTarget;
         public float baseOffset => navMeshAgent.baseOffset;
         public AllowedTargets AllowedTargets => allowedTargets;
@@ -77,6 +81,9 @@ namespace Units{
         public UnitData Data => data;
         public int Health => health;
         public Type Type => type;
+
+        public int indexTest;
+        public int indexTestStop = -1;
 
         public UnityAction<Unit> OnDeath;
         public UnityAction<Unit> OnDeathAnimationFinish;
@@ -100,6 +107,8 @@ namespace Units{
         protected bool attackTargetFound = false;
         protected bool mandatoryFirstAttack = false;
         protected Vector3 positionBefore;
+        protected Vector3 lastAttackTargetPosition;
+        private const float updateMovementTargetThreshold = 2f;
         protected int health;
         protected bool isDead = true;
         protected AllowedTargets allowedTargets = AllowedTargets.All;
@@ -135,6 +144,11 @@ namespace Units{
         public void PerformActionForEachUnit(Action<Unit> Action)
         {
             Action(this);
+        }
+
+        public void SetTeam(Sides team)
+        {
+            Team = (int)team;
         }
 
         public virtual GameObject GetGameObject()
@@ -276,15 +290,22 @@ namespace Units{
         {
             navMeshAgent.enabled = true;
             navMeshAgent.updateRotation = true;
-            StartMovement(true, destination.position);
+            SetMovementActive(true, destination.position);
         }
 
         protected virtual void CheckIfAttackTargetReachable()
         {
+            if (indexTest == indexTestStop)
+            {
+                int a = 0;
+            }
             if (navMeshObstacle.isActiveAndEnabled || navMeshAgent.isOnNavMesh)
             {
-                float distance = (transform.position - attackTarget.transform.position).magnitude - attackTarget.Radius;
-                if (attackTarget is not Base && distance > data.AttackNoticeRange)
+                float sqrDistance = (transform.position - attackTarget.transform.position).sqrMagnitude;
+                float adjustedAttackRange = data.AttackRange + attackTarget.Radius;
+                float adjustedNoticeRange = data.AttackNoticeRange + attackTarget.Radius;
+
+                if (attackTarget is not Base && sqrDistance > adjustedNoticeRange * adjustedNoticeRange)
                 {
                     attackTargetFound = false;
                     attackTarget.OnDeath -= ClearAttackTarget;
@@ -292,12 +313,12 @@ namespace Units{
                 }
                 else
                 {
-                    bool isInAttackRange = distance <= data.AttackRange;
+                    bool isInAttackRange = sqrDistance <= adjustedAttackRange * adjustedAttackRange;
                     if (isInAttackRange)
                     {
                         if (navMeshAgent.enabled)
                         {
-                            StartMovement(false, Vector3.zero);
+                            SetMovementActive(false, Vector3.zero);
                             mandatoryFirstAttack = true;
                         }
                         RotateTowards(attackTarget.transform);
@@ -306,37 +327,52 @@ namespace Units{
                     else
                     {
                         attackAllowed = false;
-                        StartMovement(true, attackTarget.transform.position);
+                        UpdateMovementPositionIfNeeded();
                     }
-                    if (distance <= data.AttackNoticeRange)
+                    if (sqrDistance <= adjustedNoticeRange * adjustedNoticeRange)
                         OnOpponentInNoticeRange?.Invoke(isInAttackRange);
                 }
             }
         }
 
-        protected bool IsTargetInAttackRange()
+        private void UpdateMovementPositionIfNeeded()
         {
-            float distance = (transform.position - attackTarget.transform.position).magnitude - attackTarget.Radius;
-            return distance <= data.AttackRange;
+            if (!navMeshAgent.hasPath || navMeshAgent.pathStatus == NavMeshPathStatus.PathInvalid || navMeshAgent.pathStatus == NavMeshPathStatus.PathPartial ||
+                navMeshAgent.remainingDistance < 0.1f || lastAttackTargetPosition == Vector3.zero ||
+                (lastAttackTargetPosition - attackTarget.transform.position).sqrMagnitude > updateMovementTargetThreshold)
+            {
+                lastAttackTargetPosition = attackTarget.transform.position;
+                SetMovementActive(true, attackTarget.transform.position);
+            }
         }
 
-        protected virtual void ClearAttackTarget(Unit unit)
+        protected virtual void ClearAttackTarget(Unit _)
         {
-            if (isDead)
-                return;
 
             attackTarget = null;
             attackAllowed = false;
             attackTargetFound = false;
             mandatoryFirstAttack = false;
+            lastAttackTargetPosition = Vector3.zero;
+            
+            if (isDead)
+                return;
 
-            StartMovement(true, destination.position);
+            SetMovementActive(true, destination.position);
         }
 
-        protected void StartMovement(bool isMoving, Vector3 destPos)
+        protected void SetMovementActive(bool isMoving, Vector3 destPos)
         {
+            if (isDead)
+                return;
+
             positionBefore = transform.position;
             navMeshObstacle.enabled = !isMoving;
+            bool isTargetBase = attackTarget != null && attackTarget is Base;
+            navMeshObstacle.carving = !isMoving && isTargetBase;
+            // if (forwardObstacle != null)
+            //     forwardObstacle.SetActive(!isMoving && isTargetBase);
+
             navMeshAgent.enabled = isMoving;
             if (navMeshAgent.isOnNavMesh)
             {
@@ -345,22 +381,29 @@ namespace Units{
             }
             StartMovingAnimation(isMoving);
 
-            if (isMoving)
-                StartCoroutine(nameof(SetDestination), destPos);
+            // if (isMoving)
+            //     StartCoroutine(nameof(SetDestination), destPos);
+
+            transform.position = positionBefore;
+
+            //navMeshAgent.ResetPath();
+            if (navMeshAgent.isOnNavMesh)
+                navMeshAgent.SetDestination(destPos);
         }
 
         /* Because after switching from NavMeshObstacle to NavMeshAgent back again, the position of the unit slightly changes,
             so we need to set it to one from the frame before (on current frame it's the same for some reason).*/
         protected IEnumerator SetDestination(Vector3 destPos)
         {
-            yield return new WaitForNextFrameUnit();
+            // yield return new WaitForNextFrameUnit();
 
             if (isDead)
                 yield break;
 
             transform.position = positionBefore;
-            if (navMeshAgent.isOnNavMesh)
-                navMeshAgent.SetDestination(destPos);
+
+            navMeshAgent.ResetPath();
+            navMeshAgent.SetDestination(destPos);
         }
 
         protected virtual void StartMovingAnimation(bool isMoving)
@@ -376,10 +419,10 @@ namespace Units{
 
             navMeshAgent.enabled = false;
             navMeshObstacle.enabled = false;
-            attackAllowed = false;
-            attackTarget = null;
-            mandatoryFirstAttack = false;
-            attackTargetFound = false;
+            if (forwardObstacle != null)
+                forwardObstacle.SetActive(false);
+            ClearAttackTarget(this);
+            SetMovementActive(false, Vector3.zero);
 
             if (rotationAnimation != null)
             {
@@ -397,6 +440,7 @@ namespace Units{
             }
 
             DG.Tweening.Sequence deathSeq = DOTween.Sequence();
+            deathSeq.SetAutoKill(true);
             deathSeq.Insert(1f, transform.DOBlendableMoveBy(new Vector3(0, -deathAnimationDepth, 0), 2f));
             deathSeq.InsertCallback(3f, () =>
             {
@@ -462,6 +506,10 @@ namespace Units{
             if (isDead)
                 return;
 
+            if (indexTest == indexTestStop)
+            {
+                int a = 0;
+            }
 
             if (attackTarget != null && attackTargetFound)
             {

@@ -59,6 +59,8 @@
         "Interactable",
         "Lerp",
         "Mathf",
+        "pushback",
+        "Scriptable",
         "Spawnable",
         "UGUI",
         "Unsheath"

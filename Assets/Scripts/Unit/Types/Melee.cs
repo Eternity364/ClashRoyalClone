@@ -20,6 +20,8 @@ namespace Units{
                 seq = DOTween.Sequence();
                 seq.InsertCallback(0.5f, () =>
                 {
+                    if (!HasTarget)
+                        return;
                     attackTarget.ReceiveAttack(data.Attack);
                 });
                 seq.InsertCallback(1f, OnFinish);

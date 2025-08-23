@@ -12,6 +12,8 @@ namespace Units{
 
         private float timePassed = 0;
 
+        protected override void Start()  {}
+
         private void Awake()
         {
             timePassed = spawnRate;

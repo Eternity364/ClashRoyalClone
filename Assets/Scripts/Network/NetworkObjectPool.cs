@@ -16,6 +16,7 @@ namespace Unity.BossRoom.Infrastructure
     /// </summary>
     public class NetworkObjectPool : NetworkBehaviour
     {
+
         public static NetworkObjectPool Singleton { get; private set; }
 
         [SerializeField]
@@ -86,7 +87,6 @@ namespace Unity.BossRoom.Infrastructure
         /// <returns></returns>
         public NetworkObject GetNetworkObject(GameObject prefab, Vector3 position, Quaternion rotation)
         {
-            print("NetworkObjectPool.GetNetworkObject called for prefab: " + prefab.name);
             var networkObject = m_PooledObjects[prefab].Get();
 
             var noTransform = networkObject.transform;
@@ -102,6 +102,7 @@ namespace Unity.BossRoom.Infrastructure
         public void ReturnNetworkObject(NetworkObject networkObject, GameObject prefab)
         {
             m_PooledObjects[prefab].Release(networkObject);
+            print("NetworkObjectPool.ReturnNetworkObject called for prefab: " + prefab.name);
         }
 
         /// <summary>

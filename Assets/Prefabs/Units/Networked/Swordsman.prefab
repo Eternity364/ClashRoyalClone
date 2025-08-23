@@ -4695,7 +4695,7 @@ NavMeshAgent:
   m_Height: 2
   m_BaseOffset: -0.6
   m_WalkableMask: 16
-  m_ObstacleAvoidanceType: 2
+  m_ObstacleAvoidanceType: 4
 --- !u!208 &7290862605227990102
 NavMeshObstacle:
   m_ObjectHideFlags: 0
@@ -4707,11 +4707,11 @@ NavMeshObstacle:
   serializedVersion: 3
   m_Shape: 0
   m_Extents: {x: 1.66, y: 0.00001, z: 1.66}
-  m_MoveThreshold: 0.1
+  m_MoveThreshold: 0
   m_Carve: 1
   m_CarveOnlyStationary: 1
   m_Center: {x: 0, y: 3.56, z: 0}
-  m_TimeToStationary: 0.1
+  m_TimeToStationary: 0
 --- !u!114 &-3097958103367793821
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4739,6 +4739,9 @@ MonoBehaviour:
   animator: {fileID: 7413368972480049925}
   type: 1
   commonUnitData: {fileID: 11400000, guid: 7aaee75492567754fa689bc74206aac0, type: 2}
+  forwardObstacle: {fileID: 0}
+  indexTest: 0
+  indexTestStop: -1
   swordInHand: {fileID: 3926819761456522989}
   swordInTheBack: {fileID: 7413368972470626003}
 --- !u!114 &7798779959216085822
@@ -4817,3 +4820,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   spawnAnimation: 1
   unit: {fileID: 0}
+  index:
+    m_InternalValue: 0

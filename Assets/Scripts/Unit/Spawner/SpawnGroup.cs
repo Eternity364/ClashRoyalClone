@@ -47,6 +47,7 @@ namespace Units
             if (GetComponent<NetworkObject>() != null && NetworkManager.Singleton.IsHost)
             {
                 networkObject.Despawn();
+                return;
             }
             Destroy(gameObject);
         }
@@ -60,11 +61,11 @@ namespace Units
             });
         }
 
-        public void SetTeamColor(Color teamColor)
+        public void SetTeam(Sides team)
         {
             PerformActionForEachUnit((unit) =>
             {
-                unit.SetTeamColor(teamColor);
+                unit.SetTeam(team);
             });
         }
 

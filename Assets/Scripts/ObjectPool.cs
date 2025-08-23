@@ -3,6 +3,7 @@ using UnityEngine;
 using Units;
 using Unity.Netcode;
 using UnityEngine.Assertions;
+using Unity.BossRoom.Infrastructure;
 
 public class ObjectPool : MonoBehaviour
 {
@@ -29,6 +30,13 @@ public class ObjectPool : MonoBehaviour
     // Retrieve an object from the pool
     public GameObject GetObject(GameObject prefab, bool setActive = true)
     {
+        if (prefab.GetComponent<NetworkObject>() != null)
+        {
+            GameObject go = NetworkObjectPool.Singleton.GetNetworkObject(prefab, Vector3.zero, Quaternion.identity).gameObject;
+            go.SetActive(setActive);
+            return go;
+        }
+
         string key = prefab.name;
 
         // Ensure the pool for this prefab exists
@@ -57,14 +65,16 @@ public class ObjectPool : MonoBehaviour
     public void ReturnObject(GameObject obj)
     {
         NetworkObject networkObject = obj.GetComponent<NetworkObject>();
+        obj.SetActive(false);
+        
         if (obj.GetComponent<NetworkObject>() != null && NetworkManager.Singleton.IsHost && networkObject.IsSpawned)
         {
             networkObject.Despawn();
+            return;
         }
         Assert.IsNotNull(obj, "Returned object is null");
         string key = obj.name;
         Assert.IsNotNull(pools[key], "No pool for object: " + key);
         pools[key].Add(obj);
-        obj.SetActive(false);
     }
 }

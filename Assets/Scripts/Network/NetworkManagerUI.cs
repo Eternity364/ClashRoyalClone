@@ -27,12 +27,15 @@ public class NetworkManagerUI : MonoBehaviour
     [SerializeField]
     private GameObject panel;
     [SerializeField] List<NavMeshSurface> surfaces;
+    [SerializeField] List<UnitAutoSpawner> playerSpawners;
     [SerializeField] List<UnitAutoSpawner> enemySpawners;
     [SerializeField] Transform mainParent;
     [SerializeField] GameObject relayMenu;
     [SerializeField] GameObject waitingText;
     [SerializeField] WinConditionWindow winConditionWindow;
     [SerializeField] GameObject progressBarCanvas;
+    [SerializeField] Toggle autoSpawnPlayerUnits;
+    [SerializeField] Toggle autoSpawnEnemyUnits;
 
     bool isSinglePlayer = false;
 
@@ -101,7 +104,8 @@ public class NetworkManagerUI : MonoBehaviour
         {
             NetworkManager.Singleton.OnServerStarted += () =>
             {
-                enemySpawners.ForEach(spawner => spawner.gameObject.SetActive(true));
+                enemySpawners.ForEach(spawner => spawner.gameObject.SetActive(autoSpawnEnemyUnits.isOn));
+                playerSpawners.ForEach(spawner => spawner.gameObject.SetActive(autoSpawnPlayerUnits.isOn));
             };
         }
         StartHost();

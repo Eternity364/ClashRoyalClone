@@ -70,10 +70,6 @@ namespace Units
                 unit.OnHealthChanged -= OnHealthChanged;
                 activeProgressBars.Remove(unit);
             }
-            else
-            {
-                Debug.LogWarning("Attempted to remove a progress bar that does not exist for the unit.");
-            }
         }
 
         private void OnHealthChanged(Unit unit)

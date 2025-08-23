@@ -35,6 +35,7 @@ namespace Units
                 unit.OnEmissionStrengthSet += SetEmissionStrengthNetworkVar;
                 unit.OnDamageColorSet += SetDamageColorNetworkVar;
                 unit.OnHealthChanged += SetHPNetworkVar;
+                index.OnValueChanged += Test;
             }
             else if (IsClient)
             {
@@ -51,7 +52,7 @@ namespace Units
                 SetEmissionStrength(emissionStrength.Value, emissionStrength.Value);
 
                 progressBar = ProgressBarManager.Instance.CreateProgressBar(unit);
-                progressBar.gameObject.SetActive(unit is Base);
+                progressBar?.gameObject.SetActive(unit is Base);
                 SetTeamColor(0, team.Value);
             }
         }
@@ -101,6 +102,11 @@ namespace Units
             UnitSpawner.Instance.RemoveClientCopy(index);
         }
 
+        void Test(int _, int index)
+        {
+            unit.indexTest = index;
+        }
+
         void SetEmissionStrengthNetworkVar(float value)
         {
             emissionStrength.Value = value;
@@ -118,7 +124,7 @@ namespace Units
 
         void SetDamageColor(Color _, Color color)
         {
-            unit.SetDamageColor(color);
+            //unit.SetDamageColor(color);
         }
 
         void SetProgressBarValue(int _, int hp)
@@ -145,7 +151,7 @@ namespace Units
         {
             unit.Team = team;
             unit.SetTeamColor(UnitSpawner.Instance.TeamColors[team]);
-            progressBar.ChangeColors(progressBar.backgroundColor, UnitSpawner.Instance.TeamColors[team]);
+            progressBar?.ChangeColors(progressBar.backgroundColor, UnitSpawner.Instance.TeamColors[team]);
             progressBar?.SetFillAmount(100f);
         }
     }

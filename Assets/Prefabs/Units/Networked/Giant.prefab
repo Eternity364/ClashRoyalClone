@@ -316,7 +316,7 @@ NavMeshAgent:
   m_GameObject: {fileID: 4392560655695614523}
   m_Enabled: 1
   m_AgentTypeID: 0
-  m_Radius: 3.2
+  m_Radius: 2.6
   m_Speed: 4
   m_Acceleration: 200
   avoidancePriority: 50
@@ -328,7 +328,7 @@ NavMeshAgent:
   m_Height: 2
   m_BaseOffset: 6.44
   m_WalkableMask: 8
-  m_ObstacleAvoidanceType: 2
+  m_ObstacleAvoidanceType: 4
 --- !u!208 &4608970349504169898
 NavMeshObstacle:
   m_ObjectHideFlags: 0
@@ -339,12 +339,12 @@ NavMeshObstacle:
   m_Enabled: 0
   serializedVersion: 3
   m_Shape: 0
-  m_Extents: {x: 3.2, y: 1, z: 3.2}
-  m_MoveThreshold: 0.1
+  m_Extents: {x: 2.6, y: 1, z: 2.6}
+  m_MoveThreshold: 0
   m_Carve: 1
   m_CarveOnlyStationary: 1
   m_Center: {x: 0, y: 0, z: 0}
-  m_TimeToStationary: 0.1
+  m_TimeToStationary: 0
 --- !u!114 &345719639570813046
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -366,6 +366,9 @@ MonoBehaviour:
   animator: {fileID: 7831052181578513884}
   type: 3
   commonUnitData: {fileID: 11400000, guid: 7aaee75492567754fa689bc74206aac0, type: 2}
+  forwardObstacle: {fileID: 0}
+  indexTest: 0
+  indexTestStop: -1
 --- !u!114 &4819641843213741820
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -442,6 +445,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   spawnAnimation: 1
   unit: {fileID: 0}
+  index:
+    m_InternalValue: 0
 --- !u!1001 &3584683006785470891
 PrefabInstance:
   m_ObjectHideFlags: 0

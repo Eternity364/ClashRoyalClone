@@ -11,9 +11,11 @@ public class TargetAcquiring : MonoBehaviour
     private float frequency = 0.2f;
     [SerializeField]
     [Tooltip("If a new possible target is closer than this value, it will be set as a target.")]
-    private float distanceDifferanceToChangeTarget = 2f;
+    private float distanceDifferenceToChangeTarget = 2f;
     [SerializeField]
     private ObjectPool objectPool;
+
+    public int testIndex = -1;
 
     private float timePassed = 0;
     private List<Unit> toRemove = new();
@@ -40,12 +42,18 @@ public class TargetAcquiring : MonoBehaviour
 
             if (agent.IsDead) continue;
 
-            Unit closestEnemy = null;
-            float closestDistance = float.MaxValue;
-            float currentEnemyDistance = float.MaxValue;
-            if (agent.HasTarget && agent.Target != UnitSpawner.Instance.Bases[agent.Team]) {
-                currentEnemyDistance = (agent.transform.position - agent.Target.transform.position).magnitude;
+            if (agent.indexTest == testIndex)
+            {
+                int a = 0;
             }
+
+            Unit closestEnemy = null;
+            float closestSqrDistance = float.MaxValue;
+            float currentEnemySqrDistance = float.MaxValue;
+            if (agent.HasTarget && agent.Target != UnitSpawner.Instance.Bases[agent.Team]) {
+                currentEnemySqrDistance = (agent.transform.position - agent.Target.transform.position).sqrMagnitude;
+            }
+
             int team = agent.Team;
 
             if (agent.AllowedTargets != AllowedTargets.Base)
@@ -55,17 +63,17 @@ public class TargetAcquiring : MonoBehaviour
                     if (agents[j].IsDead) continue;
                     if (i != j && team != agents[j].Team)
                     {
-                        float distance = (agent.transform.position - agents[j].transform.position).magnitude;
-                        if (distance < closestDistance)
+                        float sqrDistance = (agent.transform.position - agents[j].transform.position).sqrMagnitude;
+                        if (sqrDistance < closestSqrDistance)
                         {
-                            closestDistance = distance;
+                            closestSqrDistance = sqrDistance;
                             closestEnemy = agents[j];
                         }
                     }
 
-                    if (closestEnemy != null && agent.Target != closestEnemy && closestDistance < currentEnemyDistance - distanceDifferanceToChangeTarget)
+                    if (closestEnemy != null && agent.Target != closestEnemy && closestSqrDistance < currentEnemySqrDistance)
                     {
-                        CheckAndSetTarget(agent, closestEnemy, closestDistance);
+                        CheckAndSetTarget(agent, closestEnemy, closestSqrDistance, currentEnemySqrDistance == float.MaxValue ? 0 : distanceDifferenceToChangeTarget);
                     }
                 }
             }
@@ -83,8 +91,12 @@ public class TargetAcquiring : MonoBehaviour
         toRemove.Clear();
     }
 
-    private void CheckAndSetTarget(Unit attacker, Unit possibleEnemy, float distance) {
-        if (attacker.AttackNoticeRange > distance) {
+    private void CheckAndSetTarget(Unit attacker, Unit possibleEnemy, float sqrDistance, float additionalDistanceAdjustment = 0)
+    {
+        float adjustedNoticeRange = attacker.Data.AttackNoticeRange + possibleEnemy.Radius - additionalDistanceAdjustment;
+        //bool ignoreNoticeRange = attacker.HasTarget && attacker.Target is Base && !attacker.HasPathToTarget;
+        if (/*ignoreNoticeRange ||*/ adjustedNoticeRange * adjustedNoticeRange > sqrDistance)
+        {
             attacker.SetAttackTarget(possibleEnemy, possibleEnemy is not Base);
         }
     }
