@@ -83,6 +83,7 @@ MonoBehaviour:
   animator: {fileID: 0}
   type: 0
   commonUnitData: {fileID: 11400000, guid: 7aaee75492567754fa689bc74206aac0, type: 2}
+  forwardObstacle: {fileID: 0}
   indexTest: 0
   indexTestStop: -1
   teamColor: {r: 0, g: 0, b: 0, a: 0}

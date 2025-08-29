@@ -358,7 +358,8 @@ namespace Units{
             if (isDead)
                 return;
 
-            SetMovementActive(true, destination.position);
+            if (destination != null)
+                SetMovementActive(true, destination.position);
         }
 
         protected void SetMovementActive(bool isMoving, Vector3 destPos)
@@ -387,7 +388,7 @@ namespace Units{
             transform.position = positionBefore;
 
             //navMeshAgent.ResetPath();
-            if (navMeshAgent.isOnNavMesh)
+            if (navMeshAgent.isOnNavMesh && destPos != Vector3.zero)
                 navMeshAgent.SetDestination(destPos);
         }
 
@@ -408,6 +409,8 @@ namespace Units{
 
         protected virtual void StartMovingAnimation(bool isMoving)
         {
+            if (animator == null)
+                return; 
             animator.SetBool("Moving", isMoving);
             animator.SetFloat("Velocity Z", isMoving ? 1 : 0);
         }
