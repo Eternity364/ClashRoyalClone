@@ -1,10 +1,10 @@
 using System.Collections.Generic;
-using Units;
 using Unity.AI.Navigation;
 using Unity.Netcode;
 using Unity.Netcode.Transports.UTP;
 using UnityEngine;
 using UnityEngine.UI;
+using Units;
 
 public class NetworkManagerUI : MonoBehaviour
 {
@@ -13,7 +13,7 @@ public class NetworkManagerUI : MonoBehaviour
     [SerializeField]
     private UnityTransport unityTransport;
     [SerializeField]
-    private TargetAcquiring targetAcquiring;
+    private GameObject targetAcquiring;
     [SerializeField]
     private Button singlePlayerButton;
     [SerializeField]
@@ -27,8 +27,8 @@ public class NetworkManagerUI : MonoBehaviour
     [SerializeField]
     private GameObject panel;
     [SerializeField] List<NavMeshSurface> surfaces;
-    [SerializeField] List<UnitAutoSpawner> playerSpawners;
-    [SerializeField] List<UnitAutoSpawner> enemySpawners;
+    [SerializeField] List<GameObject> playerSpawners;
+    [SerializeField] List<GameObject> enemySpawners;
     [SerializeField] Transform mainParent;
     [SerializeField] GameObject relayMenu;
     [SerializeField] GameObject waitingText;
@@ -143,7 +143,7 @@ public class NetworkManagerUI : MonoBehaviour
 
     private void OnMatchEnded(Sides losingTeam)
     {
-        targetAcquiring.gameObject.SetActive(false);
+        targetAcquiring.SetActive(false);
         winConditionWindow.gameObject.SetActive(true);
         bool isWinner =
             (NetworkManager.Singleton.IsHost && losingTeam != Sides.Player) ||

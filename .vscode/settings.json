@@ -59,6 +59,7 @@
         "Interactable",
         "Lerp",
         "Mathf",
+        "Pathfinding",
         "pushback",
         "Scriptable",
         "Spawnable",

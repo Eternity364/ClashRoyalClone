@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using QFSW.QC;
 using Unity.Netcode;
 using Unity.Netcode.Transports.UTP;
 using Unity.Services.Authentication;
@@ -24,7 +23,6 @@ public class RelayManager : MonoBehaviour
         unityTransport = GetComponentInChildren<UnityTransport>();
     }
 
-    [Command]
     public async Task<string> CreateRelay()
     {
         SwitchUnityTransport();
@@ -46,8 +44,6 @@ public class RelayManager : MonoBehaviour
 
         return joinCode;
     }
-
-    [Command]
     public async Task JoinRelay(string joinCode)
     {
         SwitchUnityTransport();

@@ -9,12 +9,6 @@ using UnityEngine.AI;
 
 
 namespace Units{
-    public enum Sides
-    {
-        Player,
-        Enemy
-    }
-
     public class UnitSpawner : NetworkBehaviour
     {
         [SerializeField]
