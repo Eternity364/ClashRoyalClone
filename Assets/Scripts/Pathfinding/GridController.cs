@@ -1,48 +1,37 @@
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
-
-namespace Pathfinding
+ 
+public class GridController : MonoBehaviour
 {
-    public class GridController : MonoBehaviour
+    public Vector2Int gridSize;
+    public float cellRadius = 0.5f;
+    public FlowField curFlowField;
+    public GridDebug gridDebug;
+ 
+    private void InitializeFlowField()
     {
-        public Vector2Int gridSize;
-        public float cellRadius;
-        public FlowField currentFlowField;
-        public Vector3 origin;
-        public float cellPositionAdjustment = 0.5f;
-
-        private void Start()
+        curFlowField = new FlowField(cellRadius, gridSize);
+        curFlowField.CreateGrid();
+        gridDebug.SetFlowField(curFlowField);
+    }
+ 
+    private void Update()
+    {
+        if (Input.GetMouseButtonDown(0))
         {
             InitializeFlowField();
-        }
-
-        private void InitializeFlowField()
-        {
-            currentFlowField = new FlowField(cellRadius, gridSize);
-            currentFlowField.CreateGrid(origin);
-
-            if (currentFlowField != null)
-            {
-                GridDebug.Instance.SetFlowField(currentFlowField);
-            }
-        }
-
-        private void Update()
-        {
-            if (Input.GetMouseButtonDown(0))
-            {
-                InitializeFlowField();
-                currentFlowField.CreateCostField(cellPositionAdjustment);
-
-                Vector3 mousePos = new Vector3(Input.mousePosition.x, Input.mousePosition.y, 10f);
-                Vector3 worldPos = Camera.main.ScreenToWorldPoint(mousePos) - origin;
-                print("worldPos: " + worldPos);
-                Cell destinationCell = currentFlowField.GetCellFromWorldPos(worldPos);
-                print("Destination Cell: " + destinationCell.gridIndex);
-                currentFlowField.CreateIntegrationField(destinationCell);
-
-                currentFlowField.CreateFlowField();
-            }
+ 
+            curFlowField.CreateCostField();
+ 
+            Vector3 mousePos = new Vector3(Input.mousePosition.x, Input.mousePosition.y, 10f);
+            Vector3 worldMousePos = Camera.main.ScreenToWorldPoint(mousePos);
+            Cell destinationCell = curFlowField.GetCellFromWorldPos(worldMousePos);
+            curFlowField.CreateIntegrationField(destinationCell);
+ 
+            curFlowField.CreateFlowField();
+ 
+            gridDebug.DrawFlowField();
         }
     }
 }
-
