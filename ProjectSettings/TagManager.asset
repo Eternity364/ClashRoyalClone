@@ -22,8 +22,8 @@ TagManager:
   - Units
   - PostProcessing
   - 
-  - 
-  - 
+  - Impassable
+  - RoughTerrain
   - 
   - 
   - 
